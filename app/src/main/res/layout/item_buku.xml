@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="160dp"
+    android:layout_height="270dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_cover"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:src="@drawable/bintang"
+            android:scaleType="centerCrop"/>
+
+        <TextView
+            android:id="@+id/tv_judul"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:paddingTop="6dp"
+            android:text="Bintang"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins_semibold"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/tv_penulis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TereLiye"
+            android:fontFamily="@font/roboto_regular"
+            android:layout_marginStart="8dp"
+            android:textSize="12sp"
+            android:textColor="#777777"/>
+        
+        <RatingBar
+            android:id="@+id/rating_bar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:numStars="5"
+            android:stepSize="0.5"
+            android:rating="4.5"
+            android:isIndicator="true"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

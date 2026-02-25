@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    tools:context=".ui.home.HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+       <!--GREETING-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hi"
+            android:textSize="16sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textStyle="bold"/>
+
+        <!--SEARCH -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:startIconDrawable="@drawable/ic_search"
+            app:startIconTint="@color/gray"
+            app:boxBackgroundMode="filled"
+            app:boxBackgroundColor="@color/search_bg"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/find"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="#1F2937"
+                android:textColorHint="@color/text_hint"
+                android:background="@null"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/all"
+                    android:textColor="@color/filter_text_active"
+                    app:cornerRadius="20dp"
+                    app:strokeColor="@color/filter_active"
+                    app:strokeWidth="1dp"
+                    android:backgroundTint="@color/filter_active"/>
+                
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_petualangan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/adventure"
+                    android:textColor="@color/filter_text"
+                    android:backgroundTint="@color/filter_bg"
+                    app:strokeColor="@color/filter_active"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_romance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/romance"
+                    android:textColor="@color/filter_text"
+                    android:backgroundTint="@color/filter_bg"
+                    app:strokeColor="@color/filter_active"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_horor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/horor"
+                    android:textColor="@color/filter_text"
+                    android:backgroundTint="@color/filter_bg"
+                    app:strokeColor="@color/filter_active"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_sejarah"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:text="@string/history"
+                    android:textColor="@color/filter_text"
+                    android:backgroundTint="@color/filter_bg"
+                    app:strokeColor="@color/filter_active"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="20dp"/>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical">
+
+            <!--REKOMENDASI-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/rekomendasi"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="#111827"/>
+            
+            <TextView
+                android:id="@+id/tv_lihat_semua_rekomendasi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/see_all"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="#2563EB"
+                android:clickable="true"
+                android:focusable="true"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_rekomendasi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/popular"
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins_medium"
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"/>
+
+            <TextView
+                android:id="@+id/liat_semua_populer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/see_all"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="#2563EB"
+                android:clickable="true"
+                android:focusable="true"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_populer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
