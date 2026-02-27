@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
+    android:layout_height="200dp"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/blue">
+    android:padding="20dp"
+    android:gravity="bottom"
+    android:background="@drawable/bg_gradient_header">
 
+    <!--PROFILE USER-->
     <ImageView 
         android:id="@+id/iv_profile"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:src="@drawable/ic_profile"
         android:background="@drawable/bg_circle_white"
-        android:padding="8dp"
+        android:padding="6dp"
+        android:scaleType="centerCrop"
         android:contentDescription="@string/profile"/>
     
     <TextView
         android:id="@+id/tv_nama"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nama:"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp"
+        android:text="@string/name"
+        android:textSize="18sp"
+        android:fontFamily="@font/poppins_semibold"
+        android:layout_marginTop="10dp"
         android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/tv_nim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="NIM:"
+        android:text="@string/nimm"
         android:textSize="12sp"
-        android:textColor="@color/white"/>
+        android:fontFamily="@font/roboto_regular"
+        android:layout_marginTop="3dp"
+        android:textColor="#E0E0E0"/>
 
     </LinearLayout>

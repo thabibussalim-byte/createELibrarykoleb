@@ -162,7 +162,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
             app:singleSelection="true"
-            app:checkedChip="@+id/chip_all"
+            app:checkedChip="@id/chip_all"
             app:chipSpacingHorizontal="8dp">
 
         <com.google.android.material.chip.Chip
@@ -187,6 +187,7 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_disetujui"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:text="Disetujui"
@@ -196,6 +197,7 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_dibatalkan"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:text="Dibatalkan"

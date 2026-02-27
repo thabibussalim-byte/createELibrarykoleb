@@ -45,4 +45,12 @@
     <string name="see_all">Lihat Semua</string>
     <string name="popular">Popular</string>
 
+    <!--TEKS DRAWER HEADER-->
+    <string name="name">Nama:</string>
+    <string name="nimm">Nim:</string>
+    <string name="judul_buku">Judul Buku</string>
+    <string name="genre">Genre</string>
+    <string name="desc">Descripsi</string>
+    <string name="pinjam">Pinjam</string>
+
 </resources>
