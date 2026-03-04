@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".ui.detail.StatuspeminjamanFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_primary"
+        app:title="Status Peminjaman"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_back"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+        <!--CARI BUKU-->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+                    
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="120dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/matahari"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp">
+
+                        <!--JUDUL BUKU-->
+                        <TextView
+                            android:id="@+id/tv_judul"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Judul Buku"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/poppins_semibold"/>
+
+                        <!--PENULIS BUKU-->
+                        <TextView
+                            android:id="@+id/tv_penulis"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Penulis Buku"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/roboto_regular"/>
+
+                    <!--BADGE STATUS-->
+                        <TextView
+                            android:id="@+id/tv_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AKTIF"
+                            android:textSize="12sp"
+                            android:textColor="@android:color/white"
+                            android:fontFamily="@font/poppins_medium"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp"
+                            android:layout_marginTop="6dp"
+                            android:background="@drawable/bg_status_aktif"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!--INFO-->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tanggal Pinjam"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"/>
+
+                    <TextView
+                        android:id="@+id/tanggal_pinjam"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10 Feb 2026"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tanggal Kembali"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:layout_marginTop="10dp"/>
+
+                    <TextView
+                        android:id="@+id/tanggal_kembali"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="17 Feb 2026"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Denda: Rp 0"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:layout_marginTop="10dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kembalikan Buku"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins_medium"
+                android:backgroundTint="@color/color_primary"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
