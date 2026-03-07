@@ -9,9 +9,11 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
+
     @GET("api/genre")
     fun getGenres(): Call<GenreResponse>
 
     @POST("api/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
+
 }
