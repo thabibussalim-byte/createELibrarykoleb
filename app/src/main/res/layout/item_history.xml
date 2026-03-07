@@ -1,67 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:radius="12dp"
-    android:layout_marginBottom="10dp"
-    android:elevation="4dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="12dp">
 
-        <!--COVER -->
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="90dp"
+        <!-- Cover Buku -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_book_cover"
+            android:layout_width="80dp"
+            android:layout_height="110dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/narasi"
-            android:scaleType="centerCrop"/>
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
 
-        <!--INFO-->
+        <!-- Info Detail -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Baris Judul -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Narasi"
-                android:fontFamily="@font/poppins_semibold"
-                android:textSize="14sp"
-                android:textStyle="bold"/>
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Judul:  "
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_history_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="Narasi"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Baris Karya -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Karya: TereLiye"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Karya:  "
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_history_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="TereLiye"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Status / Tanggal / Denda -->
+            <TextView
+                android:id="@+id/tv_history_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:fontFamily="@font/roboto_regular"
-                android:layout_marginTop="5dp"
-                android:textSize="12sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="1 Januari - 5 Januari 2026"
-                android:textSize="11sp"
-                android:fontFamily="@font/roboto_regular"
-                android:layout_marginTop="5dp"/>
+                android:textColor="@color/text_primary"
+                android:textSize="12sp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_history_fine"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Denda: Rp 2.000 (Telat 2 Hari)"
-                android:textSize="11sp"
-                android:textColor="#E53935"
+                android:layout_marginTop="2dp"
                 android:fontFamily="@font/roboto_regular"
-                android:layout_marginTop="5dp"/>
+                android:text="Denda: Rp 2.000 (Telat 2 hari)"
+                android:textColor="@color/error_red"
+                android:textSize="12sp"
+                tools:visibility="visible"/>
 
         </LinearLayout>
     </LinearLayout>
 
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

@@ -12,30 +12,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-       <!--APP BAR/TOLLBAR-->
+       <!--APP BAR/TOOLBAR-->
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.Material3.ActionBar">
+            android:theme="@style/ThemeOverlay.Material3.ActionBar"
+            app:elevation="0dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/primary"
+                android:background="@color/primary_blue"
                 app:title="E-Library"
                 app:titleTextColor="@color/white"
-                app:navigationIcon="@drawable/ic_menu"
                 app:navigationIconTint="@color/white"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 
-    <!--FRAGMENT CONTAINER-->
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <!--FRAGMENT CONTAINER (NavHostFragment)-->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_main"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <!--BOTTOM NAVIGATION-->

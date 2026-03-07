@@ -1,34 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Brand Colors -->
+    <color name="primary_blue">#1E3C72</color>
+    <color name="primary_blue_light">#2A5298</color>
+    <color name="accent_blue">#4A89F3</color>
+    
+    <!-- Status Colors -->
+    <color name="success_green">#4CAF50</color>
+    <color name="error_red">#E53935</color>
+    <color name="pending_orange">#FF9800</color>
+    
+    <!-- Neutral Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="background_light">#F5F7FA</color>
+    <color name="surface_white">#FFFFFF</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_hint">#9CA3AF</color>
+    
+    <!-- Existing Colors (Preserved for compatibility) -->
     <color name="blue">#1E88E5</color>
     <color name="gray">#9E9E9E</color>
     <color name="light_gray">#F2F2F2</color>
     <color name="gray1">#DDDDDD</color>
     <color name="primary">#3F51B5</color>
     <color name="primary_dark">#303F9F</color>
-    <color name="text_primary">#111827</color>
-    <color name="text_secondary">#6B7280</color>
-    <color name="text_hint">#9CA3AF</color>
     <color name="search_bg">#F3F4F6</color>
     <color name="color_primary">#2563EB</color>
-
-<!--colors filter default home-->
     <color name="filter_bg_default">#F1F5F9</color>
     <color name="filter_text_default">#64748B</color>
-
-<!--colors filter-->
     <color name="filter_active">#2563EB</color>
     <color name="filter_text_active">#FFFFFF</color>
     <color name="filter_bg">#FFFFFF</color>
     <color name="filter_text">#2563EB</color>
     <color name="filter_stroke">#2563EB</color>
     <color name="red">#E53935</color>
-
-    <style name="ToolbarTitleStyle">
-        <item name="android:fontFamily">@font/poppins_semibold</item>
-        <item name="android:textSize">18sp</item>
-
-    </style>
 </resources>

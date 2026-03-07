@@ -1,189 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_light"
     android:fillViewport="true"
+    android:clipToPadding="false"
+    android:paddingBottom="80dp"
     tools:context=".ui.home.HomeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-       <!--GREETING-->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/hi"
-            android:textSize="16sp"
-            android:fontFamily="@font/poppins_medium"
-            android:textStyle="bold"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@color/primary_blue" />
 
-        <!--SEARCH -->
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:startIconDrawable="@drawable/ic_search"
-            app:startIconTint="@color/gray"
-            app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="@color/search_bg"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <!-- GREETING -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Hai Aril, mau baca buku apa hari ini?"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- SEARCH BAR -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="@string/find"
-                android:textSize="14sp"
-                android:fontFamily="@font/poppins_regular"
-                android:textColor="#1F2937"
-                android:textColorHint="@color/text_hint"
-                android:background="@null"/>
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/search_bg"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:scrollbars="none">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="@color/text_secondary" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_group_category"
-                android:layout_width="wrap_content"
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@null"
+                        android:fontFamily="@font/poppins_regular"
+                        android:hint="Cari judul buku, genre, penulis..."
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CATEGORY CHIPS -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                app:singleSelection="true"
-                app:checkedChip="@id/chip_all"
-                app:chipSpacingHorizontal="8dp">
+                android:layout_marginTop="20dp"
+                android:scrollbars="none">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_all"
-                    style="@style/Widget.Material3.Chip.Filter"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group_category"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="@string/all"
-                    android:fontFamily="@font/poppins_medium"
-                    android:checkable="true"/>
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="12dp"
+                    app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_petualangan"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="@string/adventure"
-                    android:fontFamily="@font/poppins_medium"
-                    android:checkable="true"/>
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Petualangan"
+                        app:chipBackgroundColor="#EEF2FF"
+                        app:chipStrokeWidth="0dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_romance"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="@string/romance"
-                    android:fontFamily="@font/poppins_medium"
-                    android:checkable="true"/>
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Romance"
+                        app:chipBackgroundColor="#F1F5F9"
+                        app:chipStrokeWidth="0dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_horor"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="@string/horor"
-                    android:fontFamily="@font/poppins_medium"
-                    android:checkable="true"/>
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Horor"
+                        app:chipBackgroundColor="#F1F5F9"
+                        app:chipStrokeWidth="0dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_sejarah"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="@string/history"
-                    android:fontFamily="@font/poppins_medium"
-                    android:checkable="true"/>
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sejarah"
+                        app:chipBackgroundColor="#F1F5F9"
+                        app:chipStrokeWidth="0dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
 
-            </com.google.android.material.chip.ChipGroup>
-
-        </HorizontalScrollView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp"
-            android:gravity="center_vertical">
-
-            <!--REKOMENDASI-->
-            <TextView
-                android:layout_width="0dp"
+            <!-- REKOMENDASI SECTION -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rekomendasi"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:fontFamily="@font/poppins_medium"
-                android:textColor="#111827"/>
-            
-            <TextView
-                android:id="@+id/tv_lihat_semua_rekomendasi"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Rekomendasi"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_lihat_semua_rekomendasi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Lihat Semua >"
+                    android:textColor="@color/accent_blue"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_rekomendasi"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/see_all"
-                android:textSize="13sp"
-                android:fontFamily="@font/poppins_regular"
-                android:textColor="#2563EB"
-                android:clickable="true"
-                android:focusable="true"/>
+                android:layout_marginTop="12dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_buku" />
+
+            <!-- POPULER SECTION -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Populer"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/liat_semua_populer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Lihat Semua >"
+                    android:textColor="@color/accent_blue"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_populer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_buku" />
 
         </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_rekomendasi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="20dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/popular"
-                android:textStyle="bold"
-                android:fontFamily="@font/poppins_medium"
-                android:textSize="16sp"
-                android:textColor="@color/text_primary"/>
-
-            <TextView
-                android:id="@+id/liat_semua_populer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/see_all"
-                android:textSize="13sp"
-                android:fontFamily="@font/poppins_regular"
-                android:textColor="#2563EB"
-                android:clickable="true"
-                android:focusable="true"/>
-
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_populer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

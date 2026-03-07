@@ -1,60 +1,57 @@
 package com.example.elibrarypetik.ui.history
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.elibrarypetik.R
+import com.example.elibrarypetik.data.model.HistoryItem
+import com.example.elibrarypetik.databinding.FragmentHistoryBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HistoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HistoryFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentHistoryBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false)
+    ): View {
+        _binding = FragmentHistoryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HistoryFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HistoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        // Data Dummy Riwayat
+        val dummyHistory = listOf(
+            HistoryItem(1, "Buya Hamka", "A. Fuadi", "https://i.pinimg.com/1200x/e4/93/95/e4939592075ca1824c40075548a069f0.jpg", "1 Januari - 5 Januari 2026"),
+            HistoryItem(2, "Senja di Jakarta", "Mochtar Lubis", "https://i.pinimg.com/736x/56/9f/15/569f1519ff55cca588f3524ed9697324.jpg", "10 Januari - 15 Januari 2026"),
+            HistoryItem(3, "Dilan 1990", "Pidi Baiq", "https://i.pinimg.com/736x/48/5f/12/485f1211ebb34c999522de421c63849b.jpg", "Denda: Rp 2.000 (Telat 2 hari)", "Rp 2.000", true),
+            HistoryItem(4, "Negeri Para Bedebah", "Tere Liye", "https://i.pinimg.com/736x/de/be/49/debe492d980f7141c1a32ac93f49bb77.jpg", "Buku Ditolak")
+        )
+
+        val historyAdapter = HistoryAdapter(dummyHistory) { item ->
+            // Navigasi ke Detail History saat item diklik
+            findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment)
+        }
+
+        binding.rvHistory.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = historyAdapter
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
