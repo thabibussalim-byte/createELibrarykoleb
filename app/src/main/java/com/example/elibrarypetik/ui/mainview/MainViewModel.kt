@@ -12,5 +12,11 @@ class MainViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-class MainViewModel {
+    // Contoh fungsi untuk mengatur status loading
+    fun setLoading(loading: Boolean) {
+        _isLoading.value = loading
+    }
+
+    // Nanti di sini bisa ditambahkan logika untuk session user atau data profil
+
 }
