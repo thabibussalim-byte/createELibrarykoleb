@@ -45,10 +45,28 @@ class HomeFragment : Fragment() {
                     val genres = response.body()?.data
                     genres?.let { listGenre ->
                         binding.chipGroupCategory.removeAllViews()
-                        addChipToGroup("Semua", true)
-                        for (genre in listGenre) {
-                            addChipToGroup(genre.namaGenre, false)
+                        
+                        // 1. Tambahkan Chip "Semua"
+                        addChipToGroup("Semua", true) {
+                            Toast.makeText(requireContext(), "Menampilkan semua buku", Toast.LENGTH_SHORT).show()
                         }
+                        
+                        // 2. Batasi hanya 5 genre pertama untuk tampilan Home
+                        val limitedGenres = listGenre.take(5)
+                        for (genre in limitedGenres) {
+                            addChipToGroup(genre.namaGenre, false) {
+                                Toast.makeText(requireContext(), "Kategori: ${genre.namaGenre}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                        // 3. Tambahkan Chip "Lainnya..." untuk navigasi ke Katalog
+                        val chipMore = Chip(requireContext())
+                        chipMore.text = "Lainnya..."
+                        chipMore.setOnClickListener {
+                            // Pindah ke menu Buku (Katalog) lewat Bottom Navigation
+                            findNavController().navigate(R.id.bookFragment)
+                        }
+                        binding.chipGroupCategory.addView(chipMore)
                     }
                 }
             }
