@@ -31,41 +31,15 @@ class HistoryFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        // Mengisi Data Dummy sesuai dengan struktur HistoryItem baru
+        // Mengisi Data Dummy
         val dummyHistory = listOf(
-            HistoryItem(
-                id = 1,
-                title = "Buya Hamka",
-                author = "A. Fuadi",
-                imageUrl = "https://picsum.photos/id/1/200/300",
-                borrowDate = "1 Jan 2026",
-                dueDate = "8 Jan 2026",
-                status = "Dipinjam"
-            ),
-            HistoryItem(
-                id = 2,
-                title = "Dilan 1990",
-                author = "Pidi Baiq",
-                imageUrl = "https://picsum.photos/id/10/200/300",
-                borrowDate = "20 Des 2025",
-                dueDate = "27 Des 2025",
-                status = "Terlambat",
-                fine = "Rp 2.000",
-                isLate = true
-            ),
-            HistoryItem(
-                id = 3,
-                title = "Bumi",
-                author = "Tere Liye",
-                imageUrl = "https://picsum.photos/id/20/200/300",
-                borrowDate = "15 Nov 2025",
-                dueDate = "22 Nov 2025",
-                status = "Selesai"
-            )
+            HistoryItem(1, "Buya Hamka", "A. Fuadi", "https://picsum.photos/id/1/200/300", "1 Jan 2026", "8 Jan 2026", "Dipinjam"),
+            HistoryItem(2, "Dilan 1990", "Pidi Baiq", "https://picsum.photos/id/10/200/300", "20 Des 2025", "27 Des 2025", "Terlambat", "Rp 2.000", true),
+            HistoryItem(3, "Bumi", "Tere Liye", "https://picsum.photos/id/20/200/300", "15 Nov 2025", "22 Nov 2025", "Selesai")
         )
 
         val historyAdapter = HistoryAdapter(dummyHistory) { item ->
-            // Pindah ke Detail History saat item diklik
+            // Alur yang Benar: Dari History ke Detail History
             findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment)
         }
 

@@ -65,18 +65,18 @@
                     android:fontFamily="@font/poppins_semibold"
                     android:text="Judul:  "
                     android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"/>
 
                 <TextView
                     android:id="@+id/tv_history_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:fontFamily="sans-serif"
+                    android:fontFamily="@font/roboto_regular"
                     android:maxLines="1"
                     android:text="Buya Hamka"
                     android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"/>
             </LinearLayout>
 
             <!-- Baris Karya -->
@@ -112,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:fontFamily="sans-serif"
+                android:fontFamily="@font/roboto_regular"
                 android:text="1 Jan - 8 Jan 2026"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp" />
@@ -122,7 +122,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif"
+                android:fontFamily="@font/roboto_regular"
                 android:text="Denda: Rp 2.000"
                 android:textColor="@color/error_red"
                 android:textSize="11sp"

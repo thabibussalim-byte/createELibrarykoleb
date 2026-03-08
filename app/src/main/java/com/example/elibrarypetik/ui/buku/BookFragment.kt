@@ -10,9 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.elibrarypetik.data.api.ApiConfig
 import com.example.elibrarypetik.data.api.model.GenreResponse
-import com.example.elibrarypetik.data.model.HistoryItem
+import com.example.elibrarypetik.data.model.Book
 import com.example.elibrarypetik.databinding.FragmentBookBinding
-import com.example.elibrarypetik.ui.history.HistoryAdapter
 import com.google.android.material.chip.Chip
 import retrofit2.Call
 import retrofit2.Callback
@@ -45,11 +44,7 @@ class BookFragment : Fragment() {
                     val genres = response.body()?.data
                     genres?.let { listGenre ->
                         binding.chipGroupBookFilter.removeAllViews()
-                        
-                        // Tambahkan Chip "Semua"
                         addChipToGroup("Semua", true)
-                        
-                        // Tambahkan Chip dari API
                         for (genre in listGenre) {
                             addChipToGroup(genre.namaGenre, false)
                         }
@@ -68,32 +63,30 @@ class BookFragment : Fragment() {
         chip.text = name
         chip.isCheckable = true
         chip.isChecked = isSelected
-        
         chip.setOnClickListener {
             Toast.makeText(requireContext(), "Filter: $name", Toast.LENGTH_SHORT).show()
-            // Nanti di sini panggil API filter buku
         }
-        
         binding.chipGroupBookFilter.addView(chip)
     }
 
     private fun setupRecyclerView() {
-        // Data Dummy Katalog (Bisa gunakan HistoryItem model untuk tampilan list samping)
+        // Menggunakan model data Book yang sesuai untuk Katalog
         val dummyBooks = listOf(
-            HistoryItem(1, "Bumi", "Tere Liye", "https://picsum.photos/id/1/200/300", "Tersedia"),
-            HistoryItem(2, "Hujan", "Tere Liye", "https://picsum.photos/id/10/200/300", "Tersedia"),
-            HistoryItem(3, "Selena", "Tere Liye", "https://picsum.photos/id/20/200/300", "Dipinjam"),
-            HistoryItem(4, "Gadis Kretek", "Ratih Kumala", "https://picsum.photos/id/30/200/300", "Tersedia")
+            Book(1, "Python for Beginners", "Paul Deitel", "https://i.pinimg.com/736x/b9/70/f9/b970f956854a01648c0aca3cae176c84.jpg", 4.5f),
+            Book(2, "Computer Science", "Tere Liye", "https://i.pinimg.com/1200x/d3/a9/b5/d3a9b57d44fbc69ff9b52a32fb8a2d07.jpg", 4.8f),
+            Book(3, "Selamat Tinggal", "Tere Liye", "https://i.pinimg.com/736x/6a/3b/13/6a3b1337ae7980bd8d36f09ba9bf4e8a.jpg", 4.2f),
+            Book(4, "Bumi", "Tere Liye", "https://i.pinimg.com/736x/b9/70/f9/b970f956854a01648c0aca3cae176c84.jpg", 4.7f)
         )
 
-        // Gunakan HistoryAdapter (karena layout item_history sangat cocok untuk katalog list)
-        val bookAdapter = HistoryAdapter(dummyBooks) { item ->
-            Toast.makeText(requireContext(), "Klik: ${item.title}", Toast.LENGTH_SHORT).show()
+        // Gunakan BookKatalogAdapter yang baru kita buat
+        val bookAdapter = BookKatalogAdapter(dummyBooks) { book ->
+            Toast.makeText(requireContext(), "Detail: ${book.title}", Toast.LENGTH_SHORT).show()
         }
 
         binding.rvAllBooks.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = bookAdapter
+            setHasFixedSize(true)
         }
     }
 

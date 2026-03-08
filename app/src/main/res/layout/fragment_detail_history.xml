@@ -7,94 +7,23 @@
     android:background="@color/background_light"
     tools:context=".ui.history.DetailHistoryFragment">
 
-    <!-- Konten Detail History (Tanpa AppBar sendiri) -->
-    <ScrollView
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="24dp">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/layout_actions"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <!-- Card 1: Informasi Buku -->
+            <!-- CARD 1: INFORMASI BUKU -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/iv_book_cover"
-                        android:layout_width="60dp"
-                        android:layout_height="80dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/narasi"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical"
-                        app:layout_constraintEnd_toStartOf="@id/tv_status_badge"
-                        app:layout_constraintStart_toEndOf="@id/iv_book_cover"
-                        app:layout_constraintTop_toTopOf="@id/iv_book_cover">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
-                            android:text="Judul:  Buya Hamka"
-                            android:textColor="@color/text_primary"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/poppins_regular"
-                            android:text="Karya:  A. Fuadi"
-                            android:textColor="@color/text_primary"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tv_status_badge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_status_telat"
-                        android:fontFamily="@font/poppins_regular"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="4dp"
-                        android:text="Telat"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Card 2: Detail Tanggal -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
@@ -102,78 +31,62 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_semibold"
-                            android:text="Tanggal pinjam:"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="1 Januari 2026"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                    </LinearLayout>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/iv_detail_history_cover"
+                        android:layout_width="70dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/narasi"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_semibold"
-                            android:text="Jatuh Tempo:"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="5 Januari 2026"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                    </LinearLayout>
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
                         <TextView
-                            android:layout_width="140dp"
+                            android:id="@+id/tv_detail_history_title"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_semibold"
-                            android:text="Tanggal Kembali:"
+                            android:text="Buya Hamka"
                             android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
+                            android:textSize="16sp" />
+
                         <TextView
+                            android:id="@+id/tv_detail_history_author"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
-                            android:text="-"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
+                            android:text="A. Fuadi"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_history_status_badge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_status_dipinjam"
+                            android:fontFamily="@font/poppins_medium"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp"
+                            android:text="DIPINJAM"
+                            android:textColor="@android:color/white"
+                            android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 3: Riwayat Perpanjangan -->
+            <!-- CARD 2: DETAIL WAKTU & DENDA -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
@@ -188,144 +101,113 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_semibold"
-                        android:text="Riwayat Perpanjangan"
+                        android:text="Detail Peminjaman"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="#F1F5F9" />
+
+                    <GridLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="sans-serif"
-                        android:text="1. 20 Januari 2026 - 27 Januari 2026"
-                        android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
+                        android:columnCount="2">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tgl Pinjam"
+                                android:textColor="@color/text_hint"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tv_detail_history_tgl_pinjam"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="10 Feb 2026"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Jatuh Tempo"
+                                android:textColor="@color/text_hint"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tv_detail_history_tgl_kembali"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="17 Feb 2026"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </GridLayout>
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tv_detail_history_denda"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="sans-serif"
-                        android:text="2. 27 Januari 2026 - 3 Februari 2026"
-                        android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Denda: Rp 0"
+                        android:textColor="@color/success_green"
+                        android:textSize="14sp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <!-- Card 4: Status Denda -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_semibold"
-                            android:text="Status:"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_semibold"
-                            android:text="Telat"
-                            android:textColor="@color/error_red"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="Terlambat:"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="3 Hari"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="Denda Per Hari:"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="Rp2.000"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="Total Denda:"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:text="Rp6.000"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Action Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_kembalikan"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:backgroundTint="@color/error_red"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="Kembalikan Buku"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                app:cornerRadius="12dp" />
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ACTION BUTTONS (STIKY AT BOTTOM) -->
+    <LinearLayout
+        android:id="@+id/layout_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_perpanjang_history"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="@color/accent_blue"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Perpanjang Peminjaman"
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            app:cornerRadius="12dp"
+            app:elevation="2dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_kembalikan_history"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Kembalikan Buku Sekarang"
+            android:textAllCaps="false"
+            android:textColor="@color/error_red"
+            android:textSize="15sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

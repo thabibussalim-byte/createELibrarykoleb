@@ -9,13 +9,21 @@
         android:id="@+id/homeFragment"
         android:name="com.example.elibrarypetik.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_detailbookFragment"
+            app:destination="@id/detailbookFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/bookFragment"
         android:name="com.example.elibrarypetik.ui.buku.BookFragment"
         android:label="Buku"
-        tools:layout="@layout/fragment_book" />
+        tools:layout="@layout/fragment_book">
+        <action
+            android:id="@+id/action_bookFragment_to_detailbookFragment"
+            app:destination="@id/detailbookFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/historyFragment"
@@ -24,11 +32,28 @@
         tools:layout="@layout/fragment_history">
         <action
             android:id="@+id/action_historyFragment_to_detailHistoryFragment"
+            app:destination="@id/detailHistoryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailbookFragment"
+        android:name="com.example.elibrarypetik.ui.detail.DetailbookFragment"
+        android:label="Detail Buku"
+        tools:layout="@layout/fragment_detailbook">
+        <action
+            android:id="@+id/action_detailbookFragment_to_detailpeminjamanFragment"
+            app:destination="@id/detailpeminjamanFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailpeminjamanFragment"
+        android:name="com.example.elibrarypetik.ui.detail.DetailpeminjamanFragment"
+        android:label="Pinjam Buku"
+        tools:layout="@layout/fragment_detailpeminjaman">
+        <action
+            android:id="@+id/action_detailpeminjamanFragment_to_detailHistoryFragment"
             app:destination="@id/detailHistoryFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:popUpTo="@id/bookFragment" />
     </fragment>
 
     <fragment
@@ -41,23 +66,20 @@
         android:id="@+id/profileFragment"
         android:name="com.example.elibrarypetik.ui.profile.ProfileFragment"
         android:label="Profil"
-        tools:layout="@layout/fragment_profile"/>
-    <activity
-        android:id="@+id/splashActivity"
-        android:name="com.example.elibrarypetik.ui.splash.SplashActivity"
-        android:label="activity_splash"
-        tools:layout="@layout/activity_splash" />
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/nav_pengaturan"
         android:name="com.example.elibrarypetik.ui.pengaturan.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
+
     <fragment
         android:id="@+id/nav_bantuan"
         android:name="com.example.elibrarypetik.ui.bantuan.HelpFragment"
         android:label="Help"
         tools:layout="@layout/fragment_help" />
+
     <fragment
         android:id="@+id/nav_tentang"
         android:name="com.example.elibrarypetik.ui.about.AboutFragment"

@@ -1,108 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:background="@color/background_light"
     tools:context=".ui.detail.DetailpeminjamanFragment">
 
-        <!-- Toolbar -->
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_pinjam_final"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color_primary"
-            app:title="Pinjam Buku"
-            app:titleTextColor="@android:color/white"
-            app:navigationIcon="@drawable/ic_back"/>
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <!-- Content -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
+            <!-- 1. Mini Book Preview (Agar user yakin buku yang dipinjam) -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
-                <!-- Tanggal Pinjam -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tanggal Pinjam"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:textSize="18sp"/>
-
-                <TextView
-                    android:id="@+id/tv_tgl_pinjam"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:text="Pilih tanggal"
-                    android:layout_marginTop="8dp"
-                    android:textSize="14sp"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/iv_borrow_preview"
+                        android:layout_width="50dp"
+                        android:layout_height="70dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/narasi"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_borrow_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="Judul Buku"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/tv_borrow_author"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_regular"
+                            android:text="Nama Penulis"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Informasi Peminjaman"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
+
+            <!-- 2. Tanggal Pinjam Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Tanggal Pinjam"
+                app:startIconDrawable="@drawable/ic_history">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_tgl_pinjam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
                     android:fontFamily="@font/roboto_regular"
-                    android:background="@drawable/bg_input"/>
+                    android:inputType="none"
+                    android:text="Pilih Tanggal" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Lama Pinjam -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lama Pinjam (hari)"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:layout_marginTop="12dp"/>
+            <!-- 3. Lama Pinjam Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Lama Pinjam (Hari)"
+                app:suffixText="Hari">
 
-                <NumberPicker
-                    android:id="@+id/np_lama_pinjam"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-                <!-- Tanggal Kembali -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tanggal Kembali"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:textSize="18sp"
-                    android:layout_marginTop="12dp"/>
-
-                <TextView
-                    android:id="@+id/tv_tgl_kembali"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_lama_pinjam"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textSize="14sp"
                     android:fontFamily="@font/roboto_regular"
-                    android:background="@drawable/bg_input"
-                    android:padding="12dp"/>
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Catatan -->
-                <EditText
-                    android:id="@+id/et_catatan"
+            <!-- 4. Tanggal Kembali (Display Only) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#F8FAFC"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Catatan Peminjaman (opsional)"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_input"/>
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                <!-- Button -->
-                <Button
-                    android:id="@+id/btn_pinjam"
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Estimasi Pengembalian:"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tv_tgl_kembali_est"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="-"
+                        android:textColor="@color/accent_blue"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 5. Catatan Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Catatan (Opsional)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_catatan_borrow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Pinjam Buku"
-                    android:textSize="15sp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:backgroundTint="@color/color_primary"
-                    android:layout_marginTop="20dp"/>
+                    android:fontFamily="sans-serif"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:lines="3" />
+            </com.google.android.material.textfield.TextInputLayout>
 
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+    <!-- 6. Button Aksi (Sticky at bottom) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_pinjam_final"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="20dp"
+        android:backgroundTint="@color/accent_blue"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="Konfirmasi Peminjaman"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

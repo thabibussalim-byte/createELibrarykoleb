@@ -1,60 +1,77 @@
 package com.example.elibrarypetik.ui.history
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.example.elibrarypetik.R
+import com.example.elibrarypetik.databinding.FragmentDetailHistoryBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DetailHistoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DetailHistoryFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentDetailHistoryBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail_history, container, false)
+    ): View {
+        _binding = FragmentDetailHistoryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DetailHistoryFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DetailHistoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Simulasi status buku yang diklik (Nanti dikirim lewat SafeArgs/Bundle)
+        val statusBuku = "dipinjam" // Coba ganti: "terlambat", "selesai", "proses", "ditolak"
+        
+        updateDetailUI(statusBuku)
+    }
+
+    private fun updateDetailUI(status: String) {
+        binding.tvDetailHistoryStatusBadge.text = status.uppercase()
+
+        when (status.lowercase()) {
+            "dipinjam" -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
+                binding.tvDetailHistoryDenda.text = "Denda: Rp 0"
+                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.success_green))
+                binding.layoutActions.visibility = View.VISIBLE
+                binding.btnPerpanjangHistory.visibility = View.VISIBLE
             }
+            "terlambat" -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
+                binding.tvDetailHistoryDenda.text = "Denda: Rp 6.000 (Telat 3 hari)"
+                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
+                binding.layoutActions.visibility = View.VISIBLE
+                binding.btnPerpanjangHistory.visibility = View.GONE // Telat tidak bisa perpanjang
+            }
+            "proses" -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
+                binding.tvDetailHistoryStatusBadge.text = "MENUNGGU PERSETUJUAN"
+                binding.tvDetailHistoryDenda.text = "Permohonan sedang ditinjau"
+                binding.layoutActions.visibility = View.GONE // Belum ada aksi yang bisa dilakukan
+            }
+            "ditolak" -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_ditolak)
+                binding.tvDetailHistoryDenda.text = "Pengajuan ditolak oleh admin"
+                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
+                binding.layoutActions.visibility = View.GONE
+            }
+            "selesai" -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
+                binding.tvDetailHistoryStatusBadge.text = "DIKEMBALIKAN"
+                binding.tvDetailHistoryDenda.text = "Buku sudah dikembalikan tepat waktu"
+                binding.layoutActions.visibility = View.GONE
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
