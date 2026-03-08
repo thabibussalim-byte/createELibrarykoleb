@@ -119,7 +119,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="1 Januari 2026"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
@@ -140,7 +140,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="5 Januari 2026"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
@@ -161,7 +161,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="-"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
@@ -196,7 +196,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:fontFamily="@font/poppins_regular"
+                        android:fontFamily="sans-serif"
                         android:text="1. 20 Januari 2026 - 27 Januari 2026"
                         android:textColor="@color/text_primary"
                         android:textSize="13sp" />
@@ -205,7 +205,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:fontFamily="@font/poppins_regular"
+                        android:fontFamily="sans-serif"
                         android:text="2. 27 Januari 2026 - 3 Februari 2026"
                         android:textColor="@color/text_primary"
                         android:textSize="13sp" />
@@ -255,14 +255,14 @@
                         <TextView
                             android:layout_width="140dp"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="Terlambat:"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="3 Hari"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
@@ -276,14 +276,14 @@
                         <TextView
                             android:layout_width="140dp"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="Denda Per Hari:"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="Rp2.000"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
@@ -297,14 +297,14 @@
                         <TextView
                             android:layout_width="140dp"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="Total Denda:"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_regular"
+                            android:fontFamily="sans-serif"
                             android:text="Rp6.000"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp" />

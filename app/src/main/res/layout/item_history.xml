@@ -10,10 +10,9 @@
     app:cardElevation="2dp"
     app:strokeWidth="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:padding="12dp">
 
         <!-- Cover Buku -->
@@ -23,16 +22,36 @@
             android:layout_height="110dp"
             android:scaleType="centerCrop"
             android:src="@drawable/narasi"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
+
+        <!-- Badge Status -->
+        <TextView
+            android:id="@+id/tv_history_status_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_status_dipinjam"
+            android:fontFamily="@font/poppins_medium"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:text="Dipinjam"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Info Detail -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/tv_history_status_badge"
+            app:layout_constraintStart_toEndOf="@id/iv_book_cover"
+            app:layout_constraintTop_toTopOf="@id/iv_book_cover">
 
             <!-- Baris Judul -->
             <LinearLayout
@@ -46,23 +65,25 @@
                     android:fontFamily="@font/poppins_semibold"
                     android:text="Judul:  "
                     android:textColor="@color/text_primary"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_history_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Narasi"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif"
+                    android:maxLines="1"
+                    android:text="Buya Hamka"
                     android:textColor="@color/text_primary"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <!-- Baris Karya -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -71,41 +92,44 @@
                     android:fontFamily="@font/poppins_semibold"
                     android:text="Karya:  "
                     android:textColor="@color/text_primary"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_history_author"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="TereLiye"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif"
+                    android:maxLines="1"
+                    android:text="A. Fuadi"
                     android:textColor="@color/text_primary"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- Status / Tanggal / Denda -->
+            <!-- Rentang Tanggal -->
             <TextView
-                android:id="@+id/tv_history_status"
+                android:id="@+id/tv_history_date_range"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/roboto_regular"
-                android:text="1 Januari - 5 Januari 2026"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
+                android:layout_marginTop="24dp"
+                android:fontFamily="sans-serif"
+                android:text="1 Jan - 8 Jan 2026"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/tv_history_fine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="@font/roboto_regular"
-                android:text="Denda: Rp 2.000 (Telat 2 hari)"
+                android:fontFamily="sans-serif"
+                android:text="Denda: Rp 2.000"
                 android:textColor="@color/error_red"
-                android:textSize="12sp"
-                tools:visibility="visible"/>
+                android:textSize="11sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
         </LinearLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

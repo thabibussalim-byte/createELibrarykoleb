@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.elibrarypetik.R
 import com.example.elibrarypetik.data.api.ApiConfig
 import com.example.elibrarypetik.data.api.model.GenreResponse
 import com.example.elibrarypetik.data.model.Book
@@ -46,50 +45,33 @@ class HomeFragment : Fragment() {
                     genres?.let { listGenre ->
                         binding.chipGroupCategory.removeAllViews()
                         
-                        // 1. Tambahkan Chip "Semua"
-                        addChipToGroup("Semua", true) {
-                            Toast.makeText(requireContext(), "Menampilkan semua buku", Toast.LENGTH_SHORT).show()
-                        }
-                        
-                        // 2. Batasi hanya 5 genre pertama untuk tampilan Home
-                        val limitedGenres = listGenre.take(5)
+                        // Menampilkan 6 genre pertama secara bersih tanpa "Semua" atau "Lainnya"
+                        val limitedGenres = listGenre.take(6)
                         for (genre in limitedGenres) {
                             addChipToGroup(genre.namaGenre, false) {
-                                Toast.makeText(requireContext(), "Kategori: ${genre.namaGenre}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "Melihat kategori: ${genre.namaGenre}", Toast.LENGTH_SHORT).show()
                             }
                         }
-
-                        // 3. Tambahkan Chip "Lainnya..." untuk navigasi ke Katalog
-                        val chipMore = Chip(requireContext())
-                        chipMore.text = "Lainnya..."
-                        chipMore.setOnClickListener {
-                            // Pindah ke menu Buku (Katalog) lewat Bottom Navigation
-                            findNavController().navigate(R.id.bookFragment)
-                        }
-                        binding.chipGroupCategory.addView(chipMore)
                     }
                 }
             }
 
             override fun onFailure(call: Call<GenreResponse>, t: Throwable) {
                 Log.e("HomeFragment", "API Failure: ${t.message}")
-                if (binding.chipGroupCategory.childCount == 0) {
-                    addChipToGroup("Semua", true)
-                }
             }
         })
     }
 
-    private fun addChipToGroup(name: String, isSelected: Boolean) {
+    private fun addChipToGroup(name: String, isSelected: Boolean, onClick: () -> Unit) {
         val chip = Chip(requireContext())
         chip.text = name
         chip.isCheckable = true
         chip.isChecked = isSelected
+        chip.setOnClickListener { onClick() }
         binding.chipGroupCategory.addView(chip)
     }
 
     private fun setupRecyclerView() {
-        // Menggunakan link gambar Lorem Picsum (Sangat stabil)
         val dummyBooks = listOf(
             Book(1, "Bumi", "Tere Liye", "https://picsum.photos/id/1/200/300", 4.5f),
             Book(2, "Hujan", "Tere Liye", "https://picsum.photos/id/10/200/300", 4.8f),
