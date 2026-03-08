@@ -5,7 +5,9 @@ data class HistoryItem(
     val title: String,
     val author: String,
     val imageUrl: String,
-    val statusDate: String,
+    val borrowDate: String,
+    val dueDate: String,
+    val status: String, // Contoh: "Dipinjam", "Disetujui", "Ditolak", "Terlambat"
     val fine: String? = null,
     val isLate: Boolean = false
 )
