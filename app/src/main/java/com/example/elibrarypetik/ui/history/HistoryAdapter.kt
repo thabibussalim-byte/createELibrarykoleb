@@ -35,6 +35,7 @@ class HistoryAdapter(
                 "terlambat" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
                 "selesai" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
                 "proses" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
+                "ditolak" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_ditolak)
                 else -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
             }
 
