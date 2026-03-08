@@ -31,22 +31,48 @@ class HistoryFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        // Data Dummy Riwayat
+        // Mengisi Data Dummy sesuai dengan struktur HistoryItem baru
         val dummyHistory = listOf(
-            HistoryItem(1, "Buya Hamka", "A. Fuadi", "https://i.pinimg.com/1200x/e4/93/95/e4939592075ca1824c40075548a069f0.jpg", "1 Januari - 5 Januari 2026"),
-            HistoryItem(2, "Senja di Jakarta", "Mochtar Lubis", "https://i.pinimg.com/736x/56/9f/15/569f1519ff55cca588f3524ed9697324.jpg", "10 Januari - 15 Januari 2026"),
-            HistoryItem(3, "Dilan 1990", "Pidi Baiq", "https://i.pinimg.com/736x/48/5f/12/485f1211ebb34c999522de421c63849b.jpg", "Denda: Rp 2.000 (Telat 2 hari)", "Rp 2.000", true),
-            HistoryItem(4, "Negeri Para Bedebah", "Tere Liye", "https://i.pinimg.com/736x/de/be/49/debe492d980f7141c1a32ac93f49bb77.jpg", "Buku Ditolak")
+            HistoryItem(
+                id = 1,
+                title = "Buya Hamka",
+                author = "A. Fuadi",
+                imageUrl = "https://picsum.photos/id/1/200/300",
+                borrowDate = "1 Jan 2026",
+                dueDate = "8 Jan 2026",
+                status = "Dipinjam"
+            ),
+            HistoryItem(
+                id = 2,
+                title = "Dilan 1990",
+                author = "Pidi Baiq",
+                imageUrl = "https://picsum.photos/id/10/200/300",
+                borrowDate = "20 Des 2025",
+                dueDate = "27 Des 2025",
+                status = "Terlambat",
+                fine = "Rp 2.000",
+                isLate = true
+            ),
+            HistoryItem(
+                id = 3,
+                title = "Bumi",
+                author = "Tere Liye",
+                imageUrl = "https://picsum.photos/id/20/200/300",
+                borrowDate = "15 Nov 2025",
+                dueDate = "22 Nov 2025",
+                status = "Selesai"
+            )
         )
 
         val historyAdapter = HistoryAdapter(dummyHistory) { item ->
-            // Navigasi ke Detail History saat item diklik
+            // Pindah ke Detail History saat item diklik
             findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment)
         }
 
         binding.rvHistory.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = historyAdapter
+            setHasFixedSize(true)
         }
     }
 

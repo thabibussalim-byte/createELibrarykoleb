@@ -26,11 +26,20 @@ class HistoryAdapter(
         holder.binding.apply {
             tvHistoryTitle.text = history.title
             tvHistoryAuthor.text = history.author
-            tvHistoryStatus.text = history.statusDate
+            tvHistoryDateRange.text = "${history.borrowDate} - ${history.dueDate}"
+            tvHistoryStatusBadge.text = history.status
             
+            // Logika warna badge berdasarkan status
+            when (history.status.lowercase()) {
+                "dipinjam" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
+                "terlambat" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
+                "selesai" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
+                else -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
+            }
+
             if (history.isLate && history.fine != null) {
                 tvHistoryFine.visibility = View.VISIBLE
-                tvHistoryFine.text = history.fine
+                tvHistoryFine.text = "Denda: ${history.fine}"
             } else {
                 tvHistoryFine.visibility = View.GONE
             }
