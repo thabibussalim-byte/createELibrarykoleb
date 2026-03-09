@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.elibrarypetik.data.api.ApiConfig
@@ -40,7 +39,8 @@ class BookFragment : Fragment() {
     private fun getGenreFromApi() {
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
-                if (response.isSuccessful && response.body() != null) {
+                // PENGECEKAN PENTING: Pastikan binding tidak null sebelum akses UI
+                if (_binding != null && response.isSuccessful && response.body() != null) {
                     val genres = response.body()?.data
                     genres?.let { listGenre ->
                         binding.chipGroupBookFilter.removeAllViews()
@@ -59,18 +59,25 @@ class BookFragment : Fragment() {
     }
 
     private fun addChipToGroup(name: String, isSelected: Boolean) {
+        if (_binding == null) return
+        
         val chip = Chip(requireContext())
         chip.text = name
         chip.isCheckable = true
         chip.isChecked = isSelected
         chip.setOnClickListener {
-            Toast.makeText(requireContext(), "Filter: $name", Toast.LENGTH_SHORT).show()
+            if (_binding != null) {
+                if (name == "Semua") {
+                    binding.tvStatusLabel.text = "Menampilkan semua koleksi"
+                } else {
+                    binding.tvStatusLabel.text = "Menampilkan kategori: $name"
+                }
+            }
         }
         binding.chipGroupBookFilter.addView(chip)
     }
 
     private fun setupRecyclerView() {
-        // Menggunakan model data Book yang sesuai untuk Katalog
         val dummyBooks = listOf(
             Book(1, "Python for Beginners", "Paul Deitel", "https://i.pinimg.com/736x/b9/70/f9/b970f956854a01648c0aca3cae176c84.jpg", 4.5f),
             Book(2, "Computer Science", "Tere Liye", "https://i.pinimg.com/1200x/d3/a9/b5/d3a9b57d44fbc69ff9b52a32fb8a2d07.jpg", 4.8f),
@@ -78,9 +85,8 @@ class BookFragment : Fragment() {
             Book(4, "Bumi", "Tere Liye", "https://i.pinimg.com/736x/b9/70/f9/b970f956854a01648c0aca3cae176c84.jpg", 4.7f)
         )
 
-        // Gunakan BookKatalogAdapter yang baru kita buat
         val bookAdapter = BookKatalogAdapter(dummyBooks) { book ->
-            Toast.makeText(requireContext(), "Detail: ${book.title}", Toast.LENGTH_SHORT).show()
+            // Navigasi detail
         }
 
         binding.rvAllBooks.apply {

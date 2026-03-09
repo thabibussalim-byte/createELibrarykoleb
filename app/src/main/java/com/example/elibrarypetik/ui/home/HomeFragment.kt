@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.elibrarypetik.R
 import com.example.elibrarypetik.data.api.ApiConfig
 import com.example.elibrarypetik.data.api.model.GenreResponse
 import com.example.elibrarypetik.data.model.Book
@@ -40,12 +41,11 @@ class HomeFragment : Fragment() {
     private fun getGenreFromApi() {
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
-                if (response.isSuccessful && response.body() != null) {
+                // PENGECEKAN PENTING: Pastikan Fragment masih aktif dan binding tidak null
+                if (_binding != null && response.isSuccessful && response.body() != null) {
                     val genres = response.body()?.data
                     genres?.let { listGenre ->
                         binding.chipGroupCategory.removeAllViews()
-                        
-                        // Menampilkan 6 genre pertama secara bersih tanpa "Semua" atau "Lainnya"
                         val limitedGenres = listGenre.take(6)
                         for (genre in limitedGenres) {
                             addChipToGroup(genre.namaGenre, false) {
@@ -63,6 +63,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun addChipToGroup(name: String, isSelected: Boolean, onClick: () -> Unit) {
+        if (_binding == null) return
         val chip = Chip(requireContext())
         chip.text = name
         chip.isCheckable = true

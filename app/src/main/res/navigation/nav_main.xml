@@ -66,7 +66,17 @@
         android:id="@+id/profileFragment"
         android:name="com.example.elibrarypetik.ui.profile.ProfileFragment"
         android:label="Profil"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_detailDendaFragment"
+            app:destination="@id/detailDendaFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailDendaFragment"
+        android:name="com.example.elibrarypetik.ui.profile.DetailDendaFragment"
+        android:label="Detail Denda"
+        tools:layout="@layout/fragment_detail_denda" />
 
     <fragment
         android:id="@+id/nav_pengaturan"
