@@ -44,7 +44,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <!-- Red Accent Strip -->
                     <View
                         android:layout_width="6dp"
                         android:layout_height="match_parent"
@@ -78,6 +77,7 @@
                 android:id="@+id/tv_jumlah_buku_denda"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
                 android:text="1 Buku Telat"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
@@ -101,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:fontFamily="sans-serif"
+                android:fontFamily="@font/roboto_regular"
                 android:text="Jika antum ingin bayar denda: bayar kas langsung di bagian perpustakaan"
                 android:textAlignment="center"
                 android:textColor="@color/text_primary"

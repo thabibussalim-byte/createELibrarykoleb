@@ -20,13 +20,12 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Profile Image Area dengan Tombol Edit -->
+            <!-- Profile Image Area -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp">
 
-                <!-- Frame Lingkaran Foto -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_profile_image"
                     android:layout_width="120dp"
@@ -47,7 +46,6 @@
                         android:src="@drawable/ic_profile" />
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Tombol Edit Foto (Kamera) -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btn_edit_photo"
                     android:layout_width="36dp"
@@ -67,7 +65,6 @@
                         android:src="@drawable/ic_search" 
                         app:tint="@color/white" />
                 </com.google.android.material.card.MaterialCardView>
-                <!-- Catatan: Ganti @drawable/ic_search dengan ikon kamera jika sudah ada -->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -101,6 +98,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/poppins_medium"
                             android:text="Edit"
                             android:textColor="@color/accent_blue"
                             android:textSize="13sp" />
@@ -115,6 +113,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_regular"
                         android:text="Username"
                         android:textColor="@color/text_hint"
                         android:textSize="12sp" />
@@ -122,7 +121,7 @@
                         android:id="@+id/tv_profile_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/poppins_medium"
                         android:text="aril_stiven"
                         android:textColor="@color/text_primary"
                         android:textSize="15sp" />
@@ -131,6 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
+                        android:fontFamily="@font/roboto_regular"
                         android:text="Deskripsi"
                         android:textColor="@color/text_hint"
                         android:textSize="12sp" />
@@ -138,7 +138,7 @@
                         android:id="@+id/tv_profile_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif"
+                        android:fontFamily="@font/roboto_regular"
                         android:text="Pencinta kopi &amp; petualangan imajinasi lewat buku."
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
@@ -178,13 +178,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
+                            android:fontFamily="@font/poppins_bold"
                             android:text="Rp 2.000"
                             android:textColor="@color/error_red"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textSize="16sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_regular"
                             android:text="Status: Belum Dibayar"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
@@ -240,4 +241,5 @@
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
