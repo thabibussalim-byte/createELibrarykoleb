@@ -59,8 +59,9 @@ class BookFragment : Fragment() {
     }
 
     private fun addChipToGroup(name: String, isSelected: Boolean) {
+
         if (_binding == null) return
-        
+
         val chip = Chip(requireContext())
         chip.text = name
         chip.isCheckable = true

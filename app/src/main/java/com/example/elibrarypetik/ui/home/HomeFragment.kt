@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.elibrarypetik.data.api.ApiConfig
@@ -40,7 +39,6 @@ class HomeFragment : Fragment() {
     private fun getGenreFromApi() {
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
-                // PENGECEKAN PENTING: Pastikan Fragment masih aktif dan binding tidak null
                 if (_binding != null && response.isSuccessful && response.body() != null) {
                     val genres = response.body()?.data
                     genres?.let { listGenre ->
@@ -48,7 +46,8 @@ class HomeFragment : Fragment() {
                         val limitedGenres = listGenre.take(6)
                         for (genre in limitedGenres) {
                             addChipToGroup(genre.namaGenre, false) {
-                                Toast.makeText(requireContext(), "Melihat kategori: ${genre.namaGenre}", Toast.LENGTH_SHORT).show()
+                                // Toast dihapus agar UI lebih bersih
+                                // Anda bisa menambahkan logika filter list buku di sini nanti
                             }
                         }
                     }
