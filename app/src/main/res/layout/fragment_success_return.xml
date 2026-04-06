@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Animasi/Ikon Centang -->
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/centang" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="Terima Kasih!"
+            android:textColor="@color/primary_blue"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tv_success_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Buku berhasil dikembalikan tepat waktu. Teruslah membaca untuk memperluas wawasan!"
+            android:textAlignment="center"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp" />
+
+        <!-- Tombol Utama: Pinjam Lagi -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_to_catalog"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="48dp"
+            android:backgroundTint="@color/primary_blue"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Pinjam Buku Lain"
+            android:textAllCaps="false"
+            app:cornerRadius="12dp" />
+
+        <!-- Tombol beranda-->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_back_to_home"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Kembali ke Beranda"
+            android:textAllCaps="false"
+            android:textColor="@color/primary_blue"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/primary_blue"
+            app:strokeWidth="1.5dp" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.splash.SplashActivity">
+    android:background="@color/primary_blue"
+    tools:context="com.example.elibrarypetik.ui.splash.SplashActivity">
 
     <ImageView
         android:id="@+id/iv_petik"
@@ -26,9 +27,8 @@
         android:layout_height="wrap_content"
         android:text="Elibrary PeTIK"
         android:textSize="28sp"
-        android:fontFamily="@font/font"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:fontFamily="@font/poppins_bold"
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/iv_petik"
         app:layout_constraintBottom_toTopOf="@id/tv_desc"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,8 +40,8 @@
         android:layout_height="wrap_content"
         android:text="Pesantren Teknologi Informasi dan Komunikasi"
         android:textSize="14sp"
-        android:fontFamily="@font/font"
-        android:textColor="@android:color/black"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="#E0E0E0"
         app:layout_constraintTop_toBottomOf="@id/tv_app"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +52,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginBottom="48dp"
-        android:indeterminateTint="@android:color/white"
+        android:indeterminateTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

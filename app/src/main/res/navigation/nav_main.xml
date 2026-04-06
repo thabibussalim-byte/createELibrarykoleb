@@ -60,7 +60,26 @@
         android:id="@+id/detailHistoryFragment"
         android:name="com.example.elibrarypetik.ui.history.DetailHistoryFragment"
         android:label="Detail History"
-        tools:layout="@layout/fragment_detail_history" />
+        tools:layout="@layout/fragment_detail_history">
+        <action
+            android:id="@+id/action_detailHistoryFragment_to_successReturnFragment"
+            app:destination="@id/successReturnFragment"
+            app:popUpTo="@id/historyFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/successReturnFragment"
+        android:name="com.example.elibrarypetik.ui.history.SuccessReturnFragment"
+        android:label="Berhasil Dikembalikan"
+        tools:layout="@layout/fragment_success_return">
+        <!-- Aksi Kembali ke Home dengan membersihkan backstack -->
+        <action
+            android:id="@+id/action_successReturnFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_main"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
@@ -87,13 +106,23 @@
     <fragment
         android:id="@+id/nav_bantuan"
         android:name="com.example.elibrarypetik.ui.bantuan.HelpFragment"
-        android:label="Help"
-        tools:layout="@layout/fragment_help" />
+        android:label="Bantuan"
+        tools:layout="@layout/fragment_help">
+        <action
+            android:id="@+id/action_nav_bantuan_to_faqDetailFragment"
+            app:destination="@id/faqDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_tentang"
         android:name="com.example.elibrarypetik.ui.about.AboutFragment"
         android:label="About"
         tools:layout="@layout/fragment_about" />
+
+    <fragment
+        android:id="@+id/faqDetailFragment"
+        android:name="com.example.elibrarypetik.ui.bantuan.FaqDetailFragment"
+        android:label="Detail FAQ"
+        tools:layout="@layout/fragment_faq_detail" />
 
 </navigation>
