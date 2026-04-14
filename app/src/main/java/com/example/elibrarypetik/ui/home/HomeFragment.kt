@@ -46,8 +46,7 @@ class HomeFragment : Fragment() {
                         val limitedGenres = listGenre.take(6)
                         for (genre in limitedGenres) {
                             addChipToGroup(genre.namaGenre, false) {
-                                // Toast dihapus agar UI lebih bersih
-                                // Anda bisa menambahkan logika filter list buku di sini nanti
+
                             }
                         }
                     }
