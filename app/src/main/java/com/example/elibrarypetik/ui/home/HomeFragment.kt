@@ -71,10 +71,10 @@ class HomeFragment : Fragment() {
 
     private fun setupRecyclerView() {
         val dummyBooks = listOf(
-            Book(1, "Bumi", "Tere Liye", "https://picsum.photos/id/1/200/300", 4.5f),
-            Book(2, "Hujan", "Tere Liye", "https://picsum.photos/id/10/200/300", 4.8f),
-            Book(3, "Selena", "Tere Liye", "https://picsum.photos/id/20/200/300", 4.2f),
-            Book(4, "Gadis Kretek", "Ratih Kumala", "https://picsum.photos/id/30/200/300", 4.7f)
+            Book(1, "Bumi", "Tere Liye", "https://i.pinimg.com/736x/b9/70/f9/b970f956854a01648c0aca3cae176c84.jpg", 4.5f),
+            Book(2, "They Didn't Know", "Tuhina Pal", "https://i.pinimg.com/736x/4e/41/4b/4e414baf3c8c902bcdcae73d27d8037f.jpg", 4.8f),
+            Book(3, "Sabtu Bersama Bapak", "Ratih Kumala", "https://i.pinimg.com/736x/a3/06/28/a3062830e71e97c86b0e45a0e997baf1.jpg", 4.2f),
+            Book(4, "EGO IS THE ENEMY", "Ryan Holiday", "https://i.pinimg.com/736x/50/ed/cb/50edcbcf09d2789d041f089a45507cba.jpg0", 4.7f)
         )
 
         val bookAdapter = BookAdapter(dummyBooks)

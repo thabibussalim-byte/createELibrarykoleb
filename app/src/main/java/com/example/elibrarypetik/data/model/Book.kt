@@ -4,6 +4,6 @@ data class Book(
     val id: Int,
     val title: String,
     val author: String,
-    val imageUrl: String, // Menggunakan String untuk menampung link URL
+    val imageUrl: String,
     val rating: Float
 )
