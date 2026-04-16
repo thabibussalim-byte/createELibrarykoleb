@@ -11,11 +11,17 @@ import com.bumptech.glide.Glide
 import com.example.elibrarypetik.R
 import com.example.elibrarypetik.data.api.model.BookItem
 import com.example.elibrarypetik.databinding.FragmentDetailbookBinding
+import com.google.android.material.chip.Chip
 
 class DetailbookFragment : Fragment() {
 
     private var _binding: FragmentDetailbookBinding? = null
     private val binding get() = _binding!!
+
+    private var currentBook: BookItem? = null
+    private var currentWriter: String? = null
+    private var currentPublisher: String? = null
+    private var currentGenre: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,32 +34,50 @@ class DetailbookFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ambil data buku dari arguments menggunakan BundleCompat agar tidak deprecated
-        val book = arguments?.let {
+        // Ambil data dari arguments
+        currentBook = arguments?.let {
             BundleCompat.getParcelable(it, "book", BookItem::class.java)
         }
+        currentWriter = arguments?.getString("book_writer")
+        currentPublisher = arguments?.getString("book_publisher")
+        currentGenre = arguments?.getString("book_genre")
         
-        book?.let { displayBookDetail(it) }
+        currentBook?.let { displayBookDetail(it, currentWriter, currentPublisher, currentGenre) }
 
         // Klik tombol pinjam untuk pindah ke formulir peminjaman
         binding.btnPinjam.setOnClickListener {
-            findNavController().navigate(R.id.action_detailbookFragment_to_detailpeminjamanFragment)
+            val bundle = Bundle().apply {
+                putParcelable("book", currentBook)
+                putString("book_writer", currentWriter)
+                putString("book_publisher", currentPublisher)
+            }
+            findNavController().navigate(R.id.action_detailbookFragment_to_detailpeminjamanFragment, bundle)
         }
     }
 
-    private fun displayBookDetail(book: BookItem) {
+    private fun displayBookDetail(book: BookItem, writerName: String?, publisherName: String?, genreName: String?) {
         binding.apply {
             tvDetailTitle.text = book.judulBuku
             tvDetailDescription.text = book.deskripsi
             tvDetailStock.text = "${book.stok} Tersedia"
             
-            // Note: Penulis dan Penerbit di model masih ID
-            tvDetailAuthor.text = "ID Penulis: ${book.penulisId}"
-            tvDetailPublisher.text = "ID Penerbit: ${book.penerbitId}"
+            tvDetailAuthor.text = writerName ?: "Penulis: ${book.penulisId}"
+            tvDetailPublisher.text = publisherName ?: "Penerbit: ${book.penerbitId}"
+
+            // Setup Genre Chip
+            chipGroupDetailGenre.removeAllViews()
+            val chip = Chip(requireContext()).apply {
+                text = genreName ?: "Umum"
+                isClickable = false
+                isCheckable = false
+                setChipBackgroundColorResource(R.color.search_bg) // Sesuaikan dengan warna di layout
+                setTextColor(resources.getColor(R.color.accent_blue, null))
+            }
+            chipGroupDetailGenre.addView(chip)
 
             Glide.with(requireContext())
                 .load(book.foto)
-                .placeholder(R.drawable.bintang) // Tambahkan placeholder jika perlu
+                .placeholder(R.drawable.bintang)
                 .into(ivDetailCover)
         }
     }

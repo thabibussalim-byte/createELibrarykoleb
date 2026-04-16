@@ -30,6 +30,11 @@ class BookKatalogAdapter(
         notifyDataSetChanged()
     }
 
+    // Fungsi untuk mendapatkan nama penulis berdasarkan ID
+    fun getAuthorName(authorId: Int): String {
+        return listAuthor.find { it.id == authorId }?.namaPenulis ?: "Penulis Anonim"
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemBookKatalogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
@@ -39,7 +44,7 @@ class BookKatalogAdapter(
         val book = listBook[position]
         
         // Cari nama penulis berdasarkan id dari daftar penulis
-        val authorName = listAuthor.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
+        val authorName = getAuthorName(book.penulisId)
 
         holder.binding.apply {
             tvBookTitle.text = book.judulBuku

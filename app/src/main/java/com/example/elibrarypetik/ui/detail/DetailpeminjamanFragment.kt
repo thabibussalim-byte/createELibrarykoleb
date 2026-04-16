@@ -8,9 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.elibrarypetik.R
+import com.example.elibrarypetik.data.api.model.BookItem
 import com.example.elibrarypetik.databinding.FragmentDetailpeminjamanBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,7 +35,14 @@ class DetailpeminjamanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupDummyBookPreview()
+        // Ambil data dari arguments
+        val book = arguments?.let {
+            BundleCompat.getParcelable(it, "book", BookItem::class.java)
+        }
+        val writerName = arguments?.getString("book_writer")
+        val publisherName = arguments?.getString("book_publisher")
+
+        setupBookPreview(book, writerName)
         setupDatePicker()
         setupAutoCalculateReturnDate()
 
@@ -47,11 +57,16 @@ class DetailpeminjamanFragment : Fragment() {
         }
     }
 
-    private fun setupDummyBookPreview() {
-        // Dummy data buku yang sedang diproses
-        binding.tvBorrowTitle.text = "Python for Beginners"
-        binding.tvBorrowAuthor.text = "Paul Deitel"
-        // iv_borrow_preview sudah memiliki src default di XML, nanti bisa di-set lewat Glide
+    private fun setupBookPreview(book: BookItem?, writerName: String?) {
+        if (book != null) {
+            binding.tvBorrowTitle.text = book.judulBuku
+            binding.tvBorrowAuthor.text = writerName ?: "ID Penulis: ${book.penulisId}"
+            
+            Glide.with(this)
+                .load(book.foto)
+                .placeholder(R.drawable.bintang)
+                .into(binding.ivBorrowPreview)
+        }
     }
 
     private fun setupDatePicker() {
@@ -93,7 +108,7 @@ class DetailpeminjamanFragment : Fragment() {
     private fun calculateReturnDate() {
         val lamaPinjamStr = binding.etLamaPinjam.text.toString()
         if (lamaPinjamStr.isNotEmpty()) {
-            val days = lamaPinjamStr.toInt()
+            val days = try { lamaPinjamStr.toInt() } catch (e: Exception) { 0 }
             val returnCalendar = calendar.clone() as Calendar
             returnCalendar.add(Calendar.DAY_OF_YEAR, days)
 

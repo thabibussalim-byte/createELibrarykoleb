@@ -2,16 +2,15 @@ package com.example.elibrarypetik.data.api.model
 
 import com.google.gson.annotations.SerializedName
 
-data class AuthorResponse(
+data class PublisherResponse(
     @SerializedName("status") val status: String,
     @SerializedName("message") val message: String,
-    @SerializedName("data") val data: List<AuthorItem>
+    @SerializedName("data") val data: List<PublisherItem>
 )
 
-data class AuthorItem(
+data class PublisherItem(
     @SerializedName("id") val id: Int,
-    @SerializedName("nama_penulis") val namaPenulis: String,
-    @SerializedName("alamat") val alamat: String,
+    @SerializedName("nama_penerbit") val publisherName: String,
     @SerializedName("email") val email: String,
     @SerializedName("no_hp") val noHp: String,
     @SerializedName("profil") val profil: String,

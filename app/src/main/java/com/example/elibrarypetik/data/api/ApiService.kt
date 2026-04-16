@@ -5,6 +5,7 @@ import com.example.elibrarypetik.data.api.model.BookResponse
 import com.example.elibrarypetik.data.api.model.GenreResponse
 import com.example.elibrarypetik.data.api.model.LoginRequest
 import com.example.elibrarypetik.data.api.model.LoginResponse
+import com.example.elibrarypetik.data.api.model.PublisherResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -20,6 +21,9 @@ interface ApiService {
 
     @GET("api/penulis")
     fun getAuthors(): Call<AuthorResponse>
+
+    @GET("api/penerbit")
+    fun getPublishers(): Call<PublisherResponse>
 
     @POST("api/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>

@@ -16,7 +16,10 @@ import com.example.elibrarypetik.data.api.model.AuthorItem
 import com.example.elibrarypetik.data.api.model.AuthorResponse
 import com.example.elibrarypetik.data.api.model.BookItem
 import com.example.elibrarypetik.data.api.model.BookResponse
+import com.example.elibrarypetik.data.api.model.GenreItem
 import com.example.elibrarypetik.data.api.model.GenreResponse
+import com.example.elibrarypetik.data.api.model.PublisherItem
+import com.example.elibrarypetik.data.api.model.PublisherResponse
 import com.example.elibrarypetik.data.pref.PreferenceManager
 import com.example.elibrarypetik.databinding.FragmentHomeBinding
 import com.google.android.material.chip.Chip
@@ -33,7 +36,9 @@ class HomeFragment : Fragment() {
     private lateinit var populerAdapter: BookAdapter
     
     private var allBooksList: List<BookItem> = emptyList()
-    private var allAuthorsList: List<AuthorItem> = emptyList() // Simpan daftar penulis
+    private var allAuthorsList: List<AuthorItem> = emptyList()
+    private var allPublishersList: List<PublisherItem> = emptyList()
+    private var allGenresList: List<GenreItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,8 +54,7 @@ class HomeFragment : Fragment() {
         setupGreeting()
         setupRecyclerView()
         setupSearch()
-        getGenreFromApi()
-        loadDataFromServer()
+        loadGenres()
     }
 
     private fun setupGreeting() {
@@ -61,21 +65,53 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun loadDataFromServer() {
+    private fun loadGenres() {
         binding.progressBar.visibility = View.VISIBLE
-        
-        ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
+        ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
+            override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    allGenresList = response.body()?.data ?: emptyList()
+                    
+                    binding.chipGroupCategory.removeAllViews()
+                    for (genre in allGenresList.take(6)) {
+                        addChipToGroup(genre.id, genre.namaGenre)
+                    }
+                    
+                    loadAuthors()
+                }
+            }
+            override fun onFailure(call: Call<GenreResponse>, t: Throwable) {
+                if (_binding != null) loadAuthors()
+            }
+        })
+    }
 
+    private fun loadAuthors() {
+        ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
             override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allAuthorsList = response.body()?.data ?: emptyList()
                     rekomendasiAdapter.updateAuthors(allAuthorsList)
                     populerAdapter.updateAuthors(allAuthorsList)
-                    getBooksFromApi()
+                    loadPublishers()
                 }
             }
             override fun onFailure(call: Call<AuthorResponse>, t: Throwable) {
-                if (_binding != null) binding.progressBar.visibility = View.GONE
+                if (_binding != null) loadPublishers()
+            }
+        })
+    }
+
+    private fun loadPublishers() {
+        ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
+            override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    allPublishersList = response.body()?.data ?: emptyList()
+                    getBooksFromApi()
+                }
+            }
+            override fun onFailure(call: Call<PublisherResponse>, t: Throwable) {
+                if (_binding != null) getBooksFromApi()
             }
         })
     }
@@ -94,7 +130,6 @@ class HomeFragment : Fragment() {
             override fun onFailure(call: Call<BookResponse>, t: Throwable) {
                 if (_binding != null) {
                     binding.progressBar.visibility = View.GONE
-                    Log.e("HomeFragment", "Books API Failure: ${t.message}")
                 }
             }
         })
@@ -116,10 +151,7 @@ class HomeFragment : Fragment() {
             allBooksList
         } else {
             allBooksList.filter { book ->
-                // Mencari nama penulis berdasarkan ID untuk keperluan filter pencarian
                 val authorName = allAuthorsList.find { it.id == book.penulisId }?.namaPenulis?.lowercase() ?: ""
-                
-                // Cek apakah Judul ATAU Penulis mengandung kata kunci
                 book.judulBuku.lowercase().contains(query) || authorName.contains(query)
             }
         }
@@ -127,18 +159,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-
         rekomendasiAdapter = BookAdapter(emptyList(), emptyList()) { book ->
-            val bundle = Bundle().apply {
-                putParcelable("book", book)
-            }
-            findNavController().navigate(R.id.action_homeFragment_to_detailbookFragment, bundle)
+            navigateToDetail(book)
         }
         populerAdapter = BookAdapter(emptyList(), emptyList()) { book ->
-            val bundle = Bundle().apply {
-                putParcelable("book", book)
-            }
-            findNavController().navigate(R.id.action_homeFragment_to_detailbookFragment, bundle)
+            navigateToDetail(book)
         }
 
         binding.rvRekomendasi.apply {
@@ -152,26 +177,27 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun navigateToDetail(book: BookItem) {
+        //cari id yang sama dengan id penulis, genre, dan penerbit dari buku ini, kalo ada, maka ambil data nya
+        val authorName = allAuthorsList.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
+        val publisherName = allPublishersList.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
+        val genreName = allGenresList.find { it.id == book.genreId }?.namaGenre ?: "Umum"
+
+        //mengirim data ke detailbook fragment
+        val bundle = Bundle().apply {
+            putParcelable("book", book)
+            putString("book_writer", authorName)
+            putString("book_publisher", publisherName)
+            putString("book_genre", genreName)
+        }
+         //berpindah halaman dari halaman home ke halaman detail buku dan membawa data yang dikirim ke detailbook fragment
+        findNavController().navigate(R.id.action_homeFragment_to_detailbookFragment, bundle)
+    }
+
+    //mengambil lima data genre dari masing masing recyclerview rekomendasi dan populer
     private fun updateDisplay(listBuku: List<BookItem>) {
         rekomendasiAdapter.submitList(listBuku.take(5))
         populerAdapter.submitList(listBuku.drop(5))
-    }
-
-    private fun getGenreFromApi() {
-        ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
-            override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    val genres = response.body()?.data ?: emptyList()
-                    binding.chipGroupCategory.removeAllViews()
-                    for (genre in genres.take(6)) {
-                        addChipToGroup(genre.id, genre.namaGenre)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<GenreResponse>, t: Throwable) {
-                Log.e("HomeFragment", "Genre API Failure: ${t.message}")
-            }
-        })
     }
 
     private fun addChipToGroup(genreId: Int, name: String) {
