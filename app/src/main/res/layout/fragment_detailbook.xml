@@ -147,7 +147,7 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
-                    <!-- Book Metadata (Stock, Location, etc) -->
+                    <!-- Book Metadata -->
                     <GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -184,16 +184,16 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="sans-serif-medium"
-                                android:text="Lokasi Rak"
+                                android:fontFamily="@font/roboto_regular"
+                                android:text="Penerbit"
                                 android:textColor="@color/text_hint"
                                 android:textSize="12sp" />
                             <TextView
-                                android:id="@+id/tv_detail_location"
+                                android:id="@+id/tv_detail_publisher"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="sans-serif-medium"
-                                android:text="Rak A3"
+                                android:fontFamily="@font/roboto_regular"
+                                android:text="Gramedia"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp" />
                         </LinearLayout>

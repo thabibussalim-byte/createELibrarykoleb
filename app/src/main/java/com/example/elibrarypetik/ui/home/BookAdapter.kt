@@ -1,16 +1,34 @@
 package com.example.elibrarypetik.ui.home
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.elibrarypetik.data.model.Book
+import com.example.elibrarypetik.data.api.model.AuthorItem
+import com.example.elibrarypetik.data.api.model.BookItem
 import com.example.elibrarypetik.databinding.ItemBukuBinding
 
-class BookAdapter(private val listBook: List<Book>) : RecyclerView.Adapter<BookAdapter.ViewHolder>() {
+class BookAdapter(
+    private var listBook: List<BookItem>,
+    private var listAuthor: List<AuthorItem> = emptyList(), // Menampung daftar penulis
+    private val onItemClick: (BookItem) -> Unit = {} // Tambahkan listener klik
+) : RecyclerView.Adapter<BookAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemBukuBinding) : RecyclerView.ViewHolder(binding.root)
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun submitList(newList: List<BookItem>) {
+        listBook = newList
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateAuthors(authors: List<AuthorItem>) {
+        listAuthor = authors
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemBukuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,17 +37,24 @@ class BookAdapter(private val listBook: List<Book>) : RecyclerView.Adapter<BookA
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val book = listBook[position]
+        
+        // Cari nama penulis berdasarkan id
+        val authorName = listAuthor.find { it.id == book.penulisId }?.namaPenulis ?: "Memuat..."
+
         holder.binding.apply {
-            tvJudul.text = book.title
-            tvPenulis.text = book.author
-            ratingBar.rating = book.rating
+            tvJudul.text = book.judulBuku
+            tvPenulis.text = authorName // Menampilkan Nama Penulis
+            ratingBar.rating = 4.5f
             
-            // Perbaikan pemuatan gambar dengan Glide
             Glide.with(holder.itemView.context)
-                .load(book.imageUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL) // Simpan cache agar lebih cepat
-                .centerCrop() // Pastikan gambar memenuhi area
+                .load(book.foto)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
                 .into(ivCover)
+
+            root.setOnClickListener {
+                onItemClick(book)
+            }
         }
     }
 

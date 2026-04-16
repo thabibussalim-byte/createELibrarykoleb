@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.elibrarypetik.R
+import com.example.elibrarypetik.data.pref.PreferenceManager
 import com.example.elibrarypetik.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
@@ -27,50 +27,30 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupProfileData()
+        setupUI()
         setupClickListeners()
     }
 
-    private fun setupProfileData() {
-        binding.tvProfileUsername.text = "aril_stiven"
-        binding.tvProfileDesc.text = "Pencinta kopi & petualangan imajinasi lewat buku."
+    private fun setupUI() {
+        val prefManager = PreferenceManager(requireContext())
         
-        val photoUrl: String? = null
+        // Menampilkan Nama dari Preferences
+        binding.tvProfileUsername.text = prefManager.getUsername()
+        binding.tvProfileDesc.text = "Santri PeTIK - Pencinta ilmu & teknologi."
         
+        // Menampilkan Foto dari URL API menggunakan Glide
         Glide.with(this)
-            .load(photoUrl)
+            .load(prefManager.getProfileUrl())
             .placeholder(R.drawable.ic_profile)
-            .error(R.drawable.ic_profile)
             .circleCrop()
             .into(binding.ivProfilePicture)
-
-        val totalDenda = 2000
-        binding.tvTotalDenda.text = "Rp $totalDenda"
-        
-        if (totalDenda > 0) {
-            binding.tvTotalDenda.setTextColor(resources.getColor(R.color.error_red, null))
-        } else {
-            binding.tvTotalDenda.text = "Tidak ada denda"
-            binding.tvTotalDenda.setTextColor(resources.getColor(R.color.success_green, null))
-        }
+            
+        binding.tvTotalDenda.text = "Rp 0" // Default
     }
 
     private fun setupClickListeners() {
-        binding.btnEditPhoto.setOnClickListener {
-            Toast.makeText(requireContext(), "Membuka Galeri...", Toast.LENGTH_SHORT).show()
-        }
-
         binding.cardDenda.setOnClickListener {
-            // PASTIKAN ID INI SAMA PERSIS DENGAN DI nav_main.xml
-            try {
-                findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Navigasi Error: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-
-        binding.cardStatistik.setOnClickListener {
-            Toast.makeText(requireContext(), "Membuka statistik...", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
         }
     }
 

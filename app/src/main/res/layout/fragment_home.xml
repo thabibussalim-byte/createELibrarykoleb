@@ -9,13 +9,14 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="24dp">
+            android:paddingBottom="100dp">
 
             <!-- Welcome Section -->
             <LinearLayout
@@ -57,14 +58,19 @@
                             android:src="@drawable/ic_search"
                             app:tint="@color/text_secondary" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <EditText
+                            android:id="@+id/et_search_home"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
+                            android:background="@android:color/transparent"
                             android:fontFamily="@font/roboto_regular"
-                            android:text="Cari judul buku, genre, penulis..."
-                            android:textColor="@color/text_hint"
-                            android:textSize="14sp"/>
+                            android:hint="Cari judul buku, penulis..."
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_hint"
+                            android:textSize="14sp"
+                            android:imeOptions="actionSearch"
+                            android:inputType="text" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -84,7 +90,6 @@
                     android:paddingHorizontal="20dp"
                     app:chipSpacingHorizontal="8dp"
                     app:singleSelection="true">
-                    <!-- Chip dinamis menggunakan Poppins (diatur via styles/kode) -->
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
 
@@ -160,5 +165,15 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

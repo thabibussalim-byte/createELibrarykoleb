@@ -40,6 +40,9 @@
         android:name="com.example.elibrarypetik.ui.detail.DetailbookFragment"
         android:label="Detail Buku"
         tools:layout="@layout/fragment_detailbook">
+        <argument
+            android:name="book"
+            app:argType="com.example.elibrarypetik.data.api.model.BookItem" />
         <action
             android:id="@+id/action_detailbookFragment_to_detailpeminjamanFragment"
             app:destination="@id/detailpeminjamanFragment" />
@@ -93,7 +96,7 @@
 
     <fragment
         android:id="@+id/detailDendaFragment"
-        android:name="com.example.elibrarypetik.ui.profile.DetailDendaFragment"
+        android:name="com.example.elibrarypetik.ui.detail.DetailDendaFragment"
         android:label="Detail Denda"
         tools:layout="@layout/fragment_detail_denda" />
 

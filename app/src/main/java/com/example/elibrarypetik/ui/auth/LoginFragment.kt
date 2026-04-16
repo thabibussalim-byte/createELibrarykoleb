@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.example.elibrarypetik.data.api.ApiConfig
 import com.example.elibrarypetik.data.api.model.LoginRequest
 import com.example.elibrarypetik.data.api.model.LoginResponse
+import com.example.elibrarypetik.data.pref.PreferenceManager
 import com.example.elibrarypetik.databinding.FragmentLoginBinding
 import com.example.elibrarypetik.ui.main.MainActivity
 import retrofit2.Call
@@ -49,6 +50,16 @@ class LoginFragment : Fragment() {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse?.status == "success") {
+                            
+                            // SIMPAN DATA KE PREFERENCES
+                            val data = loginResponse.data
+                            val prefManager = PreferenceManager(requireContext())
+                            prefManager.saveUser(
+                                data?.token ?: "",
+                                data?.username ?: username,
+                                data?.profil ?: "" // Menyimpan URL Foto
+                            )
+
                             Toast.makeText(requireContext(), "Login Berhasil: ${loginResponse.message}", Toast.LENGTH_SHORT).show()
                             
                             // Berpindah ke MainActivity
@@ -69,6 +80,8 @@ class LoginFragment : Fragment() {
                 }
             })
         }
+
+
     }
 
     override fun onDestroyView() {

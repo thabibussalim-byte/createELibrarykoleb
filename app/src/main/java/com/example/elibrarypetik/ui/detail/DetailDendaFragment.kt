@@ -1,4 +1,4 @@
-package com.example.elibrarypetik.ui.profile
+package com.example.elibrarypetik.ui.detail
 
 import android.os.Bundle
 import android.view.LayoutInflater
