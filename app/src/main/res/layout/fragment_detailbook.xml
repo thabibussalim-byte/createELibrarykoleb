@@ -5,28 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_light"
-    tools:context=".ui.detail.DetailbookFragment">
+    tools:context="com.example.petbook.ui.detail.DetailbookFragment">
 
     <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="24dp">
+        android:paddingBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="24dp">
 
-            <!-- Book Cover -->
+            <!-- Book Cover Container -->
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="160dp"
-                android:layout_height="220dp"
+                android:layout_width="180dp"
+                android:layout_height="250dp"
                 android:layout_gravity="center"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="12dp"
                 app:strokeWidth="0dp">
 
                 <ImageView
@@ -37,188 +40,224 @@
                     android:src="@drawable/bintang" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Book Title & Author -->
+            <!-- Book Title -->
             <TextView
                 android:id="@+id/tv_detail_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="28dp"
                 android:fontFamily="@font/poppins_bold"
-                android:text="Bintang"
                 android:textAlignment="center"
                 android:textColor="@color/text_primary"
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                tools:text="Bintang" />
 
+            <!-- Author Name -->
             <TextView
                 android:id="@+id/tv_detail_author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:fontFamily="@font/roboto_regular"
-                android:text="Tere Liye"
+                android:fontFamily="@font/poppins_medium"
                 android:textAlignment="center"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+                android:textColor="@color/accent_blue"
+                android:textSize="14sp"
+                tools:text="Tere Liye" />
 
-            <!-- Rating Section -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <RatingBar
-                    android:id="@+id/rating_bar_detail"
-                    style="?android:attr/ratingBarStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:isIndicator="true"
-                    android:numStars="5"
-                    android:progressTint="#FFB300"
-                    android:rating="4.5"
-                    android:stepSize="0.1"/>
-
-                <TextView
-                    android:id="@+id/tv_detail_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="4.5"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <!-- Book Info Container -->
+            <!-- Stats Horizontal Row -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:cardCornerRadius="24dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                    <!-- Genre Chips -->
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chip_group_detail_genre"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:chipSpacingHorizontal="8dp">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.Material3.Chip.Suggestion"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Romansa"
-                            android:textColor="@color/accent_blue"
-                            app:chipBackgroundColor="#EEF2FF"
-                            app:chipStrokeWidth="0dp" />
-                    </com.google.android.material.chip.ChipGroup>
+                            android:text="Rating"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:src="@drawable/ic_star"
+                                app:tint="#FFB300"/>
+
+                            <TextView
+                                android:id="@+id/tv_detail_rating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:fontFamily="@font/poppins_semibold"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                tools:text="4.8" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginVertical="16dp"
-                        android:background="#F1F5F9" />
+                        android:layout_width="1dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="#EEEEEE" />
 
-                    <!-- Deskripsi -->
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_semibold"
-                        android:text="Deskripsi"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tv_detail_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="@font/roboto_regular"
-                        android:lineSpacingExtra="4dp"
-                        android:text="Buku ini menceritakan tentang petualangan luar biasa di klan matahari..."
-                        android:textColor="@color/text_secondary"
-                        android:textSize="14sp" />
-
-                    <!-- Book Metadata -->
-                    <GridLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:columnCount="2">
-
-                        <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/roboto_regular"
-                                android:text="Stok Buku"
-                                android:textColor="@color/text_hint"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:id="@+id/tv_detail_stock"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/roboto_regular"
-                                android:text="3 Tersedia"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
+                            android:text="Stok"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tv_detail_stock"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/roboto_regular"
-                                android:text="Penerbit"
-                                android:textColor="@color/text_hint"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:id="@+id/tv_detail_publisher"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/roboto_regular"
-                                android:text="Gramedia"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-                    </GridLayout>
+                            android:fontFamily="@font/poppins_semibold"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            tools:text="12" />
+                    </LinearLayout>
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="#EEEEEE" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Genre"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tv_detail_genre_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            tools:text="Fantasi" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Borrow Button -->
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Tentang Buku"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_detail_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/roboto_regular"
+                android:lineSpacingExtra="6dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                tools:text="Deskripsi lengkap buku..." />
+
+            <!-- Publisher Info -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Informasi Lain"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Penerbit"
+                    android:textColor="@color/text_hint"
+                    android:fontFamily="@font/roboto_regular" />
+                <TextView
+                    android:id="@+id/tv_detail_publisher"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_regular"
+                    android:textColor="@color/text_primary"
+                    tools:text="Gramedia Pustaka Utama" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Fixed Bottom Button Section -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="16dp"
+        app:cardCornerRadius="0dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:background="@color/white">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_pinjam"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginTop="24dp"
                 android:backgroundTint="@color/accent_blue"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="Pinjam Buku"
-                android:textAllCaps="false"
+                android:fontFamily="@font/poppins_bold"
+                android:text="PINJAM BUKU"
                 android:textSize="16sp"
-                app:cornerRadius="16dp"
-                app:elevation="4dp" />
-
+                app:cornerRadius="16dp" />
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

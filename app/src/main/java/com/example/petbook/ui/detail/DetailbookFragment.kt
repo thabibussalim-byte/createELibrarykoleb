@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.model.BookItem
 import com.example.petbook.databinding.FragmentDetailbookBinding
-import com.google.android.material.chip.Chip
 
 class DetailbookFragment : Fragment() {
 
@@ -61,25 +60,16 @@ class DetailbookFragment : Fragment() {
         binding.apply {
             tvDetailTitle.text = book.judulBuku
             tvDetailDescription.text = book.deskripsi
-            tvDetailStock.text = "${book.stok} Tersedia"
+            tvDetailStock.text = book.stok.toString()
             
             tvDetailAuthor.text = writerName ?: "Penulis: ${book.penulisId}"
             tvDetailPublisher.text = publisherName ?: "Penerbit: ${book.penerbitId}"
             
-            // Set Rating Bintang dan Teks Rating agar SINKRON
-            ratingBarDetail.rating = rating
+            // Set Teks Rating agar SINKRON
             tvDetailRating.text = String.format("%.1f", rating)
 
-            // Setup Genre Chip
-            chipGroupDetailGenre.removeAllViews()
-            val chip = Chip(requireContext()).apply {
-                text = genreName ?: "Umum"
-                isClickable = false
-                isCheckable = false
-                setChipBackgroundColorResource(R.color.search_bg)
-                setTextColor(resources.getColor(R.color.accent_blue, null))
-            }
-            chipGroupDetailGenre.addView(chip)
+            // Set Genre Text
+            tvDetailGenreLabel.text = genreName ?: "Umum"
 
             Glide.with(requireContext())
                 .load(book.foto)
