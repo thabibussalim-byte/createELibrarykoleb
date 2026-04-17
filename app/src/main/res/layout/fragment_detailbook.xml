@@ -77,16 +77,18 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:progressTint="#FFB300"
-                    android:rating="4.5"/>
+                    android:rating="4.5"
+                    android:stepSize="0.1"/>
 
                 <TextView
+                    android:id="@+id/tv_detail_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:fontFamily="@font/roboto_regular"
                     android:text="4.5"
                     android:textColor="@color/text_primary"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Book Info Container -->

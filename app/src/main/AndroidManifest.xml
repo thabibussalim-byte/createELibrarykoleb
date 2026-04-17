@@ -16,10 +16,10 @@
         android:theme="@style/Theme.ElibraryPetik">
         
         <activity
-            android:name=".ui.auth.AuthActivity"
+            android:name="com.example.petbook.ui.auth.AuthActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name="com.example.petbook.ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name="com.example.petbook.ui.main.MainActivity"
             android:exported="true" />
     </application>
 

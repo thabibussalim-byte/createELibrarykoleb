@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.elibrarypetik"
+    namespace = "com.example.petbook"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.elibrarypetik"
+        applicationId = "com.example.petbook"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
