@@ -4,18 +4,27 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.example.petbook.R
+import com.example.petbook.data.api.ApiConfig
+import com.example.petbook.data.api.model.LogoutResponse
+import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.ActivityMainBinding
 import com.example.petbook.ui.auth.AuthActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,16 +54,33 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         setSupportActionBar(binding.toolbar)
 
+        // Setup awal
         binding.bottomNav.setupWithNavController(navController)
         binding.navigationView.setupWithNavController(navController)
 
-        // Panggil fungsi untuk memuat foto profil di Drawer Header
+        // LOGIKA PERBAIKAN: Reset tumpukan setiap kali tab diklik
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            if (item.itemId != binding.bottomNav.selectedItemId) {
+                // Navigasi ke tab lain dengan meriset tumpukannya (restoreState = false)
+                val options = NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setRestoreState(false) // KUNCINYA: Jangan balik ke detail buku
+                    .setPopUpTo(navController.graph.findStartDestination().id, inclusive = false, saveState = true)
+                    .build()
+                
+                navController.navigate(item.itemId, null, options)
+            } else {
+                // Jika tab yang sama diklik lagi, pop semua tumpukan di atasnya
+                navController.popBackStack(item.itemId, false)
+            }
+            true
+        }
+
         updateDrawerHeader()
 
         binding.navigationView.setNavigationItemSelectedListener { item ->
             if (item.itemId == R.id.nav_logout) {
-                startActivity(Intent(this, AuthActivity::class.java))
-                finish()
+                performLogout()
                 true
             } else {
                 val handled = NavigationUI.onNavDestinationSelected(item, navController)
@@ -78,19 +104,37 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    /**
-     * Fungsi untuk memperbarui Foto Profil di Drawer Header secara dinamis
-     */
+    private fun performLogout() {
+        val prefManager = PreferenceManager(this)
+        val token = prefManager.getToken() ?: ""
+        val formattedToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+
+        ApiConfig.getApiService().logout(formattedToken).enqueue(object : Callback<LogoutResponse> {
+            override fun onResponse(call: Call<LogoutResponse>, response: Response<LogoutResponse>) {
+                handleLocalLogout(prefManager)
+            }
+            override fun onFailure(call: Call<LogoutResponse>, t: Throwable) {
+                handleLocalLogout(prefManager)
+            }
+        })
+    }
+
+    private fun handleLocalLogout(prefManager: PreferenceManager) {
+        prefManager.clear()
+        Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, AuthActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
     fun updateDrawerHeader() {
         val headerView: View = binding.navigationView.getHeaderView(0)
         val ivProfileHeader: ImageView = headerView.findViewById(R.id.iv_profile_header)
-
-        // Contoh: Ambil URL foto dari SharedPreferences atau API
-        // Untuk sekarang kita gunakan link dummy, nanti bisa diganti data asli
-        val latestPhotoUrl = "https://picsum.photos/id/64/200/200" 
+        val prefManager = PreferenceManager(this)
 
         Glide.with(this)
-            .load(latestPhotoUrl)
+            .load(prefManager.getProfileUrl())
             .circleCrop()
             .placeholder(R.drawable.ic_profile)
             .into(ivProfileHeader)

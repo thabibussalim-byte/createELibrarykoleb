@@ -27,22 +27,23 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
 
-        <!-- Badge Status -->
+        <!-- Status Badge -->
         <TextView
             android:id="@+id/tv_history_status_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_status_dipinjam"
             android:fontFamily="@font/poppins_medium"
-            android:paddingHorizontal="12dp"
+            android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
-            android:text="Dipinjam"
-            android:textColor="@color/white"
+            android:textAllCaps="true"
             android:textSize="10sp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_status_pending"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="PENDING" />
 
-        <!-- Info Detail -->
+        <!-- Info Section -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -53,83 +54,51 @@
             app:layout_constraintStart_toEndOf="@id/iv_book_cover"
             app:layout_constraintTop_toTopOf="@id/iv_book_cover">
 
-            <!-- Baris Judul -->
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_history_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:ellipsize="end"
+                android:fontFamily="@font/poppins_semibold"
+                android:maxLines="2"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                tools:text="The Psychology of Money" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Judul:  "
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp"/>
-
-                <TextView
-                    android:id="@+id/tv_history_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/roboto_regular"
-                    android:maxLines="1"
-                    android:text="Buya Hamka"
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp"/>
-            </LinearLayout>
-
-            <!-- Baris Karya -->
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_history_author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:orientation="horizontal">
+                android:fontFamily="@font/roboto_regular"
+                android:textColor="@color/accent_blue"
+                android:textSize="13sp"
+                tools:text="Morgan Housel" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Karya:  "
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tv_history_author"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="sans-serif"
-                    android:maxLines="1"
-                    android:text="A. Fuadi"
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <!-- Rentang Tanggal -->
             <TextView
                 android:id="@+id/tv_history_date_range"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/roboto_regular"
-                android:text="1 Jan - 8 Jan 2026"
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp" />
+                android:textSize="12sp"
+                android:drawableStart="@drawable/ic_calendar"
+                android:drawablePadding="6dp"
+                tools:text="12 Sep - 19 Sep 2026" />
 
             <TextView
                 android:id="@+id/tv_history_fine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/roboto_regular"
-                android:text="Denda: Rp 2.000"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppins_semibold"
                 android:textColor="@color/error_red"
-                android:textSize="11sp"
+                android:textSize="12sp"
                 android:visibility="gone"
+                tools:text="Denda: Rp 5.000"
                 tools:visibility="visible" />
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </com.google.android.material.card.MaterialCardView>

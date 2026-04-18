@@ -1,15 +1,8 @@
 package com.example.petbook.data.api
 
-import com.example.petbook.data.api.model.AuthorResponse
-import com.example.petbook.data.api.model.BookResponse
-import com.example.petbook.data.api.model.GenreResponse
-import com.example.petbook.data.api.model.LoginRequest
-import com.example.petbook.data.api.model.LoginResponse
-import com.example.petbook.data.api.model.PublisherResponse
+import com.example.petbook.data.api.model.*
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface ApiService {
 
@@ -27,5 +20,38 @@ interface ApiService {
 
     @POST("api/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
+
+    @POST("api/logout")
+    fun logout(@Header("Authorization") token: String): Call<LogoutResponse>
+
+    @POST("api/transaksi/create")
+    fun createBorrow(
+        @Header("Authorization") token: String,
+        @Body request: BorrowRequest
+    ): Call<BorrowResponse>
+
+    @GET("api/transaksi")
+    fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
+
+    @GET("api/transaksi/user/{id}")
+    fun getHistoryByUser(
+        @Header("Authorization") token: String,
+        @Path("id") userId: Int
+    ): Call<HistoryResponse>
+
+    @GET("api/denda")
+    fun getFines(@Header("Authorization") token: String): Call<FineResponse>
+
+    @GET("api/denda/cari/{id}")
+    fun getFineDetailById(
+        @Header("Authorization") token: String,
+        @Path("id") fineId: Int
+    ): Call<FineDetailResponse>
+
+    @GET("api/mahasantri")
+    fun getMahasantri(@Header("Authorization") token: String): Call<MahasantriResponse>
+
+    @GET("api/user")
+    fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
 
 }

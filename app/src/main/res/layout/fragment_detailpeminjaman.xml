@@ -4,40 +4,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="#FBFDFF"
     tools:context=".ui.detail.DetailpeminjamanFragment">
 
-    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/btn_pinjam_final"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/bottomCard"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="24dp">
 
-            <!-- 1. Mini Book Preview (Agar user yakin buku yang dipinjam) -->
+            <!-- Header Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Konfirmasi Pinjaman"
+                android:textColor="#1E293B"
+                android:textSize="22sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif"
+                android:text="Pastikan detail peminjaman sudah sesuai"
+                android:textColor="#64748B"
+                android:textSize="14sp" />
+
+            <!-- Book Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp">
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#EAEFF5"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/iv_borrow_preview"
-                        android:layout_width="50dp"
-                        android:layout_height="70dp"
+                        android:layout_width="60dp"
+                        android:layout_height="84dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/narasi"
                         app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
@@ -53,40 +75,43 @@
                             android:id="@+id/tv_borrow_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_semibold"
+                            android:fontFamily="sans-serif-medium"
                             android:text="Judul Buku"
-                            android:textColor="@color/text_primary"
-                            android:textSize="15sp" />
+                            android:textColor="#1E293B"
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/tv_borrow_author"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_regular"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif"
                             android:text="Nama Penulis"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp" />
+                            android:textColor="#64748B"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Input Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="Informasi Peminjaman"
-                android:textColor="@color/text_primary"
+                android:layout_marginTop="32dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Atur Jadwal"
+                android:textColor="#1E293B"
                 android:textSize="16sp" />
 
-            <!-- 2. Tanggal Pinjam Input -->
+            <!-- Tanggal Pinjam -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Tanggal Pinjam"
-                app:startIconDrawable="@drawable/ic_history">
+                android:hint="Mulai Pinjam"
+                app:startIconDrawable="@drawable/ic_history"
+                app:startIconTint="#3B82F6">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_tgl_pinjam"
@@ -94,98 +119,141 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="false"
-                    android:fontFamily="@font/roboto_regular"
-                    android:inputType="none"
-                    android:text="Pilih Tanggal" />
+                    android:paddingStart="56dp"
+                    android:textColor="#1E293B" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 3. Lama Pinjam Input -->
+            <!-- Lama Pinjam -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Lama Pinjam (Hari)"
-                app:suffixText="Hari">
+                android:hint="Durasi Peminjaman"
+                app:helperText="Maksimal 14 hari"
+                app:startIconDrawable="@drawable/ic_history"
+                app:startIconTint="#64748B"
+                app:suffixText="Hari"
+                app:suffixTextColor="#3B82F6">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_lama_pinjam"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:paddingStart="56dp"
+                    android:textColor="#1E293B" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 4. Tanggal Kembali (Display Only) -->
+            <!-- Summary Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="#F8FAFC"
-                app:cardCornerRadius="12dp"
+                android:layout_marginTop="32dp"
+                app:cardBackgroundColor="#E0F2FE"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#E2E8F0"
-                app:strokeWidth="1dp">
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <TextView
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/roboto_regular"
-                        android:text="Estimasi Pengembalian:"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tv_tgl_kembali_est"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_semibold"
-                        android:text="-"
-                        android:textColor="@color/accent_blue"
-                        android:textSize="13sp" />
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_history"
+                            app:tint="#3B82F6" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="Ringkasan Pengembalian"
+                            android:textColor="#3B82F6"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="#BAE6FD" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:text="Dikembalikan pada"
+                            android:textColor="#0369A1"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tv_tgl_kembali_est"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="-"
+                            android:textColor="#3B82F6"
+                            android:textSize="15sp" />
+                    </RelativeLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <!-- 5. Catatan Input -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Catatan (Opsional)">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_catatan_borrow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:gravity="top"
-                    android:inputType="textMultiLine"
-                    android:lines="3" />
-            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 6. Button Aksi (Sticky at bottom) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_pinjam_final"
+    <!-- Bottom Button -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomCard"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_margin="20dp"
-        android:backgroundTint="@color/accent_blue"
-        android:fontFamily="@font/poppins_semibold"
-        android:text="Konfirmasi Peminjaman"
-        android:textAllCaps="false"
-        android:textSize="16sp"
-        app:cornerRadius="16dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="24dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="20dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_pinjam_final"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:backgroundTint="#3B82F6"
+                android:fontFamily="sans-serif-medium"
+                android:text="Konfirmasi Peminjaman"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:cornerRadius="16dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <ProgressBar
+        android:id="@+id/progress_bar_borrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

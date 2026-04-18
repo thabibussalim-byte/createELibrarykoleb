@@ -1,20 +1,41 @@
 package com.example.petbook.ui.history
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.petbook.R
-import com.example.petbook.data.model.HistoryItem
+import com.example.petbook.data.api.model.AuthorItem
+import com.example.petbook.data.api.model.BookItem
+import com.example.petbook.data.api.model.FineDataItem
+import com.example.petbook.data.api.model.HistoryDataItem
 import com.example.petbook.databinding.ItemHistoryBinding
 
 class HistoryAdapter(
-    private val listHistory: List<HistoryItem>,
-    private val onItemClick: (HistoryItem) -> Unit
+    private var listHistory: List<HistoryDataItem>,
+    private var listBooks: List<BookItem>,
+    private var listAuthors: List<AuthorItem>,
+    private var listFines: List<FineDataItem> = emptyList(),
+    private val onItemClick: (HistoryDataItem) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root)
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateData(
+        newHistory: List<HistoryDataItem>,
+        books: List<BookItem>,
+        authors: List<AuthorItem>,
+        fines: List<FineDataItem>
+    ) {
+        listHistory = newHistory
+        listBooks = books
+        listAuthors = authors
+        listFines = fines
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemHistoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -23,32 +44,48 @@ class HistoryAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val history = listHistory[position]
+        
+        // 1. CARI DATA BUKU BERDASARKAN ID
+        val book = listBooks.find { it.id == history.bukuId }
+        
+        // 2. CARI DATA PENULIS BERDASARKAN ID PENULIS DI BUKU
+        val authorName = listAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
+
+        // 3. CARI DATA DENDA BERDASARKAN ID TRANSAKSI
+        val fine = listFines.find { it.transaksiId == history.id }
+
         holder.binding.apply {
-            tvHistoryTitle.text = history.title
-            tvHistoryAuthor.text = history.author
-            tvHistoryDateRange.text = "${history.borrowDate} - ${history.dueDate}"
-            tvHistoryStatusBadge.text = history.status
+            tvHistoryTitle.text = book?.judulBuku ?: "Buku tidak ditemukan"
+            tvHistoryAuthor.text = authorName
             
-            // Logika warna badge berdasarkan status
+            val tglPinjam = history.tglPinjam.take(10)
+            val tglKembali = history.tglKembali.take(10)
+            tvHistoryDateRange.text = "$tglPinjam s/d $tglKembali"
+
+            // Setup Status Badge
+            tvHistoryStatusBadge.text = history.status.uppercase()
             when (history.status.lowercase()) {
+                "pending" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
                 "dipinjam" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                "terlambat" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
-                "selesai" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
-                "proses" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
-                "ditolak" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_ditolak)
-                else -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
+                "dikembalikan" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
+                else -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
             }
 
-            if (history.isLate && history.fine != null) {
+            // Setup Denda dari API Denda (Gunakan toIntOrNull agar tidak crash)
+            val dendaAmount = fine?.totalDenda?.toIntOrNull() ?: 0
+            if (dendaAmount > 0) {
                 tvHistoryFine.visibility = View.VISIBLE
-                tvHistoryFine.text = "Denda: ${history.fine}"
+                tvHistoryFine.text = "Denda: Rp $dendaAmount"
+                if (fine?.status == "dibayar") {
+                    tvHistoryFine.text = "Denda: Rp $dendaAmount (Lunas)"
+                }
             } else {
                 tvHistoryFine.visibility = View.GONE
             }
 
             Glide.with(holder.itemView.context)
-                .load(history.imageUrl)
-                .placeholder(R.drawable.ic_home)
+                .load(book?.foto)
+                .placeholder(R.drawable.narasi)
                 .into(ivBookCover)
 
             root.setOnClickListener { onItemClick(history) }

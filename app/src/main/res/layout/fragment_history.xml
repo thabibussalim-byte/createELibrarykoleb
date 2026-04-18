@@ -21,7 +21,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-
     <HorizontalScrollView
         android:id="@+id/schroll_chip"
         android:layout_width="0dp"
@@ -52,6 +51,15 @@
                 android:checkable="true"/>
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/chip_pending"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending"
+                android:fontFamily="@font/poppins_medium"
+                android:checkable="true"/>
+
+            <com.google.android.material.chip.Chip
                 android:id="@+id/chip_dipinjam"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
@@ -61,20 +69,11 @@
                 android:checkable="true"/>
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chip_disetujui"
+                android:id="@+id/chip_dikembalikan"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Disetujui"
-                android:fontFamily="@font/poppins_medium"
-                android:checkable="true"/>
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_dibatalkan"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dibatalkan"
+                android:text="Dikembalikan"
                 android:fontFamily="@font/poppins_medium"
                 android:checkable="true"/>
 

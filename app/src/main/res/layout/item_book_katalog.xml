@@ -75,7 +75,7 @@
                 <ImageView
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:src="@drawable/bintang"
+                    android:src="@drawable/ic_star"
                     app:tint="#FFB300" />
 
                 <TextView
@@ -94,13 +94,6 @@
                     android:layout_marginHorizontal="8dp"
                     android:background="#DDDDDD" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Terpinjam 100+"
-                    android:textColor="@color/text_hint"
-                    android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>

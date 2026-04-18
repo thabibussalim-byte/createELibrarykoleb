@@ -51,10 +51,12 @@ class LoginFragment : Fragment() {
                         val loginResponse = response.body()
                         if (loginResponse?.status == "success") {
                             
-                            // SIMPAN DATA KE PREFERENCES
+                            // SIMPAN DATA KE PREFERENCES (termasuk user_id)
                             val data = loginResponse.data
                             val prefManager = PreferenceManager(requireContext())
+                            
                             prefManager.saveUser(
+                                data?.id ?: -1, // Menyimpan ID User dari API
                                 data?.token ?: "",
                                 data?.username ?: username,
                                 data?.profil ?: "" // Menyimpan URL Foto
@@ -80,8 +82,6 @@ class LoginFragment : Fragment() {
                 }
             })
         }
-
-
     }
 
     override fun onDestroyView() {

@@ -13,8 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cv_bottom_container"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -87,26 +86,22 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Rating"
                             android:textColor="@color/text_hint"
-                            android:textSize="12sp"/>
-
+                            android:textSize="12sp" />
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
-
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
                                 android:src="@drawable/ic_star"
-                                app:tint="#FFB300"/>
-
+                                app:tint="#FFB300" />
                             <TextView
                                 android:id="@+id/tv_detail_rating"
                                 android:layout_width="wrap_content"
@@ -200,7 +195,6 @@
                 android:textSize="14sp"
                 tools:text="Deskripsi lengkap buku..." />
 
-            <!-- Publisher Info -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -235,6 +229,7 @@
 
     <!-- Fixed Bottom Button Section -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_bottom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="16dp"
@@ -248,15 +243,22 @@
             android:padding="20dp"
             android:background="@color/white">
 
+            <!-- Di dalam MaterialButton btn_pinjam -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_pinjam"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
                 android:backgroundTint="@color/accent_blue"
                 android:fontFamily="@font/poppins_bold"
                 android:text="PINJAM BUKU"
                 android:textSize="16sp"
-                app:cornerRadius="16dp" />
+                android:letterSpacing="0.1"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/ic_book"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp" />
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

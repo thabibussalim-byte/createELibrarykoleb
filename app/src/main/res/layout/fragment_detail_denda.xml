@@ -54,7 +54,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
-                        android:text="Rp: 2.000"
+                        android:text="Rp: 0"
                         android:textColor="@color/error_red"
                         android:textSize="20sp"
                         android:fontFamily="@font/poppins_bold" />
@@ -78,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
-                android:text="1 Buku Telat"
+                android:text="0 Buku"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_cause_label"
@@ -111,5 +111,16 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- PROGRESS BAR -->
+    <ProgressBar
+        android:id="@+id/progress_bar_denda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
