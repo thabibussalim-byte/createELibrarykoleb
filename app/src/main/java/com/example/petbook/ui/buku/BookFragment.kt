@@ -1,22 +1,18 @@
 package com.example.petbook.ui.buku
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.AuthorItem
-import com.example.petbook.data.api.model.AuthorResponse
-import com.example.petbook.data.api.model.BookItem
-import com.example.petbook.data.api.model.BookResponse
-import com.example.petbook.data.api.model.GenreItem
-import com.example.petbook.data.api.model.GenreResponse
-import com.example.petbook.data.api.model.PublisherItem
-import com.example.petbook.data.api.model.PublisherResponse
+import com.example.petbook.data.api.model.*
 import com.example.petbook.databinding.FragmentBookBinding
 import com.google.android.material.chip.Chip
 import retrofit2.Call
@@ -46,7 +42,41 @@ class BookFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        setupSearchView()
         loadGenres()
+    }
+
+    private fun setupSearchView() {
+        binding.searchViewBook.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterBooks(newText ?: "")
+                return true
+            }
+        })
+    }
+
+    private fun filterBooks(query: String) {
+        if (query.isEmpty()) {
+            bookKatalogAdapter.updateData(allBooks)
+            binding.tvStatusLabel.text = "Menampilkan semua koleksi"
+            binding.layoutEmptyState.visibility = View.GONE
+            return
+        }
+
+        val filteredList = allBooks.filter { book ->
+            val authorName = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: ""
+            book.judulBuku.contains(query, ignoreCase = true) || 
+            authorName.contains(query, ignoreCase = true)
+        }
+
+        bookKatalogAdapter.updateData(filteredList)
+        binding.tvStatusLabel.text = "Hasil pencarian: '${query}' (${filteredList.size} buku)"
+        
+        binding.layoutEmptyState.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun loadGenres() {
@@ -145,6 +175,18 @@ class BookFragment : Fragment() {
         chip.text = name
         chip.isCheckable = true
         chip.isChecked = isDefault
+        
+        // 1. Background State
+        val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
+        val backgroundColors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
+        chip.chipBackgroundColor = ColorStateList(states, backgroundColors)
+
+        // 2. Text Color State (PERBAIKAN: setTextColor)
+        val textColors = intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))
+        chip.setTextColor(ColorStateList(states, textColors))
+        
+        chip.chipStrokeWidth = 0f
+
         chip.setOnClickListener {
             if (genreId == -1) {
                 bookKatalogAdapter.updateData(allBooks)
@@ -154,6 +196,7 @@ class BookFragment : Fragment() {
                 bookKatalogAdapter.updateData(filtered)
                 binding.tvStatusLabel.text = "Kategori: $name (${filtered.size} buku)"
             }
+            binding.searchViewBook.setQuery("", false)
         }
         binding.chipGroupBookFilter.addView(chip)
     }

@@ -83,7 +83,7 @@
                 android:fontFamily="@font/roboto_regular"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
-                android:drawableStart="@drawable/ic_calendar"
+                android:drawableStart="@drawable/ic_calender"
                 android:drawablePadding="6dp"
                 tools:text="12 Sep - 19 Sep 2026" />
 

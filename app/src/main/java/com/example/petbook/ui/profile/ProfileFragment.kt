@@ -10,9 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.MahasantriResponse
-import com.example.petbook.data.api.model.FineResponse
-import com.example.petbook.data.api.model.HistoryResponse
+import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentProfileBinding
 import retrofit2.Call
@@ -43,6 +41,7 @@ class ProfileFragment : Fragment() {
         val token = prefManager.getToken()
         if (!token.isNullOrEmpty()) {
             val authHeader = "Bearer $token"
+            fetchUserData(authHeader) // AMBIL DATA USER TERBARU (FOTO PROFIL)
             fetchMahasantriData(authHeader)
             fetchTotalDenda(authHeader)
         }
@@ -57,12 +56,42 @@ class ProfileFragment : Fragment() {
             tvProfileAlamat.text = prefManager.getMahasantriAlamat().ifEmpty { "-" }
             tvProfilePhone.text = prefManager.getMahasantriPhone().ifEmpty { "-" }
 
+            // TAMPILKAN FOTO PROFIL DENGAN GLIDE
+            val photoUrl = prefManager.getProfileUrl()
             Glide.with(this@ProfileFragment)
-                .load(prefManager.getProfileUrl())
+                .load(photoUrl)
                 .placeholder(R.drawable.ic_profile)
+                .error(R.drawable.ic_profile)
                 .circleCrop()
                 .into(ivProfilePicture)
         }
+    }
+
+    private fun fetchUserData(authHeader: String) {
+        val currentUserId = prefManager.getUserId()
+        
+        ApiConfig.getApiService().getUsers(authHeader).enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    val userList = response.body()?.data ?: emptyList()
+                    val myAccount = userList.find { it.id == currentUserId }
+                    
+                    if (myAccount != null && !myAccount.profil.isNullOrEmpty()) {
+                        // Simpan URL foto terbaru ke Preference
+                        prefManager.saveUser(
+                            currentUserId,
+                            prefManager.getToken() ?: "",
+                            prefManager.getUsername() ?: "",
+                            myAccount.profil // URL Foto dari API
+                        )
+                        displayDataFromPrefs() // Update tampilan foto
+                    }
+                }
+            }
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                Log.e("Profile", "Gagal fetch User: ${t.message}")
+            }
+        })
     }
 
     private fun fetchMahasantriData(authHeader: String) {
@@ -98,14 +127,12 @@ class ProfileFragment : Fragment() {
     private fun fetchTotalDenda(authHeader: String) {
         val userId = prefManager.getUserId()
         
-        // Step 1: Ambil transaksi user untuk mendapatkan ID Transaksi miliknya
         ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     val userTransactions = response.body()?.data ?: emptyList()
                     val transactionIds = userTransactions.map { it.id }
                     
-                    // Step 2: Ambil semua denda dan filter yang milik user
                     ApiConfig.getApiService().getFines(authHeader).enqueue(object : Callback<FineResponse> {
                         override fun onResponse(call: Call<FineResponse>, response: Response<FineResponse>) {
                             if (_binding != null && response.isSuccessful) {
@@ -128,6 +155,10 @@ class ProfileFragment : Fragment() {
     private fun setupClickListeners() {
         binding.cardDenda.setOnClickListener {
             findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
+        }
+
+        binding.cardStatistik.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_statistikFragment)
         }
     }
 

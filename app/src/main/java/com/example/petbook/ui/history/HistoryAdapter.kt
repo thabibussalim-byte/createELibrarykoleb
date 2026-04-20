@@ -45,13 +45,8 @@ class HistoryAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val history = listHistory[position]
         
-        // 1. CARI DATA BUKU BERDASARKAN ID
         val book = listBooks.find { it.id == history.bukuId }
-        
-        // 2. CARI DATA PENULIS BERDASARKAN ID PENULIS DI BUKU
         val authorName = listAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
-
-        // 3. CARI DATA DENDA BERDASARKAN ID TRANSAKSI
         val fine = listFines.find { it.transaksiId == history.id }
 
         holder.binding.apply {
@@ -63,22 +58,23 @@ class HistoryAdapter(
             tvHistoryDateRange.text = "$tglPinjam s/d $tglKembali"
 
             // Setup Status Badge
-            tvHistoryStatusBadge.text = history.status.uppercase()
-            when (history.status.lowercase()) {
+            val status = history.status.lowercase()
+            tvHistoryStatusBadge.text = status.uppercase()
+            when (status) {
                 "pending" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
                 "dipinjam" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                "dikembalikan" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
+                "dikembalikan", "selesai" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
                 else -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
             }
 
-            // Setup Denda dari API Denda (Gunakan toIntOrNull agar tidak crash)
+            // LOGIKA BARU: Denda hanya muncul jika status sudah DIKEMBALIKAN atau SELESAI
+            val isReturned = status == "dikembalikan" || status == "selesai"
             val dendaAmount = fine?.totalDenda?.toIntOrNull() ?: 0
-            if (dendaAmount > 0) {
+
+            if (isReturned && dendaAmount > 0) {
                 tvHistoryFine.visibility = View.VISIBLE
-                tvHistoryFine.text = "Denda: Rp $dendaAmount"
-                if (fine?.status == "dibayar") {
-                    tvHistoryFine.text = "Denda: Rp $dendaAmount (Lunas)"
-                }
+                val statusBayar = if (fine?.status == "dibayar") "(Lunas)" else "(Belum Bayar)"
+                tvHistoryFine.text = "Denda: Rp $dendaAmount $statusBayar"
             } else {
                 tvHistoryFine.visibility = View.GONE
             }

@@ -1,25 +1,19 @@
 package com.example.petbook.ui.home
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.AuthorItem
-import com.example.petbook.data.api.model.AuthorResponse
-import com.example.petbook.data.api.model.BookItem
-import com.example.petbook.data.api.model.BookResponse
-import com.example.petbook.data.api.model.GenreItem
-import com.example.petbook.data.api.model.GenreResponse
-import com.example.petbook.data.api.model.PublisherItem
-import com.example.petbook.data.api.model.PublisherResponse
+import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentHomeBinding
 import com.google.android.material.chip.Chip
@@ -136,13 +130,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupSearch() {
-        binding.etSearchHome.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val query = s.toString().lowercase()
-                filterBooks(query)
+        binding.searchViewHome.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
             }
-            override fun afterTextChanged(s: Editable?) {}
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterBooks(newText ?: "")
+                return true
+            }
         })
     }
 
@@ -152,7 +148,7 @@ class HomeFragment : Fragment() {
         } else {
             allBooksList.filter { book ->
                 val authorName = allAuthorsList.find { it.id == book.penulisId }?.namaPenulis?.lowercase() ?: ""
-                book.judulBuku.lowercase().contains(query) || authorName.contains(query)
+                book.judulBuku.lowercase().contains(query.lowercase()) || authorName.contains(query.lowercase())
             }
         }
         updateDisplay(filteredList)
@@ -187,7 +183,7 @@ class HomeFragment : Fragment() {
             putString("book_writer", authorName)
             putString("book_publisher", publisherName)
             putString("book_genre", genreName)
-            putFloat("book_rating", rating) // Kirim rating
+            putFloat("book_rating", rating)
         }
         findNavController().navigate(R.id.action_homeFragment_to_detailbookFragment, bundle)
     }
@@ -202,9 +198,33 @@ class HomeFragment : Fragment() {
         val chip = Chip(requireContext())
         chip.text = name
         chip.isCheckable = true
+        
+        // --- KONFIGURASI WARNA PROFESIONAL (SAMA DENGAN KATALOG) ---
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_checked)
+        )
+        val backgroundColors = intArrayOf(
+            Color.parseColor("#DBEAFE"), // Biru Muda (Selected)
+            Color.parseColor("#F1F5F9")  // Abu-abu (Unselected)
+        )
+        chip.chipBackgroundColor = ColorStateList(states, backgroundColors)
+
+        val textColors = intArrayOf(
+            Color.parseColor("#1E40AF"), // Biru Tua (Selected)
+            Color.parseColor("#64748B")  // Abu-abu (Unselected)
+        )
+        chip.setTextColor(ColorStateList(states, textColors))
+        chip.chipStrokeWidth = 0f
+        // --------------------------------------------------------
+
         chip.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) updateDisplay(allBooksList.filter { it.genreId == genreId })
-            else if (binding.chipGroupCategory.checkedChipId == View.NO_ID) updateDisplay(allBooksList)
+            if (isChecked) {
+                updateDisplay(allBooksList.filter { it.genreId == genreId })
+                binding.searchViewHome.setQuery("", false) // Reset search saat filter diklik
+            } else if (binding.chipGroupCategory.checkedChipId == View.NO_ID) {
+                updateDisplay(allBooksList)
+            }
         }
         binding.chipGroupCategory.addView(chip)
     }

@@ -120,7 +120,10 @@ class DetailpeminjamanFragment : Fragment() {
                 
                 if (response.isSuccessful && response.body()?.status == "success") {
                     Toast.makeText(requireContext(), "Peminjaman Berhasil!", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_detailpeminjamanFragment_to_detailHistoryFragment)
+                    
+                    // PERBAIKAN ALUR: Arahkan ke historyFragment (Daftar Riwayat)
+                    findNavController().navigate(R.id.historyFragment)
+                    
                 } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = if (errorBody != null) {

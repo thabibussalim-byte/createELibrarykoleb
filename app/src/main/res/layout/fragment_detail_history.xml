@@ -53,7 +53,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_semibold"
-                            android:text="Buya Hamka"
+                            android:text="Judul Buku"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp" />
 
@@ -62,7 +62,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
-                            android:text="A. Fuadi"
+                            android:text="Nama Penulis"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp" />
 
@@ -132,7 +132,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:text="10 Feb 2026"
+                                android:text="-"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -153,20 +153,20 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:text="17 Feb 2026"
+                                android:text="-"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp" />
                         </LinearLayout>
                     </GridLayout>
 
                     <TextView
-                        android:id="@+id/tv_detail_history_denda"
+                        android:id="@+id/tv_detail_status"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Denda: Rp 0"
-                        android:textColor="@color/success_green"
+                        android:text="Status: Aktif"
+                        android:textColor="@color/accent_blue"
                         android:textSize="14sp" />
 
                 </LinearLayout>
@@ -175,7 +175,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- ACTION BUTTONS (STIKY AT BOTTOM) -->
+    <!-- ACTION BUTTON (STIKY AT BOTTOM) -->
     <LinearLayout
         android:id="@+id/layout_actions"
         android:layout_width="match_parent"
@@ -185,28 +185,17 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_perpanjang_history"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:backgroundTint="@color/accent_blue"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="Perpanjang Peminjaman"
-            android:textAllCaps="false"
-            android:textSize="15sp"
-            app:cornerRadius="12dp"
-            app:elevation="2dp" />
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_kembalikan_history"
-            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/error_red"
             android:fontFamily="@font/poppins_semibold"
             android:text="Kembalikan Buku Sekarang"
             android:textAllCaps="false"
-            android:textColor="@color/error_red"
-            android:textSize="15sp" />
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:cornerRadius="16dp"
+            app:elevation="4dp" />
 
     </LinearLayout>
 

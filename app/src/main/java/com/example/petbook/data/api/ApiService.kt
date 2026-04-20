@@ -30,14 +30,20 @@ interface ApiService {
         @Body request: BorrowRequest
     ): Call<BorrowResponse>
 
+    @PATCH("api/transaksi/update/{id}")
+    fun updateTransaction(
+        @Header("Authorization") token: String,
+        @Path("id") transactionId: Int,
+        @Body request: BorrowRequest
+    ): Call<BorrowResponse>
+
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
 
     @GET("api/transaksi/user/{id}")
     fun getHistoryByUser(
         @Header("Authorization") token: String,
-        @Path("id") userId: Int
-    ): Call<HistoryResponse>
+        @Path("id") userId: Int): Call<HistoryResponse>
 
     @GET("api/denda")
     fun getFines(@Header("Authorization") token: String): Call<FineResponse>

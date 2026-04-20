@@ -1,6 +1,8 @@
 package com.example.petbook.data.api.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class HistoryResponse(
     @SerializedName("status") val status: String,
@@ -8,6 +10,7 @@ data class HistoryResponse(
     @SerializedName("data") val data: List<HistoryDataItem>
 )
 
+@Parcelize
 data class HistoryDataItem(
     @SerializedName("id") val id: Int,
     @SerializedName("status") val status: String,
@@ -17,4 +20,4 @@ data class HistoryDataItem(
     @SerializedName("buku_id") val bukuId: Int,
     @SerializedName("user_id") val userId: Int,
     @SerializedName("denda") val denda: Int? = 0
-)
+) : Parcelable

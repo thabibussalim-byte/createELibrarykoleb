@@ -110,7 +110,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Mulai Pinjam"
-                app:startIconDrawable="@drawable/ic_history"
                 app:startIconTint="#3B82F6">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -119,7 +118,6 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="false"
-                    android:paddingStart="56dp"
                     android:textColor="#1E293B" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -131,7 +129,6 @@
                 android:layout_marginTop="16dp"
                 android:hint="Durasi Peminjaman"
                 app:helperText="Maksimal 14 hari"
-                app:startIconDrawable="@drawable/ic_history"
                 app:startIconTint="#64748B"
                 app:suffixText="Hari"
                 app:suffixTextColor="#3B82F6">
@@ -142,7 +139,6 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:maxLength="2"
-                    android:paddingStart="56dp"
                     android:textColor="#1E293B" />
             </com.google.android.material.textfield.TextInputLayout>
 

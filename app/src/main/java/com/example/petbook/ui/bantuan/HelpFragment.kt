@@ -48,8 +48,8 @@ class HelpFragment : Fragment() {
         // 3. Status Buku
         binding.btnFaq3.setOnClickListener {
             navigateToDetail(
-                "Apa arti status dipinjam/ disetujui/ ditolak?",
-                "Dipinjam: Buku sedang dalam genggaman Anda.\nDisetujui: Permintaan pinjam diterima, silakan ambil buku di perpustakaan.\nDitolak: Permintaan pinjam tidak dapat dipenuhi (misal: stok habis)."
+                "Apa arti status dipinjam/ dikembalikan/ pending?",
+                "Dipinjam: Buku sedang dalam genggaman Anda.\n Dikembalikan: buku yang telah selesai dibaca, lalu dikembalikan ke petugas. \nDipinjam: Buku yang sedang dipinjam oleh Anda."
             )
         }
 
@@ -74,14 +74,6 @@ class HelpFragment : Fragment() {
             navigateToDetail(
                 "Apa yang terjadi jika buku hilang?",
                 "Jika buku hilang, Anda wajib melaporkannya segera ke petugas. Anda akan diminta untuk mengganti buku yang sama atau membayar denda sesuai dengan harga pasar buku tersebut."
-            )
-        }
-
-        // 7. Perpanjang Masa Pinjam
-        binding.btnFaq7.setOnClickListener {
-            navigateToDetail(
-                "Apakah bisa memperpanjang masa pinjam?",
-                "Perpanjangan dapat dilakukan maksimal 1 kali jika buku tersebut tidak sedang dipesan oleh pengguna lain. Silakan hubungi petugas perpustakaan untuk permohonan ini."
             )
         }
     }

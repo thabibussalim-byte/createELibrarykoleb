@@ -2,28 +2,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:gravity="center_vertical"
+    android:padding="24dp"
     android:background="@color/primary_blue">
 
-    <!--PROFILE USER ONLY (Minimalist Style)-->
+    <!-- 1. Foto Profil -->
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        app:cardCornerRadius="40dp"
-        app:cardElevation="4dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        app:cardCornerRadius="35dp"
+        app:cardElevation="0dp"
         app:strokeColor="@color/white"
-        app:strokeWidth="3dp">
+        app:strokeWidth="2dp">
 
         <ImageView
             android:id="@+id/iv_profile_header"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_profile"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/profile"/>
+            android:src="@drawable/ic_launcher_background"
+            android:scaleType="centerCrop" />
+        
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- 2. Nama User -->
+    <TextView
+        android:id="@+id/tv_username_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Nama User"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:fontFamily="@font/poppins_semibold" />
+
+    <!-- 3. Keterangan Role (Opsional) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mahasantri PeTIK"
+        android:textColor="#E0E7FF"
+        android:textSize="12sp"
+        android:fontFamily="@font/roboto_regular" />
 
 </LinearLayout>

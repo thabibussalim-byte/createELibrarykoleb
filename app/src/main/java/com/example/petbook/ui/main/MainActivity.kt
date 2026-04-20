@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -43,9 +44,9 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.homeFragment, 
-                R.id.bookFragment, 
-                R.id.historyFragment, 
+                R.id.homeFragment,
+                R.id.bookFragment,
+                R.id.historyFragment,
                 R.id.profileFragment
             ),
             binding.drawerLayout
@@ -54,28 +55,25 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         setSupportActionBar(binding.toolbar)
 
-        // Setup awal
         binding.bottomNav.setupWithNavController(navController)
         binding.navigationView.setupWithNavController(navController)
 
-        // LOGIKA PERBAIKAN: Reset tumpukan setiap kali tab diklik
+        // Custom BottomNav behavior to clear stack
         binding.bottomNav.setOnItemSelectedListener { item ->
             if (item.itemId != binding.bottomNav.selectedItemId) {
-                // Navigasi ke tab lain dengan meriset tumpukannya (restoreState = false)
                 val options = NavOptions.Builder()
                     .setLaunchSingleTop(true)
-                    .setRestoreState(false) // KUNCINYA: Jangan balik ke detail buku
+                    .setRestoreState(false)
                     .setPopUpTo(navController.graph.findStartDestination().id, inclusive = false, saveState = true)
                     .build()
-                
                 navController.navigate(item.itemId, null, options)
             } else {
-                // Jika tab yang sama diklik lagi, pop semua tumpukan di atasnya
                 navController.popBackStack(item.itemId, false)
             }
             true
         }
 
+        // PANGGIL UPDATE HEADER SAAT START
         updateDrawerHeader()
 
         binding.navigationView.setNavigationItemSelectedListener { item ->
@@ -128,16 +126,28 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    // FUNGSI UNTUK UPDATE FOTO DAN NAMA DI DRAWER
     fun updateDrawerHeader() {
         val headerView: View = binding.navigationView.getHeaderView(0)
         val ivProfileHeader: ImageView = headerView.findViewById(R.id.iv_profile_header)
+        val tvUsernameHeader: TextView = headerView.findViewById(R.id.tv_username_header)
         val prefManager = PreferenceManager(this)
 
+        tvUsernameHeader.text = prefManager.getUsername() ?: "User"
+
+        val photoUrl = prefManager.getProfileUrl()
         Glide.with(this)
-            .load(prefManager.getProfileUrl())
+            .load(photoUrl)
             .circleCrop()
             .placeholder(R.drawable.ic_profile)
+            .error(R.drawable.ic_profile)
             .into(ivProfileHeader)
+    }
+
+    // Pastikan header di-update setiap kali activity kembali aktif (misal dari Profile)
+    override fun onResume() {
+        super.onResume()
+        updateDrawerHeader()
     }
 
     override fun onSupportNavigateUp(): Boolean {

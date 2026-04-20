@@ -208,7 +208,16 @@
                             android:fontFamily="@font/poppins_bold"
                             android:text="Rp 0"
                             android:textColor="@color/error_red"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Status: Belum Dibayar"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/roboto_regular"/>
                     </LinearLayout>
 
                     <ImageView
@@ -222,7 +231,43 @@
                 </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Card 3: Statistik Membaca -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_statistik"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:rippleColor="#20000000"
+                app:strokeWidth="0dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="Statistik Membaca"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:layout_centerVertical="true"/>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_back"
+                        android:rotation="180"
+                        app:tint="@color/text_hint" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
