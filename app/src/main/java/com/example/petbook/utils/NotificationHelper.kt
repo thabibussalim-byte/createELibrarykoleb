@@ -5,8 +5,13 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.petbook.R
 import com.example.petbook.ui.main.MainActivity
 
@@ -40,7 +45,7 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    fun showNotification(id: Int, title: String, message: String) {
+    fun showNotification(id: Int, title: String, message: String, imageUrl: String? = null) {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -60,6 +65,20 @@ class NotificationHelper(private val context: Context) {
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
-        notificationManager.notify(id, builder.build())
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(context)
+                .asBitmap()
+                .load(imageUrl)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        builder.setLargeIcon(resource)
+                        builder.setStyle(NotificationCompat.BigPictureStyle().bigPicture(resource).bigLargeIcon(null as Bitmap?))
+                        notificationManager.notify(id, builder.build())
+                    }
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+        } else {
+            notificationManager.notify(id, builder.build())
+        }
     }
 }

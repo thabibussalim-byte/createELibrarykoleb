@@ -1,9 +1,9 @@
 package com.example.petbook.ui.home
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +16,7 @@ import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentHomeBinding
+import com.example.petbook.utils.NotificationHelper
 import com.google.android.material.chip.Chip
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,10 +26,11 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    
+
     private lateinit var rekomendasiAdapter: BookAdapter
     private lateinit var populerAdapter: BookAdapter
-    
+    private lateinit var notificationHelper: NotificationHelper
+
     private var allBooksList: List<BookItem> = emptyList()
     private var allAuthorsList: List<AuthorItem> = emptyList()
     private var allPublishersList: List<PublisherItem> = emptyList()
@@ -39,6 +41,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        notificationHelper = NotificationHelper(requireContext())
         return binding.root
     }
 
@@ -65,12 +68,12 @@ class HomeFragment : Fragment() {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allGenresList = response.body()?.data ?: emptyList()
-                    
+
                     binding.chipGroupCategory.removeAllViews()
                     for (genre in allGenresList.take(6)) {
                         addChipToGroup(genre.id, genre.namaGenre)
                     }
-                    
+
                     loadAuthors()
                 }
             }
@@ -118,6 +121,7 @@ class HomeFragment : Fragment() {
                     if (response.isSuccessful && response.body() != null) {
                         allBooksList = response.body()?.data ?: emptyList()
                         updateDisplay(allBooksList)
+                        checkForNewBooks(allBooksList)
                     }
                 }
             }
@@ -127,6 +131,30 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun checkForNewBooks(books: List<BookItem>) {
+        if (books.isEmpty()) return
+
+        val sharedPrefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val lastNotifiedId = sharedPrefs.getInt("last_book_id", 0)
+
+        // Ambil buku dengan ID terbaru
+        val latestBook = books.maxByOrNull { it.id }
+
+        if (latestBook != null && latestBook.id > lastNotifiedId) {
+            val authorName = allAuthorsList.find { it.id == latestBook.penulisId }?.namaPenulis ?: "Penulis"
+
+            notificationHelper.showNotification(
+                NotificationHelper.NOTIFICATION_ID_NEW_BOOK,
+                "Buku Baru Tersedia!",
+                "Buku '${latestBook.judulBuku}' oleh $authorName sekarang sudah tersedia untuk dipinjam.",
+                latestBook.foto
+            )
+
+            // Simpan ID buku terbaru agar tidak muncul notifikasi lagi untuk buku yang sama
+            sharedPrefs.edit().putInt("last_book_id", latestBook.id).apply()
+        }
     }
 
     private fun setupSearch() {
@@ -177,7 +205,7 @@ class HomeFragment : Fragment() {
         val authorName = allAuthorsList.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
         val publisherName = allPublishersList.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
         val genreName = allGenresList.find { it.id == book.genreId }?.namaGenre ?: "Umum"
-        
+
         val bundle = Bundle().apply {
             putParcelable("book", book)
             putString("book_writer", authorName)
@@ -198,7 +226,7 @@ class HomeFragment : Fragment() {
         val chip = Chip(requireContext())
         chip.text = name
         chip.isCheckable = true
-        
+
         // --- KONFIGURASI WARNA PROFESIONAL (SAMA DENGAN KATALOG) ---
         val states = arrayOf(
             intArrayOf(android.R.attr.state_checked),

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.work.*
 import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
@@ -18,6 +19,7 @@ import com.example.petbook.data.api.model.BorrowRequest
 import com.example.petbook.data.api.model.BorrowResponse
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailpeminjamanBinding
+import com.example.petbook.utils.StatusCheckWorker
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import retrofit2.Call
@@ -25,6 +27,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DetailpeminjamanFragment : Fragment() {
 
@@ -121,7 +124,9 @@ class DetailpeminjamanFragment : Fragment() {
                 if (response.isSuccessful && response.body()?.status == "success") {
                     Toast.makeText(requireContext(), "Permintaan peminjaman berhasil \n Silakan tunggu konfirmasi admin!", Toast.LENGTH_SHORT).show()
                     
-                    // PERBAIKAN ALUR: Arahkan ke historyFragment (Daftar Riwayat)
+                    // START WORKER UNTUK CEK STATUS
+                    startStatusCheckWorker()
+                    
                     findNavController().navigate(R.id.historyFragment)
                     
                 } else {
@@ -143,6 +148,28 @@ class DetailpeminjamanFragment : Fragment() {
                 Toast.makeText(requireContext(), "Koneksi Bermasalah", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun startStatusCheckWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val data = Data.Builder()
+            .putLong("start_time", System.currentTimeMillis())
+            .build()
+
+        val statusWorkRequest = PeriodicWorkRequestBuilder<StatusCheckWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .setInputData(data)
+            .addTag("StatusCheckWorker")
+            .build()
+
+        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
+            "BorrowStatusCheck",
+            ExistingPeriodicWorkPolicy.REPLACE, // Pakai REPLACE agar reset timer 3 hari jika ada pinjaman baru
+            statusWorkRequest
+        )
     }
 
     private fun setupBookPreview(book: BookItem?, writerName: String?) {
