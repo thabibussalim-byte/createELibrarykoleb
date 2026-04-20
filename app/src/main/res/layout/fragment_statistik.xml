@@ -9,14 +9,14 @@
 
     <!-- Header Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarStatistik"
+        android:id="@+id/app_barStatistik"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbarStatistik"
+            android:id="@+id/toolbar_statistik"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_back"
@@ -30,7 +30,7 @@
         android:layout_height="0dp"
         android:padding="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBarStatistik">
+        app:layout_constraintTop_toBottomOf="@id/app_barStatistik">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,7 +60,7 @@
                         android:textSize="15sp" />
 
                     <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/barChartStatistik"
+                        android:id="@+id/bar_chartStatistik"
                         android:layout_width="match_parent"
                         android:layout_height="250dp"
                         android:layout_marginTop="16dp" />
@@ -103,7 +103,7 @@
                             android:textSize="13sp"/>
 
                         <TextView
-                            android:id="@+id/tvCountDipinjam"
+                            android:id="@+id/tv_countDipinjam"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
@@ -132,7 +132,7 @@
                             android:textSize="13sp"/>
 
                         <TextView
-                            android:id="@+id/tvCountSelesai"
+                            android:id="@+id/tv_countSelesai"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
@@ -161,7 +161,7 @@
                             android:textSize="13sp"/>
 
                         <TextView
-                            android:id="@+id/tvCountPending"
+                            android:id="@+id/tv_countPending"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"

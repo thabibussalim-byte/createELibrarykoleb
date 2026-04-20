@@ -78,175 +78,175 @@ class StatisticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupSpinner()
+//        setupSpinner()
 
-
-        binding.btnNext.setOnClickListener {
-            val mode = binding.spinnerTimeFrame.text.toString()
-            if (mode == "Tahunan") {
-                if (currentYearIndex < listTahun.size - 1) {
-                    currentYearIndex++
-                    updateUI()
-                }
-            } else {
-                binding.btnNext.setOnClickListener {
-                    val limit = if (binding.spinnerTimeFrame.text.toString() == "Bulanan")
-                        listBulan.size else listHari.size
-                    if (currentIdx < limit - 1) {
-                        currentIdx++
-                        updateUI()
-                    }
-                }
-
-
-                binding.btnPrev.setOnClickListener {
-                    if (currentIdx > 0) {
-                        currentIdx--
-                        updateUI()
-                    }
-                }
-            }
-        }
-
-
-        binding.btnPrev.setOnClickListener {
-            val mode = binding.spinnerTimeFrame.text.toString()
-            if (mode == "Tahunan") {
-                if (currentYearIndex > 0) {
-                    currentYearIndex--
-                    updateUI()
-                }
-            } else {
-                binding.btnNext.setOnClickListener {
-                    val limit = if (binding.spinnerTimeFrame.text.toString() == "Bulanan")
-                        listBulan.size else listHari.size
-                    if (currentIdx < limit - 1) {
-                        currentIdx++
-                        updateUI()
-                    }
-                }
-
-
-                binding.btnPrev.setOnClickListener {
-                    if (currentIdx > 0) {
-                        currentIdx--
-                        updateUI()
-                    }
-                }
-            }
-        }
-
-
-
-
-        updateUI()
-    }
-
-    private fun setupSpinner() {
-        val items = arrayOf("Harian", "Bulanan", "Tahunan")
-        val adapter = ArrayAdapter(requireContext(),
-            android.R.layout.simple_list_item_1, items)
-        binding.spinnerTimeFrame.setAdapter(adapter)
-
-        binding.spinnerTimeFrame.setOnItemClickListener { _, _, _, _ ->
-            currentIdx = 0 //
-            updateUI()
-        }
-    }
-
-    private fun updateUI() {
-        val selectedMode = binding.spinnerTimeFrame.text.toString()
-
-        when (selectedMode) {
-            "Harian" -> {
-                updateContent(listHari[currentDayIndex],
-                    allDataHarian[currentDayIndex])
-            }
-
-            "Bulanan" -> {
-                updateContent(listBulan[currentMonthIndex],
-                    allDataBulanan[currentMonthIndex])
-            }
-
-            "Tahunan" -> {
-                val teksTahun = listTahun[currentYearIndex]
-                val dataTahun = allDataTahunan[currentYearIndex]
-                updateContent(teksTahun, dataTahun)
-            }
-        }
-    }
-    private fun updateContent(periodeTeks: String, data: List<Float>) {
-        binding.tvCurrentPeriod.text = periodeTeks
-
-        updateChart(data)
-
-        binding.apply {
-            tvValueDisetujui.text = data[0].toInt().toString()
-            tvValueDitolak.text = data[1].toInt().toString()
-            tvValueDibatalkan.text = data[2].toInt().toString()
-            tvValueDikembalikan.text = data[3].toInt().toString()
-            tvValueBelumKembali.text = data[4].toInt().toString()
-        }
-    }
-
-    private fun updateChart(dataList: List<Float>) {
-        val entries = ArrayList<BarEntry>()
-
-        // 1. Memasukkan data ke dalam objek BarEntry
-        dataList.forEachIndexed { index, value ->
-            entries.add(BarEntry(index.toFloat(), value))
-        }
-
-        // 2. Konfigurasi DataSet (Batang Grafik)
-        val dataSet = BarDataSet(entries, "Statistik e-Library")
-
-        // Warna batang sesuai urutan kategori di legend
-        dataSet.colors = listOf(
-            "#A0F1FF".toColorInt(), // Cyan (Disetujui)
-            "#B1F375".toColorInt(), // Hijau (Ditolak)
-            "#FFEB55".toColorInt(), // Kuning (Dibatalkan)
-            "#FFB067".toColorInt(), // Oranye Muda (Dikembalikan)
-            "#FF8D3F".toColorInt()  // Oranye Tua (Belum Kembali)
-        )
-
-        // Hilangkan angka nilai di atas batang agar tampilan bersih
-        dataSet.setDrawValues(false)
-
-        // 3. Konfigurasi BarData
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.5f // Mengatur ketebalan batang agar tidak terlalu lebar
-
-        // 4. Konfigurasi BarChart (Sumbu & Tampilan)
-        binding.barChart.apply {
-            data = barData
-
-            // Menghilangkan deskripsi dan legend bawaan library
-            description.isEnabled = false
-            legend.isEnabled = false
-
-            // Konfigurasi Sumbu X (Bawah)
-            xAxis.apply {
-                isEnabled = false // MENGHILANGKAN ANGKA 0, 1, 2, 3, 4
-                setDrawGridLines(false)
-            }
-
-            // Konfigurasi Sumbu Y Kiri
-            axisLeft.apply {
-                textColor = Color.WHITE
-                axisMinimum = 0f
-                setDrawGridLines(false)
-                granularity = 1f // Memastikan angka sumbu Y selalu bulat
-            }
-
-            // Mematikan Sumbu Y Kanan
-            axisRight.isEnabled = false
-
-            // Tambahkan animasi agar batang muncul dari bawah ke atas
-            animateY(1000)
-
-            // Refresh grafik
-            invalidate()
-        }
+//
+//        binding.btnNext.setOnClickListener {
+//            val mode = binding.spinnerTimeFrame.text.toString()
+//            if (mode == "Tahunan") {
+//                if (currentYearIndex < listTahun.size - 1) {
+//                    currentYearIndex++
+//                    updateUI()
+//                }
+//            } else {
+//                binding.btnNext.setOnClickListener {
+//                    val limit = if (binding.spinnerTimeFrame.text.toString() == "Bulanan")
+//                        listBulan.size else listHari.size
+//                    if (currentIdx < limit - 1) {
+//                        currentIdx++
+//                        updateUI()
+//                    }
+//                }
+//
+//
+//                binding.btnPrev.setOnClickListener {
+//                    if (currentIdx > 0) {
+//                        currentIdx--
+//                        updateUI()
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        binding.btnPrev.setOnClickListener {
+//            val mode = binding.spinnerTimeFrame.text.toString()
+//            if (mode == "Tahunan") {
+//                if (currentYearIndex > 0) {
+//                    currentYearIndex--
+//                    updateUI()
+//                }
+//            } else {
+//                binding.btnNext.setOnClickListener {
+//                    val limit = if (binding.spinnerTimeFrame.text.toString() == "Bulanan")
+//                        listBulan.size else listHari.size
+//                    if (currentIdx < limit - 1) {
+//                        currentIdx++
+//                        updateUI()
+//                    }
+//                }
+//
+//
+//                binding.btnPrev.setOnClickListener {
+//                    if (currentIdx > 0) {
+//                        currentIdx--
+//                        updateUI()
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//
+//
+//        updateUI()
+//    }
+//
+//    private fun setupSpinner() {
+//        val items = arrayOf("Harian", "Bulanan", "Tahunan")
+//        val adapter = ArrayAdapter(requireContext(),
+//            android.R.layout.simple_list_item_1, items)
+//        binding.spinnerTimeFrame.setAdapter(adapter)
+//
+//        binding.spinnerTimeFrame.setOnItemClickListener { _, _, _, _ ->
+//            currentIdx = 0 //
+//            updateUI()
+//        }
+//    }
+//
+//    private fun updateUI() {
+//        val selectedMode = binding.spinnerTimeFrame.text.toString()
+//
+//        when (selectedMode) {
+//            "Harian" -> {
+//                updateContent(listHari[currentDayIndex],
+//                    allDataHarian[currentDayIndex])
+//            }
+//
+//            "Bulanan" -> {
+//                updateContent(listBulan[currentMonthIndex],
+//                    allDataBulanan[currentMonthIndex])
+//            }
+//
+//            "Tahunan" -> {
+//                val teksTahun = listTahun[currentYearIndex]
+//                val dataTahun = allDataTahunan[currentYearIndex]
+//                updateContent(teksTahun, dataTahun)
+//            }
+//        }
+//    }
+//    private fun updateContent(periodeTeks: String, data: List<Float>) {
+//        binding.tvCurrentPeriod.text = periodeTeks
+//
+//        updateChart(data)
+//
+//        binding.apply {
+//            tvValueDisetujui.text = data[0].toInt().toString()
+//            tvValueDitolak.text = data[1].toInt().toString()
+//            tvValueDibatalkan.text = data[2].toInt().toString()
+//            tvValueDikembalikan.text = data[3].toInt().toString()
+//            tvValueBelumKembali.text = data[4].toInt().toString()
+//        }
+//    }
+//
+//    private fun updateChart(dataList: List<Float>) {
+//        val entries = ArrayList<BarEntry>()
+//
+//        // 1. Memasukkan data ke dalam objek BarEntry
+//        dataList.forEachIndexed { index, value ->
+//            entries.add(BarEntry(index.toFloat(), value))
+//        }
+//
+//        // 2. Konfigurasi DataSet (Batang Grafik)
+//        val dataSet = BarDataSet(entries, "Statistik e-Library")
+//
+//        // Warna batang sesuai urutan kategori di legend
+//        dataSet.colors = listOf(
+//            "#A0F1FF".toColorInt(), // Cyan (Disetujui)
+//            "#B1F375".toColorInt(), // Hijau (Ditolak)
+//            "#FFEB55".toColorInt(), // Kuning (Dibatalkan)
+//            "#FFB067".toColorInt(), // Oranye Muda (Dikembalikan)
+//            "#FF8D3F".toColorInt()  // Oranye Tua (Belum Kembali)
+//        )
+//
+//        // Hilangkan angka nilai di atas batang agar tampilan bersih
+//        dataSet.setDrawValues(false)
+//
+//        // 3. Konfigurasi BarData
+//        val barData = BarData(dataSet)
+//        barData.barWidth = 0.5f // Mengatur ketebalan batang agar tidak terlalu lebar
+//
+//        // 4. Konfigurasi BarChart (Sumbu & Tampilan)
+//        binding.barChart.apply {
+//            data = barData
+//
+//            // Menghilangkan deskripsi dan legend bawaan library
+//            description.isEnabled = false
+//            legend.isEnabled = false
+//
+//            // Konfigurasi Sumbu X (Bawah)
+//            xAxis.apply {
+//                isEnabled = false // MENGHILANGKAN ANGKA 0, 1, 2, 3, 4
+//                setDrawGridLines(false)
+//            }
+//
+//            // Konfigurasi Sumbu Y Kiri
+//            axisLeft.apply {
+//                textColor = Color.WHITE
+//                axisMinimum = 0f
+//                setDrawGridLines(false)
+//                granularity = 1f // Memastikan angka sumbu Y selalu bulat
+//            }
+//
+//            // Mematikan Sumbu Y Kanan
+//            axisRight.isEnabled = false
+//
+//            // Tambahkan animasi agar batang muncul dari bawah ke atas
+//            animateY(1000)
+//
+//            // Refresh grafik
+//            invalidate()
+//        }
     }
 
     override fun onDestroy() {

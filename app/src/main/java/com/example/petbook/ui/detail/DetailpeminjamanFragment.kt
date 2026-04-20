@@ -119,7 +119,7 @@ class DetailpeminjamanFragment : Fragment() {
                 binding.btnPinjamFinal.isEnabled = true
                 
                 if (response.isSuccessful && response.body()?.status == "success") {
-                    Toast.makeText(requireContext(), "Peminjaman Berhasil!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Permintaan peminjaman berhasil \n Silakan tunggu konfirmasi admin!", Toast.LENGTH_SHORT).show()
                     
                     // PERBAIKAN ALUR: Arahkan ke historyFragment (Daftar Riwayat)
                     findNavController().navigate(R.id.historyFragment)

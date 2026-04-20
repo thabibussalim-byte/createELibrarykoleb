@@ -59,7 +59,7 @@ class LoginFragment : Fragment() {
                                 data?.id ?: -1, // Menyimpan ID User dari API
                                 data?.token ?: "",
                                 data?.username ?: username,
-                                data?.profil ?: "" // Menyimpan URL Foto
+                                data?.profil ?: "",
                             )
 
                             Toast.makeText(requireContext(), "Login Berhasil: ${loginResponse.message}", Toast.LENGTH_SHORT).show()

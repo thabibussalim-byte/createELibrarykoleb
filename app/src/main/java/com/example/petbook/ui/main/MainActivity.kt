@@ -1,13 +1,18 @@
 package com.example.petbook.ui.main
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -16,6 +21,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
@@ -23,9 +32,11 @@ import com.example.petbook.data.api.model.LogoutResponse
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.ActivityMainBinding
 import com.example.petbook.ui.auth.AuthActivity
+import com.example.petbook.utils.ReminderWorker
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,10 +44,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Toast.makeText(this, "Notifikasi diizinkan", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Notifikasi tidak diizinkan", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        checkNotificationPermission()
+        setupWorkManager()
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -102,6 +125,33 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private fun setupWorkManager() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .addTag("ReminderWorker")
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "DueReminderWork",
+            androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
+    }
+
     private fun performLogout() {
         val prefManager = PreferenceManager(this)
         val token = prefManager.getToken() ?: ""
@@ -119,6 +169,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleLocalLogout(prefManager: PreferenceManager) {
         prefManager.clear()
+        WorkManager.getInstance(this).cancelAllWorkByTag("ReminderWorker")
         Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, AuthActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
