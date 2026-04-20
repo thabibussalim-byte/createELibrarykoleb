@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginBottom="12dp"
-    android:background="?android:windowBackground"
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="16dp"
@@ -49,7 +48,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/poppins_semibold"
                 android:maxLines="2"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 tools:text="The Psychology of Money" />
 
@@ -61,7 +60,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/roboto_regular"
                 android:maxLines="1"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 tools:text="Morgan Housel" />
 
@@ -76,7 +75,7 @@
                 <ImageView
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:src="@drawable/bintang"
+                    android:src="@drawable/ic_star"
                     app:tint="#FFB300" />
 
                 <TextView
@@ -86,7 +85,7 @@
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/roboto_regular"
                     android:text="4.8"
-                    android:textColor="?android:textColorPrimary"
+                    android:textColor="@color/text_primary"
                     android:textSize="12sp" />
 
                 <View
@@ -95,13 +94,6 @@
                     android:layout_marginHorizontal="8dp"
                     android:background="#DDDDDD" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Terpinjam 100+"
-                    android:textColor="?android:textColorHint"
-                    android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>

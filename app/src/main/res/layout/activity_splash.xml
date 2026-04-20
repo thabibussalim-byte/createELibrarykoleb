@@ -25,7 +25,7 @@
         android:id="@+id/tv_app"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Elibrary PeTIK"
+        android:text="PeTbook"
         android:textSize="28sp"
         android:fontFamily="@font/poppins_bold"
         android:textColor="@color/white"

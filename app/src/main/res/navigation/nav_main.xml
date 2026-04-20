@@ -85,6 +85,20 @@
         android:name="com.example.petbook.ui.history.DetailHistoryFragment"
         android:label="Detail History"
         tools:layout="@layout/fragment_detail_history">
+        <argument
+            android:name="history"
+            app:argType="com.example.petbook.data.api.model.HistoryDataItem" />
+        <argument
+            android:name="book"
+            app:argType="com.example.petbook.data.api.model.BookItem" />
+        <argument
+            android:name="author"
+            app:argType="string" />
+        <argument
+            android:name="fine"
+            app:argType="com.example.petbook.data.api.model.FineDataItem"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_detailHistoryFragment_to_successReturnFragment"
             app:destination="@id/successReturnFragment"
@@ -113,9 +127,15 @@
             android:id="@+id/action_profileFragment_to_detailDendaFragment"
             app:destination="@id/detailDendaFragment" />
         <action
-            android:id="@+id/action_profileFragment_to_statisticsFragment"
-            app:destination="@id/statisticsFragment" />
+            android:id="@+id/action_profileFragment_to_statistikFragment"
+            app:destination="@id/statistikFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/statistikFragment"
+        android:name="com.example.petbook.ui.statistik.StatistikFragment"
+        android:label="Statistik"
+        tools:layout="@layout/fragment_statistik" />
 
     <fragment
         android:id="@+id/detailDendaFragment"
@@ -150,9 +170,5 @@
         android:name="com.example.petbook.ui.bantuan.FaqDetailFragment"
         android:label="Detail FAQ"
         tools:layout="@layout/fragment_faq_detail" />
-    <fragment
-        android:id="@+id/statisticsFragment"
-        android:name="com.example.petbook.ui.statis.StatisticsFragment"
-        android:label="StatisticsFragment" />
 
 </navigation>

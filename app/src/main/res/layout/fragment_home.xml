@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground"
+    android:background="@color/background_light"
     tools:context=".ui.home.HomeFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -31,48 +31,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
-                    android:text="Hai Aril, mau baca buku apa hari ini?"
-                    android:textColor="?android:textColorPrimary"
+                    android:text="Hai, mau baca buku apa hari ini?"
+                    android:textColor="@color/text_primary"
                     android:textSize="18sp" />
 
-                <!-- Search Bar -->
+                <!-- Search Bar Menggunakan SearchView Asli -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="?attr/colorOnSecondaryContainer"
+                    app:cardBackgroundColor="@color/search_bg"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/search_view_home"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:orientation="horizontal">
+                        android:layout_height="wrap_content"
+                        app:iconifiedByDefault="false"
+                        app:queryBackground="@android:color/transparent"
+                        app:queryHint="Cari judul buku, penulis..."
+                        app:searchIcon="@drawable/ic_search" />
 
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_search"
-                            app:tint="?android:textColorSecondary" />
-
-                        <EditText
-                            android:id="@+id/et_search_home"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:background="@android:color/transparent"
-                            android:fontFamily="@font/roboto_regular"
-                            android:hint="Cari judul buku, penulis..."
-                            android:textColor="?android:textColorPrimary"
-                            android:textColorHint="?android:textColorHint"
-                            android:textSize="14sp"
-                            android:imeOptions="actionSearch"
-                            android:inputType="text" />
-
-                    </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
@@ -105,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:text="Rekomendasi"
-                    android:textColor="?android:textColorPrimary"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -115,7 +96,7 @@
                     android:layout_alignParentEnd="true"
                     android:fontFamily="@font/roboto_regular"
                     android:text="Lihat Semua >"
-                    android:textColor="?attr/colorPrimaryFixed"
+                    android:textColor="@color/accent_blue"
                     android:textSize="13sp" />
             </RelativeLayout>
 
@@ -140,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:text="Populer"
-                    android:textColor="?android:textColorPrimary"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -150,7 +131,7 @@
                     android:layout_alignParentEnd="true"
                     android:fontFamily="@font/roboto_regular"
                     android:text="Lihat Semua >"
-                    android:textColor="?attr/colorPrimaryFixed"
+                    android:textColor="@color/accent_blue"
                     android:textSize="13sp" />
             </RelativeLayout>
 

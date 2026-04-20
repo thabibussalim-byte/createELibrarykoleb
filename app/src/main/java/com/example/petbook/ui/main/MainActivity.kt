@@ -2,16 +2,16 @@ package com.example.petbook.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -19,16 +19,10 @@ import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.LoginResponse
-import com.example.petbook.data.datastore.SettingPreferences
-import com.example.petbook.data.datastore.ViewModelFactory
-import com.example.petbook.data.datastore.dataStore
+import com.example.petbook.data.api.model.LogoutResponse
 import com.example.petbook.data.pref.PreferenceManager
-import com.example.petbook.data.session.SessionManager
 import com.example.petbook.databinding.ActivityMainBinding
 import com.example.petbook.ui.auth.AuthActivity
-import com.example.petbook.ui.pengaturan.SettingsViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -44,38 +38,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pref = SettingPreferences.getInstance(dataStore)
-        val viewModel =
-            ViewModelProvider(this, ViewModelFactory(pref))[SettingsViewModel::class.java]
-
-        viewModel.getThemeSettings().observe(this) { isDarkModeActive ->
-            if (isDarkModeActive) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        }
-
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
-
-        val navView: BottomNavigationView = binding.bottomNav
-        navView.setupWithNavController(navController)
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.homeFragment,
-                R.id.bookFragment,
-                R.id.historyFragment,
-                R.id.profileFragment -> {
-                    navView.visibility = View.VISIBLE
-                }
-                else -> {
-                    navView.visibility = View.GONE
-                }
-            }
-        }
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -87,10 +52,29 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout
         )
 
-        setSupportActionBar(binding.toolbar)
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
+        setSupportActionBar(binding.toolbar)
+
+        binding.bottomNav.setupWithNavController(navController)
         binding.navigationView.setupWithNavController(navController)
 
+        // Custom BottomNav behavior to clear stack
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            if (item.itemId != binding.bottomNav.selectedItemId) {
+                val options = NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setRestoreState(false)
+                    .setPopUpTo(navController.graph.findStartDestination().id, inclusive = false, saveState = true)
+                    .build()
+                navController.navigate(item.itemId, null, options)
+            } else {
+                navController.popBackStack(item.itemId, false)
+            }
+            true
+        }
+
+        // PANGGIL UPDATE HEADER SAAT START
+        updateDrawerHeader()
 
         binding.navigationView.setNavigationItemSelectedListener { item ->
             if (item.itemId == R.id.nav_logout) {
@@ -118,31 +102,52 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-
     private fun performLogout() {
-        val sessionManager = SessionManager(this)
-        sessionManager.logout()
-        val preferenceManager = PreferenceManager(this)
-        preferenceManager.clear()
-        val intent = Intent(this, AuthActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
+        val prefManager = PreferenceManager(this)
+        val token = prefManager.getToken() ?: ""
+        val formattedToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+
+        ApiConfig.getApiService().logout(formattedToken).enqueue(object : Callback<LogoutResponse> {
+            override fun onResponse(call: Call<LogoutResponse>, response: Response<LogoutResponse>) {
+                handleLocalLogout(prefManager)
+            }
+            override fun onFailure(call: Call<LogoutResponse>, t: Throwable) {
+                handleLocalLogout(prefManager)
+            }
+        })
+    }
+
+    private fun handleLocalLogout(prefManager: PreferenceManager) {
+        prefManager.clear()
+        Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, AuthActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
 
+    // FUNGSI UNTUK UPDATE FOTO DAN NAMA DI DRAWER
     fun updateDrawerHeader() {
-        val prefManager = PreferenceManager(this)
         val headerView: View = binding.navigationView.getHeaderView(0)
-        
         val ivProfileHeader: ImageView = headerView.findViewById(R.id.iv_profile_header)
+        val tvUsernameHeader: TextView = headerView.findViewById(R.id.tv_username_header)
+        val prefManager = PreferenceManager(this)
 
+        tvUsernameHeader.text = prefManager.getUsername() ?: "User"
 
+        val photoUrl = prefManager.getProfileUrl()
         Glide.with(this)
-            .load(prefManager.getProfileUrl())
+            .load(photoUrl)
             .circleCrop()
             .placeholder(R.drawable.ic_profile)
+            .error(R.drawable.ic_profile)
             .into(ivProfileHeader)
+    }
+
+    // Pastikan header di-update setiap kali activity kembali aktif (misal dari Profile)
+    override fun onResume() {
+        super.onResume()
+        updateDrawerHeader()
     }
 
     override fun onSupportNavigateUp(): Boolean {

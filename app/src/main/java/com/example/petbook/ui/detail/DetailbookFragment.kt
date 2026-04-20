@@ -35,8 +35,7 @@ class DetailbookFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Ambil data dari arguments
-        currentBook = arguments?.let {
-            BundleCompat.getParcelable(it, "book", BookItem::class.java)
+        currentBook = arguments?.let { BundleCompat.getParcelable(it, "book", BookItem::class.java)
         }
         currentWriter = arguments?.getString("book_writer")
         currentPublisher = arguments?.getString("book_publisher")
@@ -45,12 +44,13 @@ class DetailbookFragment : Fragment() {
         
         currentBook?.let { displayBookDetail(it, currentWriter, currentPublisher, currentGenre, currentRating) }
 
-        // Klik tombol pinjam untuk pindah ke formulir peminjaman
+        // LOGIKA KLIK YANG BENAR: Menggunakan Navigation Component
         binding.btnPinjam.setOnClickListener {
             val bundle = Bundle().apply {
                 putParcelable("book", currentBook)
                 putString("book_writer", currentWriter)
                 putString("book_publisher", currentPublisher)
+                putFloat("book_rating", currentRating)
             }
             findNavController().navigate(R.id.action_detailbookFragment_to_detailpeminjamanFragment, bundle)
         }
@@ -65,10 +65,7 @@ class DetailbookFragment : Fragment() {
             tvDetailAuthor.text = writerName ?: "Penulis: ${book.penulisId}"
             tvDetailPublisher.text = publisherName ?: "Penerbit: ${book.penerbitId}"
             
-            // Set Teks Rating agar SINKRON
             tvDetailRating.text = String.format("%.1f", rating)
-
-            // Set Genre Text
             tvDetailGenreLabel.text = genreName ?: "Umum"
 
             Glide.with(requireContext())

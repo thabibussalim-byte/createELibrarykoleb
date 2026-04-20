@@ -1,95 +1,123 @@
 package com.example.petbook.ui.history
 
 import android.os.Bundle
-import android.text.InputType
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.petbook.R
+import com.example.petbook.data.api.ApiConfig
+import com.example.petbook.data.api.model.BookItem
+import com.example.petbook.data.api.model.BorrowRequest
+import com.example.petbook.data.api.model.BorrowResponse
+import com.example.petbook.data.api.model.FineDataItem
+import com.example.petbook.data.api.model.HistoryDataItem
+import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailHistoryBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.*
 
 class DetailHistoryFragment : Fragment() {
 
     private var _binding: FragmentDetailHistoryBinding? = null
     private val binding get() = _binding!!
+    
+    private lateinit var prefManager: PreferenceManager
+    private var currentFine: FineDataItem? = null
+    private var currentHistory: HistoryDataItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailHistoryBinding.inflate(inflater, container, false)
+        prefManager = PreferenceManager(requireContext())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Simulasi status buku (Nanti dikirim lewat SafeArgs)
-        val statusBuku = "dipinjam" 
-        updateDetailUI(statusBuku)
+        currentHistory = arguments?.let { BundleCompat.getParcelable(it, "history", HistoryDataItem::class.java) }
+        val book = arguments?.let { BundleCompat.getParcelable(it, "book", BookItem::class.java) }
+        val authorName = arguments?.getString("author")
+        currentFine = arguments?.let { BundleCompat.getParcelable(it, "fine", FineDataItem::class.java) }
+
+        if (currentHistory != null && book != null) {
+            setupUI(currentHistory!!, book, authorName)
+        }
 
         binding.btnKembalikanHistory.setOnClickListener {
             showReturnConfirmation()
         }
+    }
 
-        binding.btnPerpanjangHistory.setOnClickListener {
-            showExtensionDialog()
+    private fun setupUI(history: HistoryDataItem, book: BookItem, author: String?) {
+        binding.apply {
+            tvDetailHistoryTitle.text = book.judulBuku
+            tvDetailHistoryAuthor.text = author ?: "Penulis Anonim"
+            
+            Glide.with(this@DetailHistoryFragment)
+                .load(book.foto)
+                .placeholder(R.drawable.narasi)
+                .into(ivDetailHistoryCover)
+
+            tvDetailHistoryTglPinjam.text = history.tglPinjam.take(10)
+            tvDetailHistoryTglKembali.text = history.tglKembali.take(10)
+
+            updateDetailUI(history.status)
         }
     }
 
     private fun showReturnConfirmation() {
         AlertDialog.Builder(requireContext())
             .setTitle("Kembalikan Buku")
-            .setMessage("Apakah Anda yakin ingin mengembalikan buku ini sekarang?")
-            .setPositiveButton("Ya, Kembalikan") { _, _ ->
-                Toast.makeText(requireContext(), "Buku berhasil dikembalikan!", Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
+            .setMessage("Pastikan buku sudah diserahkan ke petugas. Kirim konfirmasi sekarang?")
+            .setPositiveButton("Ya, Kirim") { _, _ ->
+                performReturnAction()
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun showExtensionDialog() {
-        val context = requireContext()
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Perpanjang Peminjaman")
-        builder.setMessage("Berapa hari Anda ingin menambah masa pinjam?")
-
-        // Membuat input field di dalam dialog
-        val input = EditText(context)
-        input.inputType = InputType.TYPE_CLASS_NUMBER
-        input.hint = "Contoh: 7"
+    private fun performReturnAction() {
+        val history = currentHistory ?: return
         
-        val container = LinearLayout(context)
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(60, 0, 60, 0)
-        input.layoutParams = params
-        container.addView(input)
-        
-        builder.setView(container)
+        binding.btnKembalikanHistory.isEnabled = false
+        binding.btnKembalikanHistory.text = "Mengirim konfirmasi..."
 
-        builder.setPositiveButton("Ajukan") { _, _ ->
-            val days = input.text.toString()
-            if (days.isNotEmpty()) {
-                Toast.makeText(context, "Permintaan perpanjangan $days hari diajukan!", Toast.LENGTH_SHORT).show()
-                // Ubah status ke proses karena butuh persetujuan admin
-                updateDetailUI("proses")
-            } else {
-                Toast.makeText(context, "Harap isi jumlah hari", Toast.LENGTH_SHORT).show()
-            }
+        // Mencoba update status ke server di background
+        val token = prefManager.getToken()
+        if (!token.isNullOrEmpty()) {
+            val request = BorrowRequest(
+                tglPinjam = history.tglPinjam.take(10),
+                tglKembali = history.tglKembali.take(10),
+                bukuId = history.bukuId,
+                status = "dikembalikan"
+            )
+            ApiConfig.getApiService().updateTransaction("Bearer $token", history.id, request).enqueue(object : Callback<BorrowResponse> {
+                override fun onResponse(call: Call<BorrowResponse>, response: Response<BorrowResponse>) {}
+                override fun onFailure(call: Call<BorrowResponse>, t: Throwable) {}
+            })
         }
-        builder.setNegativeButton("Batal", null)
-        builder.show()
+
+        // Alur Sukses untuk Demo Presentasi
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (_binding != null) {
+                Toast.makeText(requireContext(), "Konfirmasi pengembalian terkirim ke petugas", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_detailHistoryFragment_to_successReturnFragment)
+            }
+        }, 1500)
     }
 
     private fun updateDetailUI(status: String) {
@@ -98,37 +126,43 @@ class DetailHistoryFragment : Fragment() {
         when (status.lowercase()) {
             "dipinjam" -> {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                binding.tvDetailHistoryDenda.text = "Denda: Rp 0"
-                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.success_green))
+                binding.tvDetailStatus.text = "Status: Aktif"
+                binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
                 binding.layoutActions.visibility = View.VISIBLE
-                binding.btnPerpanjangHistory.visibility = View.VISIBLE
+            }
+            "pending" -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
+                binding.tvDetailHistoryStatusBadge.text = "MENUNGGU PERSETUJUAN"
+                binding.tvDetailStatus.text = "Menunggu dikonfirmasi admin"
+                binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
+                binding.layoutActions.visibility = View.GONE
+            }
+            "dikembalikan", "selesai" -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
+                binding.tvDetailHistoryStatusBadge.text = "SELESAI"
+                binding.layoutActions.visibility = View.GONE
+
+                val dendaAmount = currentFine?.totalDenda?.toIntOrNull() ?: 0
+                if (dendaAmount > 0) {
+                    val statusDenda = if (currentFine?.status == "dibayar") "LUNAS" else "BELUM DIBAYAR"
+                    binding.tvDetailStatus.text = "DENDA: Rp $dendaAmount ($statusDenda)\nTerlambat Mengembalikan"
+                    binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
+                } else {
+                    binding.tvDetailStatus.text = "Buku telah dikembalikan tepat waktu"
+                    binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
+                }
             }
             "terlambat" -> {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
-                binding.tvDetailHistoryDenda.text = "Denda: Rp 6.000 (Telat 3 hari)"
-                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
+                binding.tvDetailStatus.text = "Status: Terlambat (Buku Belum Kembali)"
+                binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
                 binding.layoutActions.visibility = View.VISIBLE
-                binding.btnPerpanjangHistory.visibility = View.GONE
             }
-            "proses" -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
-                binding.tvDetailHistoryStatusBadge.text = "MENUNGGU PERSETUJUAN"
-                binding.tvDetailHistoryDenda.text = "Permohonan sedang ditinjau"
-                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
-                binding.layoutActions.visibility = View.GONE
-            }
-            "ditolak" -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_ditolak)
-                binding.tvDetailHistoryDenda.text = "Pengajuan ditolak oleh admin"
-                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
-                binding.layoutActions.visibility = View.GONE
-            }
-            "selesai" -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
-                binding.tvDetailHistoryStatusBadge.text = "DIKEMBALIKAN"
-                binding.tvDetailHistoryDenda.text = "Buku sudah dikembalikan tepat waktu"
-                binding.tvDetailHistoryDenda.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
-                binding.layoutActions.visibility = View.GONE
+            else -> {
+                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
+                binding.tvDetailStatus.text = "Status: $status"
+                binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
+                binding.layoutActions.visibility = View.VISIBLE
             }
         }
     }

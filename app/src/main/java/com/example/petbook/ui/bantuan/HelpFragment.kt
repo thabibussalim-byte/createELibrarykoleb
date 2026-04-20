@@ -32,62 +32,49 @@ class HelpFragment : Fragment() {
         // 1. Cara Meminjam
         binding.btnFaq1.setOnClickListener {
             navigateToDetail(
-                "Prosedur dan Tata Cara Peminjaman Koleksi",
-                "Untuk memulai peminjaman, silakan jelajahi koleksi melalui menu Katalog Digital. Setelah menemukan buku yang diinginkan, klik tombol 'Ajukan Peminjaman'. Sistem akan mengirimkan formulir digital kepada admin perpustakaan. Mohon untuk tidak datang ke perpustakaan PeTIK sebelum Anda menerima notifikasi 'Disetujui' di aplikasi. Setelah disetujui, Anda memiliki waktu 1x24 jam untuk melakukan serah terima fisik di meja sirkulasi."
+                "Bagaimana cara meminjam buku?",
+                "Buka katalog buku, pilih buku yang Anda inginkan, lalu klik tombol 'Pinjam Buku'. Tunggu konfirmasi dari petugas melalui notifikasi aplikasi."
             )
         }
 
         // 2. Waktu Peminjaman
         binding.btnFaq2.setOnClickListener {
             navigateToDetail(
-                "Ketentuan Durasi dan Batas Waktu Pinjam",
-                "Masa peminjaman koleksi di ElibraryPetik diatur selama 7 hari kalender terhitung sejak buku fisik diserahkan oleh petugas. Kami sangat menyarankan Anda untuk memantau menu Riwayat Peminjaman secara berkala guna melihat detail tanggal jatuh tempo. Sistem juga akan mengirimkan peringatan otomatis melalui notifikasi aplikasi tepat 24 jam sebelum masa pinjam Anda berakhir untuk menghindari keterlambatan."
+                "Berapa lama waktu peminjaman?",
+                "Waktu peminjaman buku standarnya adalah 7 hari kalender. Anda dapat melihat tanggal jatuh tempo pengembalian di menu Riwayat Peminjaman."
             )
         }
 
         // 3. Status Buku
         binding.btnFaq3.setOnClickListener {
             navigateToDetail(
-                "Penjelasan Detail Mengenai Status Peminjaman",
-                "• Menunggu Verifikasi: Permintaan Anda telah masuk ke sistem dan sedang menunggu antrean pengecekan fisik buku oleh petugas.\n\n• Disetujui: Buku tersedia dan telah disisihkan untuk Anda. Silakan ambil di loket perpustakaan atau kantor PeTIK.\n\n• Dipinjam: Buku telah berada dalam tanggung jawab Anda sepenuhnya.\n\n• Ditolak: Permintaan dibatalkan sistem, biasanya karena stok buku habis, kondisi buku sedang diperbaiki, atau Anda masih memiliki pinjaman tertunggak.",
+                "Apa arti status dipinjam/ dikembalikan/ pending?",
+                "Dipinjam: Buku sedang dalam genggaman Anda.\n Dikembalikan: buku yang telah selesai dibaca, lalu dikembalikan ke petugas. \nDipinjam: Buku yang sedang dipinjam oleh Anda."
             )
-
         }
 
         // 4. Cara Mengembalikan
         binding.btnFaq4.setOnClickListener {
             navigateToDetail(
-                "Prosedur Resmi Pengembalian Koleksi",
-                "Pengembalian wajib dilakukan secara langsung kepada petugas sirkulasi untuk pengecekan fisik. Jangan meninggalkan buku di meja tanpa verifikasi petugas. Setelah petugas memeriksa buku, pastikan Anda memeriksa status di aplikasi telah berubah menjadi 'Selesai'. Hal ini penting untuk memastikan bahwa tanggung jawab peminjaman Anda telah terhapus dari sistem dan tidak memicu denda di kemudian hari.",
+                "Bagaimana cara mengembalikan buku?",
+                "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Selesai'."
             )
-
         }
 
         // 5. Denda
         binding.btnFaq5.setOnClickListener {
             navigateToDetail(
-                "Regulasi dan Akumulasi Denda Keterlambatan",
-                "Berdasarkan peraturan Pesantren PeTIK, setiap keterlambatan pengembalian akan dikenakan denda administratif sebesar Rp 1.000 per hari untuk tiap judul buku. Akumulasi denda yang belum dilunasi akan menyebabkan akun Anda terkunci secara otomatis oleh sistem, sehingga Anda tidak dapat melakukan peminjaman buku baru sampai seluruh kewajiban administrasi diselesaikan di bagian keuangan perpustakaan PeTIK.",
+                "Apakah ada denda keterlambatan?",
+                "Ya, denda keterlambatan berlaku sebesar Rp 1.000 per hari untuk setiap buku yang terlambat dikembalikan. Pastikan mengembalikan tepat waktu untuk menghindari denda."
             )
-
         }
 
         // 6. Buku Hilang
         binding.btnFaq6.setOnClickListener {
             navigateToDetail(
-                "Kebijakan Kehilangan dan Kerusakan Koleksi",
-                "Koleksi perpustakaan adalah aset bersama. Jika terjadi kerusakan (sobek, terkena air, coretan) atau kehilangan, peminjam wajib melapor segera kepada petugas. Sesuai ketentuan, Anda diwajibkan mengganti dengan buku yang sama (judul, penulis, dan penerbit yang identik) atau membayar biaya penggantian sebesar harga pasar buku saat ini ditambah biaya administrasi pengadaan sebesar 10% dari harga buku.",
+                "Apa yang terjadi jika buku hilang?",
+                "Jika buku hilang, Anda wajib melaporkannya segera ke petugas. Anda akan diminta untuk mengganti buku yang sama atau membayar denda sesuai dengan harga pasar buku tersebut."
             )
-
-        }
-
-        // 7. Perpanjang Masa Pinjam
-        binding.btnFaq7.setOnClickListener {
-            navigateToDetail(
-                "Ketentuan Perpanjangan Masa Peminjaman",
-                "Perpanjangan masa pinjam dapat dilakukan untuk durasi 7 hari tambahan dan hanya dapat diajukan sebanyak 1 kali. Fitur perpanjangan ini akan muncul di aplikasi 2 hari sebelum jatuh tempo, dengan catatan buku tersebut tidak sedang masuk dalam daftar reservasi atau antrean santri lain. Jika fitur perpanjangan tidak muncul, berarti buku tersebut harus segera dikembalikan sesuai jadwal aslinya.",
-            )
-
         }
     }
 

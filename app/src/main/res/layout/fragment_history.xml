@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#F5F7FA"
-    android:paddingBottom="80dp"
     tools:context=".ui.history.HistoryFragment">
 
     <!--RIWAYAT PEMINJAMAN-->
@@ -22,63 +21,61 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-
     <HorizontalScrollView
         android:id="@+id/schroll_chip"
-        android:layout_width="387dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/tv_riwayat_peminjaman"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_riwayat_peminjaman">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chip_group_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="16dp"
+            app:singleSelection="true"
             app:checkedChip="@id/chip_all"
-            app:chipSpacingHorizontal="8dp"
-            app:singleSelection="true">
+            app:chipSpacingHorizontal="8dp">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_all"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checkable="true"
+                android:text="Semua"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Semua" />
+                android:checkable="true"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_pending"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending"
+                android:fontFamily="@font/poppins_medium"
+                android:checkable="true"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_dipinjam"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checkable="true"
+                android:text="Dipinjam"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Dipinjam" />
+                android:checkable="true"/>
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chip_disetujui"
+                android:id="@+id/chip_dikembalikan"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checkable="true"
+                android:text="Dikembalikan"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Disetujui" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_dibatalkan"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:fontFamily="@font/poppins_medium"
-                android:text="Dibatalkan" />
+                android:checkable="true"/>
 
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
@@ -96,13 +93,13 @@
         tools:listitem="@layout/item_history"/>
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/progress_bar_history"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,105 +1,82 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E9EBF1"
-    android:orientation="vertical">
+    android:background="@color/background_light"
+    tools:context=".ui.statistik.StatistikFragment">
 
-
-    <ScrollView
+    <!-- Header Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarStatistik"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarStatistik"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="Statistik Penggunaan"
+            app:titleCentered="true"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarStatistik">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Statistik Penggunaan Aplikasi"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#212121"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="40dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxStrokeColor="#4A89DC">
-
-                <AutoCompleteTextView
-                    android:id="@+id/spinnerTimeFrame"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:padding="12dp"
-                    android:text="Bulanan"
-                    android:textSize="14sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <ImageButton
-                    android:id="@+id/btnPrev"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_chevron_left_blue" />
-                <TextView
-                    android:id="@+id/tvCurrentPeriod"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_blue_rounded"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:text="Januari"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-                <ImageButton
-                    android:id="@+id/btnNext"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_chevron_right_blue" />
-            </LinearLayout>
-
+            <!-- Chart Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="320dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="wrap_content"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="#4A89DC"
-                app:cardElevation="4dp"
+                app:cardElevation="2dp"
                 app:strokeWidth="0dp">
 
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/barChart"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="16dp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="Ringkasan Aktivitas"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChartStatistik"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginTop="16dp" />
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Detail List Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="#5C9CEE"
-                app:cardCornerRadius="20dp">
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -107,139 +84,93 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <LinearLayout
+                    <!-- Disetujui (Dipinjam) -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <View
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:background="#60A5FA"
+                            android:layout_centerVertical="true"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sedang Dipinjam"
+                            android:layout_marginStart="20dp"
+                            android:textSize="13sp"/>
+
+                        <TextView
+                            android:id="@+id/tvCountDipinjam"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/poppins_semibold"/>
+
+                    </RelativeLayout>
+
+                    <!-- Dikembalikan -->
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Disetujui:"
-                            android:textColor="@color/white" />
-                        <TextView
-                            android:id="@+id/tvValueDisetujui"
-                            android:layout_width="45dp"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_rounded_white"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textColor="#4A89DC" />
-                        <View
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:background="#A0F1FF"/>
-                    </LinearLayout>
+                        android:layout_marginTop="16dp">
 
-                    <LinearLayout
+                        <View
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:background="#34D399"
+                            android:layout_centerVertical="true"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Selesai Dikembalikan"
+                            android:layout_marginStart="20dp"
+                            android:textSize="13sp"/>
+
+                        <TextView
+                            android:id="@+id/tvCountSelesai"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/poppins_semibold"/>
+
+                    </RelativeLayout>
+
+                    <!-- Pending -->
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Ditolak:"
-                            android:textColor="@color/white" />
-                        <TextView
-                            android:id="@+id/tvValueDitolak"
-                            android:layout_width="45dp"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_rounded_white"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textColor="#4A89DC" />
-                        <View
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:background="#B1F375" />
-                    </LinearLayout>
+                        android:layout_marginTop="16dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Dibatalkan:"
-                            android:textColor="@color/white" />
-                        <TextView
-                            android:id="@+id/tvValueDibatalkan"
-                            android:layout_width="45dp"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_rounded_white"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textColor="#4A89DC" />
                         <View
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:background="#FFEB55" />
-                    </LinearLayout>
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:background="#FBBF24"
+                            android:layout_centerVertical="true"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
                         <TextView
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Dikembalikan:"
-                            android:textColor="@color/white" />
+                            android:text="Menunggu Persetujuan"
+                            android:layout_marginStart="20dp"
+                            android:textSize="13sp"/>
+
                         <TextView
-                            android:id="@+id/tvValueDikembalikan"
-                            android:layout_width="45dp"
+                            android:id="@+id/tvCountPending"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/bg_rounded_white"
-                            android:gravity="center"
                             android:text="0"
-                            android:textColor="#4A89DC" />
-                        <View
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:background="#FFB067" />
-                    </LinearLayout>
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/poppins_semibold"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Belum dikembalikan:"
-                            android:textColor="@color/white" />
-                        <TextView
-                            android:id="@+id/tvValueBelumKembali"
-                            android:layout_width="45dp"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_rounded_white"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textColor="#4A89DC"
-                            />
-                        <View
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
-                            android:background="#FF8D3F" />
-                    </LinearLayout>
-
+                    </RelativeLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
