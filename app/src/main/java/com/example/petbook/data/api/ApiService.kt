@@ -59,5 +59,4 @@ interface ApiService {
 
     @GET("api/user")
     fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
-
 }

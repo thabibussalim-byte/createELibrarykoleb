@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.*
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.pref.PreferenceManager
-import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
 
 class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
@@ -17,9 +16,6 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
         
         val formattedToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
         val notificationHelper = NotificationHelper(applicationContext)
-
-        // Ambil data lama untuk perbandingan (opsional, tapi di sini kita cek perubahan status)
-        // Kita gunakan SharedPreferences untuk menyimpan status terakhir tiap transaksi ID agar tidak spam notifikasi
         val sharedPrefs = applicationContext.getSharedPreferences("transaction_status_prefs", Context.MODE_PRIVATE)
 
         try {
@@ -27,45 +23,55 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
             if (response.isSuccessful) {
                 val historyList = response.body()?.data ?: emptyList()
                 
-                var allFinished = true
+                var hasActiveProcesses = false
                 
                 for (item in historyList) {
                     val lastStatus = sharedPrefs.getString("status_${item.id}", null)
+                    val currentStatus = item.status.lowercase()
                     
-                    // Jika status berubah
-                    if (lastStatus != null && lastStatus.lowercase() != item.status.lowercase()) {
-                        when (item.status.lowercase()) {
+                    if (lastStatus != null && lastStatus.lowercase() != currentStatus) {
+                        when (currentStatus) {
                             "dipinjam", "disetujui" -> {
                                 notificationHelper.showNotification(
                                     NotificationHelper.NOTIFICATION_ID_CONFIRMATION,
                                     "Peminjaman Disetujui",
-                                    "Peminjaman buku untuk ID #${item.id} telah disetujui oleh admin."
+                                    "Peminjaman buku ID #${item.id} telah disetujui. Silakan ambil buku di perpustakaan."
                                 )
                             }
                             "ditolak" -> {
                                 notificationHelper.showNotification(
                                     NotificationHelper.NOTIFICATION_ID_CONFIRMATION,
                                     "Peminjaman Ditolak",
-                                    "Mohon maaf, peminjaman buku untuk ID #${item.id} ditolak oleh admin."
+                                    "Mohon maaf, permintaan peminjaman buku ID #${item.id} ditolak oleh admin."
+                                )
+                            }
+                            "dikembalikan", "kembali", "selesai" -> {
+                                notificationHelper.showNotification(
+                                    NotificationHelper.NOTIFICATION_ID_CONFIRMATION,
+                                    "Buku Berhasil Dikembalikan",
+                                    "Terima kasih, buku ID #${item.id} telah resmi dikembalikan. Tanggung jawab peminjaman selesai."
                                 )
                             }
                         }
                     }
                     
                     // Simpan status terbaru
-                    sharedPrefs.edit().putString("status_${item.id}", item.status).apply()
+                    sharedPrefs.edit().putString("status_${item.id}", currentStatus).apply()
                     
-                    // Jika masih ada yang "pending" (menunggu konfirmasi), kita lanjut polling
-                    if (item.status.lowercase() == "pending" || item.status.lowercase() == "menunggu") {
-                        allFinished = false
+                    // Cek apakah masih ada proses yang membutuhkan polling (pending/menunggu/dipinjam)
+                    // Kita anggap "dipinjam" juga aktif karena kita menunggu status berubah jadi "kembali"
+                    if (currentStatus == "pending" || currentStatus == "menunggu" || currentStatus == "dipinjam") {
+                        hasActiveProcesses = true
                     }
                 }
 
-                // Jika semua transaksi sudah punya status final (disetujui/ditolak/kembali), hentikan worker ini
-                if (allFinished && historyList.isNotEmpty()) {
-                    // Berhenti secara otomatis tidak bisa dilakukan dari dalam doWork untuk PeriodicWork
-                    // Namun untuk OneTimeWork yang di-chain, ini bisa diatur.
-                    // Karena ini Periodic, ia akan terus jalan sampai di-cancel manual atau batas 3 hari.
+                // Cek Batas Waktu 3 Hari dari InputData (hanya untuk pengingat timeout)
+                val startTime = inputData.getLong("start_time", System.currentTimeMillis())
+                val isTimedOut = System.currentTimeMillis() - startTime > TimeUnit.DAYS.toMillis(3)
+
+                // Hentikan worker jika tidak ada proses aktif lagi atau sudah lewat 3 hari
+                if (!hasActiveProcesses || isTimedOut) {
+                    WorkManager.getInstance(applicationContext).cancelUniqueWork("BorrowStatusCheck")
                 }
             }
         } catch (e: Exception) {
