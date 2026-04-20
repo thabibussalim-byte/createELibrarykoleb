@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.petbook.R
-import com.example.petbook.data.model.HistoryItem
+import com.example.petbook.data.api.model.TransactionsItem
+
 import com.example.petbook.databinding.ItemHistoryBinding
 
 class HistoryAdapter(
-    private val listHistory: List<HistoryItem>,
-    private val onItemClick: (HistoryItem) -> Unit
+    private var listHistory: List<TransactionsItem>,
+    private val onItemClick: (TransactionsItem) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root)
@@ -21,16 +22,24 @@ class HistoryAdapter(
         return ViewHolder(binding)
     }
 
+    fun submitList(newList: List<TransactionsItem>) {
+        listHistory = newList
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val history = listHistory[position]
+        val transaction = listHistory[position]
         holder.binding.apply {
-            tvHistoryTitle.text = history.title
-            tvHistoryAuthor.text = history.author
-            tvHistoryDateRange.text = "${history.borrowDate} - ${history.dueDate}"
-            tvHistoryStatusBadge.text = history.status
+            // Karena DataItem tidak punya judul buku langsung, kita tampilkan ID Buku atau "Buku"
+            tvHistoryTitle.text = "Buku ID: ${transaction.bukuId}"
+            tvHistoryAuthor.text = transaction.keterangan ?: "Tidak ada keterangan"
+            tvHistoryDateRange.text = "${transaction.tglPinjam} - ${transaction.tglKembali}"
+            
+            val status = transaction.status ?: "Proses"
+            tvHistoryStatusBadge.text = status
             
             // Logika warna badge berdasarkan status
-            when (history.status.lowercase()) {
+            when (status.lowercase()) {
                 "dipinjam" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
                 "terlambat" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
                 "selesai" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
@@ -39,19 +48,15 @@ class HistoryAdapter(
                 else -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
             }
 
-            if (history.isLate && history.fine != null) {
-                tvHistoryFine.visibility = View.VISIBLE
-                tvHistoryFine.text = "Denda: ${history.fine}"
-            } else {
-                tvHistoryFine.visibility = View.GONE
-            }
+            // Denda (jika ada field denda di API, sesuaikan. Di model DataItem belum ada)
+            tvHistoryFine.visibility = View.GONE
 
             Glide.with(holder.itemView.context)
-                .load(history.imageUrl)
+                .load(R.drawable.ic_home) // Placeholder karena URL gambar tidak ada di DataItem transaksi
                 .placeholder(R.drawable.ic_home)
                 .into(ivBookCover)
 
-            root.setOnClickListener { onItemClick(history) }
+            root.setOnClickListener { onItemClick(transaction) }
         }
     }
 

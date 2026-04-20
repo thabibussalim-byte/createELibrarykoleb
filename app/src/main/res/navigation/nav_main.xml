@@ -112,6 +112,9 @@
         <action
             android:id="@+id/action_profileFragment_to_detailDendaFragment"
             app:destination="@id/detailDendaFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_statisticsFragment"
+            app:destination="@id/statisticsFragment" />
     </fragment>
 
     <fragment
@@ -147,5 +150,9 @@
         android:name="com.example.petbook.ui.bantuan.FaqDetailFragment"
         android:label="Detail FAQ"
         tools:layout="@layout/fragment_faq_detail" />
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.example.petbook.ui.statis.StatisticsFragment"
+        android:label="StatisticsFragment" />
 
 </navigation>

@@ -4,7 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.datastore.dataStore
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
+import com.example.petbook.data.datastore.SettingPreferences
+import com.example.petbook.data.datastore.ViewModelFactory
+import com.example.petbook.data.datastore.dataStore
 import com.example.petbook.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment() {
@@ -23,8 +30,19 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
-        // Tambahkan logika pengaturan di sini jika diperlukan
+
+        val pref = SettingPreferences.getInstance(requireContext().dataStore)
+        val settingsViewModel = ViewModelProvider(this, ViewModelFactory(pref))[SettingsViewModel::class.java]
+
+
+        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            settingsViewModel.saveThemeSetting(isChecked)
+        }
+
+        settingsViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive ->
+            binding.switchDarkMode.isChecked = isDarkModeActive
+        }
+
     }
 
     override fun onDestroyView() {

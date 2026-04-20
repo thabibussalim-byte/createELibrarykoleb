@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="?android:windowBackground"
     tools:context=".ui.buku.BookFragment">
 
     <!-- Top Section: Search, Filter and Status -->
@@ -12,7 +12,7 @@
         android:id="@+id/layout_header_book"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="?android:windowBackground"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,7 +21,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            app:cardBackgroundColor="@color/search_bg"
+            app:cardBackgroundColor="?attr/colorOnSecondaryContainer"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -36,7 +36,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_search"
-                    app:tint="@color/text_secondary" />
+                    app:tint="?android:textColorSecondary" />
 
                 <EditText
                     android:id="@+id/et_search_book"
@@ -44,6 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:background="@null"
+                    android:textColor="?android:textColorSecondary"
                     android:fontFamily="@font/poppins_regular"
                     android:hint="Cari judul buku, genre, penulis..."
                     android:textSize="14sp" />
@@ -82,7 +83,7 @@
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins_medium"
             android:text="Menampilkan semua koleksi"
-            android:textColor="@color/text_secondary"
+            android:textColor="?android:textColorSecondary"
             android:textSize="13sp" />
 
     </LinearLayout>
@@ -135,7 +136,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_semibold"
             android:text="Buku tidak ditemukan"
-            android:textColor="@color/text_primary"
+            android:textColor="?android:textColorPrimary"
             android:textSize="16sp" />
 
         <TextView
@@ -144,7 +145,7 @@
             android:fontFamily="sans-serif"
             android:text="Tidak ada buku yang cocok dengan\npencarian atau kategori ini"
             android:textAlignment="center"
-            android:textColor="@color/text_secondary"
+            android:textColor="?android:textColorSecondary"
             android:textSize="13sp" />
     </LinearLayout>
 

@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginBottom="12dp"
+    android:background="?android:windowBackground"
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="16dp"
@@ -48,7 +49,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/poppins_semibold"
                 android:maxLines="2"
-                android:textColor="@color/text_primary"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="16sp"
                 tools:text="The Psychology of Money" />
 
@@ -60,7 +61,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/roboto_regular"
                 android:maxLines="1"
-                android:textColor="@color/text_secondary"
+                android:textColor="?android:textColorSecondary"
                 android:textSize="14sp"
                 tools:text="Morgan Housel" />
 
@@ -85,7 +86,7 @@
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/roboto_regular"
                     android:text="4.8"
-                    android:textColor="@color/text_primary"
+                    android:textColor="?android:textColorPrimary"
                     android:textSize="12sp" />
 
                 <View
@@ -99,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto_regular"
                     android:text="Terpinjam 100+"
-                    android:textColor="@color/text_hint"
+                    android:textColor="?android:textColorHint"
                     android:textSize="12sp" />
             </LinearLayout>
 

@@ -5,6 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
     tools:openDrawer="start"
     tools:context=".ui.main.MainActivity">
 
@@ -16,6 +17,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
             android:theme="@style/ThemeOverlay.Material3.ActionBar"
             app:elevation="0dp">
 
@@ -23,10 +25,10 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/primary_blue"
+                android:background="?attr/colorPrimary"
                 app:title="E-Library"
-                app:titleTextColor="@color/white"
-                app:navigationIconTint="@color/white"/>
+                app:titleTextColor="?attr/colorOnSecondary"
+                app:navigationIconTint="?attr/colorOnSecondary"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -37,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
+        android:background="?attr/colorOnSecondaryFixed"
         app:navGraph="@navigation/nav_main"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
@@ -46,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@color/white"
+            android:background="?attr/colorOnSecondary"
             app:itemIconTint="@drawable/bottom_nav_icon"
             app:itemTextColor="@drawable/bottom_nav_icon"
             app:labelVisibilityMode="labeled"

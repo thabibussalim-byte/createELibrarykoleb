@@ -53,4 +53,10 @@
     <string name="desc">Descripsi</string>
     <string name="pinjam">Pinjam</string>
 
+    <string-array name="period_options">
+        <item>Harian</item>
+        <item>Bulanan</item>
+        <item>Tahunan</item>
+    </string-array>
+
 </resources>

@@ -10,6 +10,5 @@ data class LoginResponse(
 
 data class LoginData(
     @SerializedName("token") val token: String,
-    @SerializedName("username") val username: String? = null,
-    @SerializedName("profil") val profil: String? = null
+    @SerializedName("username") val username: String? = null
 )

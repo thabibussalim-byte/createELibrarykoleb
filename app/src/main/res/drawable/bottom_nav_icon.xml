@@ -3,7 +3,7 @@
 
 <!-- aktif/dipilih-->
     <item
-        android:color="@color/blue" android:state_checked="true"/>
+        android:color="?attr/colorOnSecondaryFixedVariant" android:state_checked="true"/>
 
 <!--Default-->
     <item

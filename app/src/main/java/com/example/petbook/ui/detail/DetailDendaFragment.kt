@@ -30,25 +30,9 @@ class DetailDendaFragment : Fragment() {
     }
 
     private fun setupDendaList() {
-        // Simulasi data buku yang kena denda
-        val dendaBooks = listOf(
-            HistoryItem(1, "Buya Hamka", "A. Fuadi", "https://picsum.photos/id/1/200/300", "1 Jan 2026", "8 Jan 2026", "Terlambat", "Rp 2.000", true)
-        )
 
-        binding.tvDetailTotalDenda.text = "Rp: 2000"
-        
-        // PERBAIKAN: Ubah format teks agar sesuai dengan keinginan Anda (Dinamis)
-        binding.tvJumlahBukuDenda.text = "${dendaBooks.size} Buku Telat"
 
-        val historyAdapter = HistoryAdapter(dendaBooks) {
-            // Logika klik jika diperlukan
-        }
 
-        binding.rvBukuDenda.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = historyAdapter
-            setHasFixedSize(true)
-        }
     }
 
     override fun onDestroyView() {

@@ -18,14 +18,18 @@ import com.example.petbook.data.api.model.BookItem
 import com.example.petbook.data.api.model.BookResponse
 import com.example.petbook.data.api.model.GenreItem
 import com.example.petbook.data.api.model.GenreResponse
+import com.example.petbook.data.api.model.LoginResponse
 import com.example.petbook.data.api.model.PublisherItem
 import com.example.petbook.data.api.model.PublisherResponse
+import com.example.petbook.data.api.model.UserResponse
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentHomeBinding
+import com.example.petbook.ui.main.MainActivity
 import com.google.android.material.chip.Chip
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class HomeFragment : Fragment() {
 
@@ -40,6 +44,8 @@ class HomeFragment : Fragment() {
     private var allPublishersList: List<PublisherItem> = emptyList()
     private var allGenresList: List<GenreItem> = emptyList()
 
+    private var allUserList : List<UserResponse> = emptyList()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,32 +57,66 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupGreeting()
+        loadUser()
         setupRecyclerView()
         setupSearch()
         loadGenres()
-    }
 
-    private fun setupGreeting() {
+        }
+
+    // HomeFragment.kt - Di dalam class HomeFragment
+    private fun loadUser() {
         val prefManager = PreferenceManager(requireContext())
-        val username = prefManager.getUsername()
-        if (!username.isNullOrEmpty()) {
-            binding.tvWelcome.text = "Hai $username, mau baca buku apa hari ini?"
+        val token = prefManager.getToken()
+        val myUsername = prefManager.getUsername() // Username yang diinput saat login
+
+        if (!token.isNullOrEmpty()) {
+            ApiConfig.getApiService().getUser("Bearer $token").enqueue(object : Callback<UserResponse> {
+                override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                    if (_binding != null && response.isSuccessful) {
+                        val userList = response.body()?.data // Ini adalah List<DataItem>
+
+                        // CARI USER YANG USERNAMENYA COCOK
+                        val myData = userList?.find { it.username == myUsername }
+
+                        myData?.let {
+                            // Simpan data detail (ID, Profil, Role) ke Preference
+                            prefManager.saveUser(
+                                it.id,
+                                it.username,
+                                it.profil ?: "",
+                                it.role
+                            )
+
+                            // Update tampilan
+                            binding.tvWelcome.text = "Hai ${it.username}, mau baca apa hari ini?"
+
+                            // Update Header di MainActivity (Foto & Role)
+                            (activity as? MainActivity)?.updateDrawerHeader()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                    Log.e("HomeFragment", "Gagal ambil data user: ${t.message}")
+                }
+            })
         }
     }
 
-    private fun loadGenres() {
+
+            private fun loadGenres() {
         binding.progressBar.visibility = View.VISIBLE
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allGenresList = response.body()?.data ?: emptyList()
-                    
+
                     binding.chipGroupCategory.removeAllViews()
                     for (genre in allGenresList.take(6)) {
                         addChipToGroup(genre.id, genre.namaGenre)
                     }
-                    
+
                     loadAuthors()
                 }
             }

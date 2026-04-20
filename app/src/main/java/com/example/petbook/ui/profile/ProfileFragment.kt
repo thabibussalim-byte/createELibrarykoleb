@@ -29,12 +29,14 @@ class ProfileFragment : Fragment() {
 
         setupUI()
         setupClickListeners()
+
     }
+
 
     private fun setupUI() {
         val prefManager = PreferenceManager(requireContext())
         
-        // Menampilkan Nama dari Preferences
+        // Menampilkan ID dan Nama dari Preferences
         binding.tvProfileUsername.text = prefManager.getUsername()
         binding.tvProfileDesc.text = "Santri PeTIK - Pencinta ilmu & teknologi."
         
@@ -46,11 +48,15 @@ class ProfileFragment : Fragment() {
             .into(binding.ivProfilePicture)
             
         binding.tvTotalDenda.text = "Rp 0" // Default
+
     }
 
     private fun setupClickListeners() {
         binding.cardDenda.setOnClickListener {
             findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
+        }
+        binding.cardStatistik.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_statisticsFragment)
         }
     }
 
