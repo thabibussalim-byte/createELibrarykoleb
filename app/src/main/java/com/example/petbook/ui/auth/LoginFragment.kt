@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.petbook.data.api.ApiConfig
+import com.example.petbook.data.api.model.LoginData
 import com.example.petbook.data.api.model.LoginRequest
 import com.example.petbook.data.api.model.LoginResponse
 import com.example.petbook.data.pref.PreferenceManager
@@ -17,6 +18,7 @@ import com.example.petbook.ui.main.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class LoginFragment : Fragment() {
 
@@ -59,7 +61,8 @@ class LoginFragment : Fragment() {
                                 data?.id ?: -1, // Menyimpan ID User dari API
                                 data?.token ?: "",
                                 data?.username ?: username,
-                                data?.profil ?: "",
+                                data?.password ?: password,
+                                data?.profil ?: ""
                             )
 
                             Toast.makeText(requireContext(), "Login Berhasil: ${loginResponse.message}", Toast.LENGTH_SHORT).show()

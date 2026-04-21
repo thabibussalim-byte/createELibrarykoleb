@@ -79,7 +79,7 @@ class ProfileFragment : Fragment() {
     private fun displayDataFromPrefs() {
         binding.apply {
             val nama = prefManager.getMahasantriNama()
-            tvProfileFullName.text = if (nama.isNotEmpty()) nama else prefManager.getUsername()
+            tvProfileFullName.text = nama.ifEmpty { prefManager.getUsername() }
             
             tvProfileJurusan.text = prefManager.getMahasantriJurusan().ifEmpty { "-" }
             tvProfileAlamat.text = prefManager.getMahasantriAlamat().ifEmpty { "-" }
@@ -189,12 +189,13 @@ class ProfileFragment : Fragment() {
     private fun updateProfilePhoto(url: String) {
         val token = prefManager.getToken() ?: return
         val userId = prefManager.getUserId()
+        val password = prefManager.getPassword() ?: ""
         val request = UpdateUserRequest(url)
 
         ApiConfig.getApiService().updateUser("Bearer $token", userId, request).enqueue(object : Callback<BorrowResponse> {
             override fun onResponse(call: Call<BorrowResponse>, response: Response<BorrowResponse>) {
                 if (response.isSuccessful) {
-                    prefManager.saveUser(userId, token, prefManager.getUsername() ?: "", url)
+                    prefManager.saveUser(userId, token, prefManager.getUsername() ?: "", password, url)
                     displayDataFromPrefs()
                 }
             }
@@ -215,7 +216,7 @@ class ProfileFragment : Fragment() {
                         val userList = response.body()?.data ?: emptyList()
                         val myAccount = userList.find { it.id == currentUserId }
                         if (myAccount != null && !myAccount.profil.isNullOrEmpty()) {
-                            prefManager.saveUser(currentUserId, prefManager.getToken() ?: "", prefManager.getUsername() ?: "", myAccount.profil)
+                            prefManager.saveUser(currentUserId, prefManager.getToken() ?: "", prefManager.getUsername() ?: "", prefManager.getPassword() ?: "",myAccount.profil)
                             displayDataFromPrefs()
                         }
                     }
