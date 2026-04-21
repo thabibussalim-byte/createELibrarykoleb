@@ -9,20 +9,15 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.AuthorItem
-import com.example.petbook.data.api.model.AuthorResponse
-import com.example.petbook.data.api.model.BookItem
-import com.example.petbook.data.api.model.BookResponse
-import com.example.petbook.data.api.model.FineDataItem
-import com.example.petbook.data.api.model.FineResponse
-import com.example.petbook.data.api.model.HistoryDataItem
-import com.example.petbook.data.api.model.HistoryResponse
+import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailDendaBinding
 import com.example.petbook.ui.history.HistoryAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.NumberFormat
+import java.util.Locale
 
 class DetailDendaFragment : Fragment() {
 
@@ -35,7 +30,7 @@ class DetailDendaFragment : Fragment() {
     private var userTransactions: List<HistoryDataItem> = emptyList()
     private var allBooks: List<BookItem> = emptyList()
     private var allAuthors: List<AuthorItem> = emptyList()
-    private var userFines: List<FineDataItem> = emptyList()
+    private var unpaidFines: List<FineDataItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,10 +49,7 @@ class DetailDendaFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) {
-            // Logika klik jika diperlukan
-        }
-
+        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { }
         binding.rvBukuDenda.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = historyAdapter
@@ -66,18 +58,15 @@ class DetailDendaFragment : Fragment() {
 
     private fun loadInitialData() {
         binding.progressBarDenda.visibility = View.VISIBLE
-        
         ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
             override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allAuthors = response.body()?.data ?: emptyList()
                     loadBooks()
-                } else {
-                    handleError("Gagal memuat data penulis")
                 }
             }
             override fun onFailure(call: Call<AuthorResponse>, t: Throwable) {
-                handleError(t.message)
+                handleError("Gagal Penulis: ${t.message}")
             }
         })
     }
@@ -88,12 +77,10 @@ class DetailDendaFragment : Fragment() {
                 if (_binding != null && response.isSuccessful) {
                     allBooks = response.body()?.data ?: emptyList()
                     loadTransactions()
-                } else {
-                    handleError("Gagal memuat data buku")
                 }
             }
             override fun onFailure(call: Call<BookResponse>, t: Throwable) {
-                handleError(t.message)
+                handleError("Gagal Buku: ${t.message}")
             }
         })
     }
@@ -101,25 +88,41 @@ class DetailDendaFragment : Fragment() {
     private fun loadTransactions() {
         val userId = prefManager.getUserId()
         val token = prefManager.getToken()
-        
-        if (token.isNullOrEmpty()) {
-            handleError("Sesi habis, silakan login kembali")
-            return
-        }
+        if (token.isNullOrEmpty()) return
 
         val authHeader = "Bearer $token"
-        
         ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    userTransactions = response.body()?.data ?: emptyList()
-                    loadFines(authHeader)
-                } else {
-                    handleError("Gagal memuat riwayat transaksi")
+                if (_binding != null) {
+                    if (response.isSuccessful) {
+                        userTransactions = response.body()?.data ?: emptyList()
+                        loadFines(authHeader)
+                    } else {
+                        loadAllTransactionsFallback(authHeader, userId)
+                    }
                 }
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                handleError(t.message)
+                loadAllTransactionsFallback(authHeader, userId)
+            }
+        })
+    }
+
+    private fun loadAllTransactionsFallback(authHeader: String, userId: Int) {
+        ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
+            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                if (_binding != null) {
+                    if (response.isSuccessful) {
+                        val rawData = response.body()?.data ?: emptyList()
+                        userTransactions = rawData.filter { it.userId == userId }
+                        loadFines(authHeader)
+                    } else {
+                        handleError("Gagal memuat riwayat")
+                    }
+                }
+            }
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                handleError("Gagal koneksi")
             }
         })
     }
@@ -131,42 +134,47 @@ class DetailDendaFragment : Fragment() {
                     binding.progressBarDenda.visibility = View.GONE
                     if (response.isSuccessful) {
                         val allFines = response.body()?.data ?: emptyList()
-                        
-                        // Filter denda yang HANYA milik transaksi user ini
                         val transactionIds = userTransactions.map { it.id }
-                        userFines = allFines.filter { it.transaksiId in transactionIds }
+                        
+                        // --- FILTER: HANYA YANG BELUM DIBAYAR ---
+                        unpaidFines = allFines.filter { 
+                            it.transaksiId in transactionIds && it.status.lowercase() != "dibayar" 
+                        }
                         
                         updateUI()
-                    } else {
-                        handleError("Gagal memuat data denda")
                     }
                 }
             }
             override fun onFailure(call: Call<FineResponse>, t: Throwable) {
-                handleError(t.message)
+                handleError("Gagal Denda: ${t.message}")
             }
         })
     }
 
     private fun updateUI() {
         var total = 0
-        userFines.forEach { 
-            total += it.totalDenda.toIntOrNull() ?: 0 
+        unpaidFines.forEach { fine ->
+            val cleanAmount = fine.totalDenda.replace(Regex("[^0-9]"), "")
+            total += cleanAmount.toIntOrNull() ?: 0
         }
 
-        binding.tvDetailTotalDenda.text = "Rp: $total"
-        binding.tvJumlahBukuDenda.text = "${userFines.size} Buku Bermasalah"
+        val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        binding.tvDetailTotalDenda.text = formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp: ")
+        binding.tvJumlahBukuDenda.text = "${unpaidFines.size} Buku"
 
-        val fineTransactionIds = userFines.map { it.transaksiId }
+        val fineTransactionIds = unpaidFines.map { it.transaksiId }
         val transactionsWithFine = userTransactions.filter { it.id in fineTransactionIds }
 
-        historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, userFines)
+        // Kirim data denda yang belum dibayar saja ke adapter
+        historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, unpaidFines)
+        
+        binding.tvInstruction.visibility = if (total > 0) View.VISIBLE else View.GONE
     }
 
-    private fun handleError(message: String?) {
+    private fun handleError(msg: String) {
         if (_binding != null) {
             binding.progressBarDenda.visibility = View.GONE
-            Toast.makeText(requireContext(), message ?: "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+            Log.e("DetailDenda", msg)
         }
     }
 

@@ -19,6 +19,13 @@ class PreferenceManager(context: Context) {
         editor.apply()
     }
 
+    // Fungsi untuk menyimpan URI foto yang dipilih dari galeri secara lokal
+    fun saveLocalProfileUri(uri: String) {
+        prefs.edit().putString("local_profile_uri", uri).apply()
+    }
+
+    fun getLocalProfileUri(): String? = prefs.getString("local_profile_uri", null)
+
     fun saveMahasantriDetail(nama: String, jurusan: String, alamat: String, phone: String) {
         val editor = prefs.edit()
         editor.putString("mhs_nama", nama)
@@ -34,14 +41,10 @@ class PreferenceManager(context: Context) {
     fun getMahasantriPhone(): String = prefs.getString("mhs_phone", "") ?: ""
 
     fun getUserId(): Int {
-        // Ambil ID dari memori, default 0
         var id = prefs.getInt("user_id", 0)
-        
-        // Jika ID 0 atau -1 (tidak valid), bongkar dari Token JWT
         if (id <= 0) {
             id = getIdFromToken()
             if (id > 0) {
-                // Simpan ID yang benar agar pemanggilan berikutnya cepat
                 prefs.edit().putInt("user_id", id).apply()
             }
         }

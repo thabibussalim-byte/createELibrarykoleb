@@ -1,11 +1,12 @@
 package com.example.petbook.ui.history
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,8 +45,41 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        applyChipStyles() // TERAPKAN WARNA YANG SAMA DENGAN HOME/KATALOG
         setupFilters()
         loadRequiredData()
+    }
+
+    private fun applyChipStyles() {
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_checked)
+        )
+        val backgroundColors = intArrayOf(
+            Color.parseColor("#DBEAFE"), // Biru Muda (Selected)
+            Color.parseColor("#F1F5F9")  // Abu-abu (Unselected)
+        )
+        val textColors = intArrayOf(
+            Color.parseColor("#1E40AF"), // Biru Tua (Selected)
+            Color.parseColor("#64748B")  // Abu-abu (Unselected)
+        )
+
+        val colorStateListBg = ColorStateList(states, backgroundColors)
+        val colorStateListText = ColorStateList(states, textColors)
+
+        // List semua chip yang ada di layout history
+        val chips = listOf(
+            binding.chipAll,
+            binding.chipPending,
+            binding.chipDipinjam,
+            binding.chipDikembalikan
+        )
+
+        for (chip in chips) {
+            chip.chipBackgroundColor = colorStateListBg
+            chip.setTextColor(colorStateListText)
+            chip.chipStrokeWidth = 0f
+        }
     }
 
     private fun setupRecyclerView() {

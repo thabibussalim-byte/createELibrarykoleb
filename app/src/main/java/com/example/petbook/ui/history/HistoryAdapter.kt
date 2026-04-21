@@ -1,6 +1,7 @@
 package com.example.petbook.ui.history
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,14 +58,27 @@ class HistoryAdapter(
             val tglKembali = history.tglKembali.take(10)
             tvHistoryDateRange.text = "$tglPinjam s/d $tglKembali"
 
-            // Setup Status Badge
+            // Setup Status Badge & Indicator Color
             val status = history.status.lowercase()
             tvHistoryStatusBadge.text = status.uppercase()
+            
             when (status) {
-                "pending" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
-                "dipinjam" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                "dikembalikan", "selesai" -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
-                else -> tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
+                "pending" -> {
+                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#F59E0B")) // Orange
+                }
+                "dipinjam" -> {
+                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#3B82F6")) // Blue
+                }
+                "dikembalikan", "selesai" -> {
+                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#10B981")) // Green
+                }
+                else -> {
+                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444")) // Red
+                }
             }
 
             // LOGIKA BARU: Denda hanya muncul jika status sudah DIKEMBALIKAN atau SELESAI

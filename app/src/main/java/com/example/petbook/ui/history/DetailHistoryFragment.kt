@@ -25,10 +25,8 @@ import com.example.petbook.databinding.FragmentDetailHistoryBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 
 class DetailHistoryFragment : Fragment() {
-
     private var _binding: FragmentDetailHistoryBinding? = null
     private val binding get() = _binding!!
     
@@ -38,8 +36,8 @@ class DetailHistoryFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+        savedInstanceState: Bundle?): View {
+
         _binding = FragmentDetailHistoryBinding.inflate(inflater, container, false)
         prefManager = PreferenceManager(requireContext())
         return binding.root

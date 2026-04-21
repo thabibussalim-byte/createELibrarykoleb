@@ -30,9 +30,9 @@ class HomeFragment : Fragment() {
     private lateinit var populerAdapter: BookAdapter
     
     private var allBooksList: List<BookItem> = emptyList()
-    private var allAuthorsList: List<AuthorItem> = emptyList()
-    private var allPublishersList: List<PublisherItem> = emptyList()
-    private var allGenresList: List<GenreItem> = emptyList()
+    private var authorList: List<AuthorItem> = emptyList()
+    private var publisherList: List<PublisherItem> = emptyList()
+    private var genreList: List<GenreItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +48,7 @@ class HomeFragment : Fragment() {
         setupGreeting()
         setupRecyclerView()
         setupSearch()
+        setupSeeAllButtons()
         loadGenres()
     }
 
@@ -59,16 +60,28 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setupSeeAllButtons() {
+        // Navigasi ke BookFragment (Katalog) saat "Lihat Semua" diklik
+        binding.tvRekomendasi.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_bookFragment)
+        }
+
+        binding.tvPopuler.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_bookFragment)
+        }
+    }
+
     private fun loadGenres() {
         binding.progressBar.visibility = View.VISIBLE
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
-                    allGenresList = response.body()?.data ?: emptyList()
+                    genreList = response.body()?.data ?: emptyList()
                     
                     binding.chipGroupCategory.removeAllViews()
-                    for (genre in allGenresList.take(6)) {
-                        addChipToGroup(genre.id, genre.namaGenre)
+                    addChipToGroup(-1, "Semua", true)
+                    for (genre in genreList.take(6)) {
+                        addChipToGroup(genre.id, genre.namaGenre, false)
                     }
                     
                     loadAuthors()
@@ -84,9 +97,9 @@ class HomeFragment : Fragment() {
         ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
             override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
                 if (_binding != null && response.isSuccessful) {
-                    allAuthorsList = response.body()?.data ?: emptyList()
-                    rekomendasiAdapter.updateAuthors(allAuthorsList)
-                    populerAdapter.updateAuthors(allAuthorsList)
+                    authorList = response.body()?.data ?: emptyList()
+                    rekomendasiAdapter.updateAuthors(authorList)
+                    populerAdapter.updateAuthors(authorList)
                     loadPublishers()
                 }
             }
@@ -100,7 +113,7 @@ class HomeFragment : Fragment() {
         ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
             override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
                 if (_binding != null && response.isSuccessful) {
-                    allPublishersList = response.body()?.data ?: emptyList()
+                    publisherList = response.body()?.data ?: emptyList()
                     getBooksFromApi()
                 }
             }
@@ -147,7 +160,7 @@ class HomeFragment : Fragment() {
             allBooksList
         } else {
             allBooksList.filter { book ->
-                val authorName = allAuthorsList.find { it.id == book.penulisId }?.namaPenulis?.lowercase() ?: ""
+                val authorName = authorList.find { it.id == book.penulisId }?.namaPenulis?.lowercase() ?: ""
                 book.judulBuku.lowercase().contains(query.lowercase()) || authorName.contains(query.lowercase())
             }
         }
@@ -174,9 +187,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun navigateToDetail(book: BookItem, rating: Float) {
-        val authorName = allAuthorsList.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
-        val publisherName = allPublishersList.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
-        val genreName = allGenresList.find { it.id == book.genreId }?.namaGenre ?: "Umum"
+        val authorName = authorList.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
+        val publisherName = publisherList.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
+        val genreName = genreList.find { it.id == book.genreId }?.namaGenre ?: "Umum"
         
         val bundle = Bundle().apply {
             putParcelable("book", book)
@@ -193,37 +206,29 @@ class HomeFragment : Fragment() {
         populerAdapter.submitList(listBuku.drop(5))
     }
 
-    private fun addChipToGroup(genreId: Int, name: String) {
+    private fun addChipToGroup(genreId: Int, name: String, isDefault: Boolean) {
         if (_binding == null) return
         val chip = Chip(requireContext())
         chip.text = name
         chip.isCheckable = true
+        chip.isChecked = isDefault
         
-        // --- KONFIGURASI WARNA PROFESIONAL (SAMA DENGAN KATALOG) ---
-        val states = arrayOf(
-            intArrayOf(android.R.attr.state_checked),
-            intArrayOf(-android.R.attr.state_checked)
-        )
-        val backgroundColors = intArrayOf(
-            Color.parseColor("#DBEAFE"), // Biru Muda (Selected)
-            Color.parseColor("#F1F5F9")  // Abu-abu (Unselected)
-        )
+        val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
+        val backgroundColors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
         chip.chipBackgroundColor = ColorStateList(states, backgroundColors)
 
-        val textColors = intArrayOf(
-            Color.parseColor("#1E40AF"), // Biru Tua (Selected)
-            Color.parseColor("#64748B")  // Abu-abu (Unselected)
-        )
+        val textColors = intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))
         chip.setTextColor(ColorStateList(states, textColors))
         chip.chipStrokeWidth = 0f
-        // --------------------------------------------------------
 
         chip.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                updateDisplay(allBooksList.filter { it.genreId == genreId })
-                binding.searchViewHome.setQuery("", false) // Reset search saat filter diklik
-            } else if (binding.chipGroupCategory.checkedChipId == View.NO_ID) {
-                updateDisplay(allBooksList)
+                if (genreId == -1) {
+                    updateDisplay(allBooksList)
+                } else {
+                    updateDisplay(allBooksList.filter { it.genreId == genreId })
+                }
+                binding.searchViewHome.setQuery("", false)
             }
         }
         binding.chipGroupCategory.addView(chip)

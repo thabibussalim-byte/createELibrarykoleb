@@ -90,7 +90,7 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/btn_lihat_semua_rekomendasi"
+                    android:id="@+id/tv_rekomendasi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -125,7 +125,7 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/btn_lihat_semua_populer"
+                    android:id="@+id/tv_populer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="#F8FAFC">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,59 +15,88 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Animasi/Ikon Centang -->
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/centang" />
+        <!-- Container Ikon dengan Efek Lingkaran Lembut -->
+        <FrameLayout
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_soft_circle"
+                android:backgroundTint="#DCFCE7" />
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:src="@drawable/centang" />
+        </FrameLayout>
 
         <TextView
+            android:id="@+id/tv_success_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/poppins_bold"
             android:text="Terima Kasih!"
-            android:textColor="@color/primary_blue"
-            android:textSize="24sp" />
+            android:textColor="#16A34A"
+            android:textSize="26sp" />
 
         <TextView
             android:id="@+id/tv_success_message"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:fontFamily="@font/roboto_regular"
+            android:lineSpacingExtra="6dp"
             android:text="Buku berhasil dikembalikan tepat waktu. Teruslah membaca untuk memperluas wawasan!"
             android:textAlignment="center"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            android:lineSpacingExtra="4dp" />
+            android:textColor="#475569"
+            android:textSize="15sp" />
 
-        <!-- Tombol Utama: Pinjam Lagi -->
+        <!-- Tombol Utama -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_to_catalog"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="48dp"
-            android:backgroundTint="@color/primary_blue"
+            android:layout_marginTop="56dp"
+            android:backgroundTint="@color/accent_blue"
             android:fontFamily="@font/poppins_semibold"
             android:text="Pinjam Buku Lain"
             android:textAllCaps="false"
-            app:cornerRadius="12dp" />
+            android:textSize="15sp"
+            app:cornerRadius="16dp"
+            app:elevation="2dp" />
 
-        <!-- Tombol beranda-->
+        <!-- Tombol Sekunder -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_back_to_home"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/poppins_semibold"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_medium"
             android:text="Kembali ke Beranda"
             android:textAllCaps="false"
-            android:textColor="@color/primary_blue"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/primary_blue"
-            app:strokeWidth="1.5dp" />
+            android:textColor="#64748B"
+            android:textSize="15sp" />
 
     </LinearLayout>
+
+    <!-- Hiasan Dekoratif (Opsional - Pojok Bawah) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="PeTbook Digital Library"
+        android:textColor="#CBD5E1"
+        android:textSize="11sp"
+        android:letterSpacing="0.1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

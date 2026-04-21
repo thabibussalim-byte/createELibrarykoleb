@@ -5,31 +5,45 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary_blue"
-    tools:context="petbook.ui.splash.SplashActivity">
+    android:background="@color/white"
+    tools:context="com.example.petbook.ui.splash.SplashActivity">
 
-    <ImageView
-        android:id="@+id/iv_petik"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:src="@drawable/logo_dua"
-        android:contentDescription="Logo PeTIK"
+    <!-- Container Logo dengan Bayangan Halus -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#F1F5F9"
+        app:strokeWidth="1dp"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_app"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="24dp">
+
+        <ImageView
+            android:id="@+id/iv_petik"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:padding="20dp"
+            android:src="@drawable/petbook"
+            android:contentDescription="Logo PeTIK"/>
+
+    </com.google.android.material.card.MaterialCardView>
     
     <TextView
         android:id="@+id/tv_app"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="PeTbook"
-        android:textSize="28sp"
+        android:textSize="32sp"
         android:fontFamily="@font/poppins_bold"
-        android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/iv_petik"
+        android:textColor="@color/color_primary"
+        android:letterSpacing="0.05"
+        app:layout_constraintTop_toBottomOf="@id/card_logo"
         app:layout_constraintBottom_toTopOf="@id/tv_desc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -39,20 +53,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pesantren Teknologi Informasi dan Komunikasi"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:fontFamily="@font/roboto_regular"
-        android:textColor="#E0E0E0"
+        android:textColor="@color/text_secondary"
+        android:alpha="0.8"
         app:layout_constraintTop_toBottomOf="@id/tv_app"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="4dp"/>
 
+    <!-- Loading Indicator -->
     <ProgressBar
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="48dp"
-        android:indeterminateTint="@color/white"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="64dp"
+        android:indeterminateTint="@color/color_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Branding Footer -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="DIGITAL LIBRARY"
+        android:textColor="#CBD5E1"
+        android:textSize="10sp"
+        android:letterSpacing="0.2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -8,6 +8,7 @@
     android:layout_marginBottom="12dp"
     android:clickable="true"
     android:focusable="true"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
     app:rippleColor="#20000000"
@@ -15,89 +16,88 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:layout_height="wrap_content">
 
-        <!-- Book Cover -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/iv_book_cover"
-            android:layout_width="85dp"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/narasi"
+        <!-- HIASAN: Garis Penanda Genre di sisi kiri -->
+        <View
+            android:id="@+id/view_genre_indicator"
+            android:layout_width="5dp"
+            android:layout_height="0dp"
+            android:background="@color/accent_blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Book Info Container -->
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@id/iv_book_cover"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_book_cover"
-            app:layout_constraintTop_toTopOf="@id/iv_book_cover">
+            app:layout_constraintStart_toEndOf="@id/view_genre_indicator"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tv_book_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="@font/poppins_semibold"
-                android:maxLines="2"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                tools:text="The Psychology of Money" />
+            <!-- Book Cover -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_book_cover"
+                android:layout_width="85dp"
+                android:layout_height="120dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/narasi"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
 
-            <TextView
-                android:id="@+id/tv_book_author"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/roboto_regular"
-                android:maxLines="1"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                tools:text="Morgan Housel" />
-
-            <!-- Rating & Stats placeholder -->
+            <!-- Book Info Container -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@drawable/ic_star"
-                    app:tint="#FFB300" />
+                android:layout_marginStart="16dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="@id/iv_book_cover"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_book_cover"
+                app:layout_constraintTop_toTopOf="@id/iv_book_cover">
 
                 <TextView
-                    android:id="@+id/tv_rating_katalog"
+                    android:id="@+id/tv_book_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:maxLines="2"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    tools:text="The Psychology of Money" />
+
+                <TextView
+                    android:id="@+id/tv_book_author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto_regular"
+                    android:maxLines="1"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    tools:text="Morgan Housel" />
+
+                <!-- Label Genre Kecil di bawah nama penulis -->
+                <TextView
+                    android:id="@+id/tv_book_genre_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#F1F5F9"
                     android:fontFamily="@font/roboto_regular"
-                    android:text="4.8"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp" />
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="10dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:background="#DDDDDD" />
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:textColor="#64748B"
+                    android:textSize="11sp"
+                    tools:text="Teknologi" />
 
             </LinearLayout>
-
-        </LinearLayout>
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </com.google.android.material.card.MaterialCardView>

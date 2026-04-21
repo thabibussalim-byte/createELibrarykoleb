@@ -46,6 +46,7 @@
                         android:src="@drawable/ic_profile" />
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Tombol Edit Photo (Sekarang menggunakan ikon kamera) -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btn_edit_photo"
                     android:layout_width="36dp"
@@ -62,7 +63,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_search" 
+                        android:src="@drawable/ic_camera" 
                         app:tint="@color/white" />
                 </com.google.android.material.card.MaterialCardView>
 
