@@ -43,6 +43,15 @@ class SettingsFragment : Fragment() {
             binding.switchDarkMode.isChecked = isDarkModeActive
         }
 
+
+        settingsViewModel.getNotificationSettings().observe(viewLifecycleOwner) { isNotifActive ->
+            binding.switchNotif.isChecked = isNotifActive
+        }
+
+        binding.switchNotif.setOnCheckedChangeListener { _, isChecked ->
+            settingsViewModel.saveNotificationSetting(isChecked)
+        }
+
     }
 
     override fun onDestroyView() {

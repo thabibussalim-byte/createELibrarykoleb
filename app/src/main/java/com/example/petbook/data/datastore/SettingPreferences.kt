@@ -1,6 +1,5 @@
 package com.example.petbook.data.datastore
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -16,7 +15,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 class SettingPreferences private constructor(private val dataStore: DataStore<Preferences>) {
 
     private val themeKey = booleanPreferencesKey("theme_setting")
-
+    private val notificationKey = booleanPreferencesKey("notification_setting")
 
     fun getThemeSetting(): Flow<Boolean> {
         return dataStore.data.map { preferences ->
@@ -27,6 +26,18 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
     suspend fun saveThemeSetting(isDarkModeActive: Boolean) {
         dataStore.edit { preferences ->
             preferences[themeKey] = isDarkModeActive
+        }
+    }
+
+    fun getNotificationSetting(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences[notificationKey] ?: true // Default aktif
+        }
+    }
+
+    suspend fun saveNotificationSetting(isActive: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[notificationKey] = isActive
         }
     }
 
@@ -41,6 +52,5 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
                 instance
             }
         }
-
     }
 }

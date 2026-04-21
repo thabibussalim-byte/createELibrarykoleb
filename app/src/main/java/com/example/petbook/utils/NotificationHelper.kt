@@ -13,7 +13,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.petbook.R
+import com.example.petbook.data.datastore.SettingPreferences
+import com.example.petbook.data.datastore.dataStore
 import com.example.petbook.ui.main.MainActivity
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class NotificationHelper(private val context: Context) {
 
@@ -37,7 +41,7 @@ class NotificationHelper(private val context: Context) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Notifikasi untuk aktivitas peminjaman buku"
             }
@@ -46,6 +50,12 @@ class NotificationHelper(private val context: Context) {
     }
 
     fun showNotification(id: Int, title: String, message: String, imageUrl: String? = null) {
+        // CEK SETTING NOTIFIKASI DULU
+        val pref = SettingPreferences.getInstance(context.dataStore)
+        val isNotifEnabled = runBlocking { pref.getNotificationSetting().first() }
+        
+        if (!isNotifEnabled) return
+
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -61,7 +71,7 @@ class NotificationHelper(private val context: Context) {
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 

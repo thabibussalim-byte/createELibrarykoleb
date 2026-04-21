@@ -19,6 +19,10 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
         val sharedPrefs = applicationContext.getSharedPreferences("transaction_status_prefs", Context.MODE_PRIVATE)
 
         try {
+            // Ambil data buku untuk mendapatkan judul
+            val booksResponse = ApiConfig.getApiService().getBooks().execute()
+            val bookList = if (booksResponse.isSuccessful) booksResponse.body()?.data ?: emptyList() else emptyList()
+
             val response = ApiConfig.getApiService().getHistoryByUser(formattedToken, userId).execute()
             if (response.isSuccessful) {
                 val historyList = response.body()?.data ?: emptyList()
@@ -29,27 +33,23 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                     val lastStatus = sharedPrefs.getString("status_${item.id}", null)
                     val currentStatus = item.status.lowercase()
                     
+                    // Cari judul buku berdasarkan bukuId
+                    val bookTitle = bookList.find { it.id == item.bukuId }?.judulBuku ?: "Buku (ID: ${item.bukuId})"
+                    
                     if (lastStatus != null && lastStatus.lowercase() != currentStatus) {
                         when (currentStatus) {
-                            "dipinjam", "disetujui" -> {
+                            "dipinjam" -> {
                                 notificationHelper.showNotification(
                                     NotificationHelper.NOTIFICATION_ID_CONFIRMATION,
                                     "Peminjaman Disetujui",
-                                    "Peminjaman buku ID #${item.id} telah disetujui. Silakan ambil buku di perpustakaan."
+                                    "Peminjaman buku \"$bookTitle\" telah disetujui. Silakan ambil buku di perpustakaan."
                                 )
                             }
-                            "ditolak" -> {
-                                notificationHelper.showNotification(
-                                    NotificationHelper.NOTIFICATION_ID_CONFIRMATION,
-                                    "Peminjaman Ditolak",
-                                    "Mohon maaf, permintaan peminjaman buku ID #${item.id} ditolak oleh admin."
-                                )
-                            }
-                            "dikembalikan", "kembali", "selesai" -> {
+                            "dikembalikan"-> {
                                 notificationHelper.showNotification(
                                     NotificationHelper.NOTIFICATION_ID_CONFIRMATION,
                                     "Buku Berhasil Dikembalikan",
-                                    "Terima kasih, buku ID #${item.id} telah resmi dikembalikan. Tanggung jawab peminjaman selesai."
+                                    "Terima kasih, buku \"$bookTitle\" telah resmi dikembalikan. Tanggung jawab peminjaman selesai."
                                 )
                             }
                         }
@@ -58,18 +58,15 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                     // Simpan status terbaru
                     sharedPrefs.edit().putString("status_${item.id}", currentStatus).apply()
                     
-                    // Cek apakah masih ada proses yang membutuhkan polling (pending/menunggu/dipinjam)
-                    // Kita anggap "dipinjam" juga aktif karena kita menunggu status berubah jadi "kembali"
-                    if (currentStatus == "pending" || currentStatus == "menunggu" || currentStatus == "dipinjam") {
+                    if (currentStatus == "pending" || currentStatus == "dipinjam") {
                         hasActiveProcesses = true
                     }
                 }
 
-                // Cek Batas Waktu 3 Hari dari InputData (hanya untuk pengingat timeout)
+                // Cek Batas Waktu 1 Hari
                 val startTime = inputData.getLong("start_time", System.currentTimeMillis())
-                val isTimedOut = System.currentTimeMillis() - startTime > TimeUnit.DAYS.toMillis(3)
+                val isTimedOut = System.currentTimeMillis() - startTime > TimeUnit.DAYS.toMillis(1)
 
-                // Hentikan worker jika tidak ada proses aktif lagi atau sudah lewat 3 hari
                 if (!hasActiveProcesses || isTimedOut) {
                     WorkManager.getInstance(applicationContext).cancelUniqueWork("BorrowStatusCheck")
                 }

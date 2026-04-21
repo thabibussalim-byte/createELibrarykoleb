@@ -21,6 +21,8 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
         val sharedPrefs = applicationContext.getSharedPreferences("fine_status_prefs", Context.MODE_PRIVATE)
 
         try {
+            val booksResponse = ApiConfig.getApiService().getBooks().execute()
+            val bookList = if (booksResponse.isSuccessful) booksResponse.body()?.data ?: emptyList() else emptyList()
             // 1. CEK JATUH TEMPO & TERLAMBAT
             val historyResponse = ApiConfig.getApiService().getHistoryByUser(formattedToken, userId).execute()
             if (historyResponse.isSuccessful) {
@@ -47,18 +49,19 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
 
                             val diff = dueDate.time - today.time
                             val daysLeft = diff / (1000 * 60 * 60 * 24)
+                            val bookTitle = bookList.find { it.id == item.bukuId }?.judulBuku ?: "Buku (ID: ${item.bukuId})"
 
                             if (daysLeft in 0..1) {
                                 notificationHelper.showNotification(
                                     NotificationHelper.NOTIFICATION_ID_REMINDER,
                                     "Pengingat Jatuh Tempo",
-                                    "Buku ID #${item.id} jatuh tempo pada ${item.tglKembali}. Harap segera kembalikan."
+                                    "Buku #\"$bookTitle\" jatuh tempo pada ${item.tglKembali}. Harap segera kembalikan."
                                 )
                             } else if (daysLeft < 0) {
                                 notificationHelper.showNotification(
                                     NotificationHelper.NOTIFICATION_ID_REMINDER,
                                     "Peringatan Terlambat!",
-                                    "Peminjaman buku ID #${item.id} sudah terlambat ${-daysLeft} hari. Segera kembalikan!"
+                                    "Peminjaman buku #\"$bookTitle\" sudah terlambat ${-daysLeft} hari. Segera kembalikan!"
                                 )
                             }
                         }
@@ -76,18 +79,18 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                     val currentStatus = fine.status.lowercase()
 
                     // Jika status "belum dibayar" atau "belum_lunas" (tergantung string API)
-                    if (currentStatus.contains("belum")) {
+                    if (currentStatus.contains("belumdibayar")) {
                         notificationHelper.showNotification(
                             NotificationHelper.NOTIFICATION_ID_REMINDER,
                             "Tagihan Denda Aktif",
-                            "Anda memiliki denda sebesar Rp ${fine.totalDenda} untuk transaksi #${fine.transaksiId} yang belum dibayar."
+                            "Anda memiliki denda sebesar Rp ${fine.totalDenda} yang belum dibayar."
                         )
-                    } else if (lastStatus != null && lastStatus.contains("belum") && currentStatus.contains("lunas") || currentStatus.contains("sudah")) {
+                    } else if (lastStatus != null && lastStatus.contains("belumdibayar") && currentStatus.contains("lunas") || currentStatus.contains("dibayar")) {
                         // Notifikasi jika denda baru saja dibayar
                         notificationHelper.showNotification(
                             NotificationHelper.NOTIFICATION_ID_REMINDER,
                             "Pembayaran Berhasil",
-                            "Terima kasih, denda untuk transaksi #${fine.transaksiId} telah berhasil dibayar."
+                            "Terima kasih, denda #${fine.totalDenda} untuk transaksi telah berhasil dibayar."
                         )
                     }
                     
