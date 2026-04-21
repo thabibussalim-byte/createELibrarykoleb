@@ -109,10 +109,13 @@ class DetailDendaFragment : Fragment() {
 
         val authHeader = "Bearer $token"
         
-        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
+        // Menggunakan getAllTransactions dan filter manual untuk menghindari 404 pada endpoint per-user
+        ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null && response.isSuccessful) {
-                    userTransactions = response.body()?.data ?: emptyList()
+                    val allTransactions = response.body()?.data ?: emptyList()
+                    // Filter transaksi milik user yang sedang login
+                    userTransactions = allTransactions.filter { it.userId == userId }
                     loadFines(authHeader)
                 } else {
                     handleError("Gagal memuat riwayat transaksi")
@@ -131,14 +134,16 @@ class DetailDendaFragment : Fragment() {
                     binding.progressBarDenda.visibility = View.GONE
                     if (response.isSuccessful) {
                         val allFines = response.body()?.data ?: emptyList()
-                        
-                        // Filter denda yang HANYA milik transaksi user ini
-                        val transactionIds = userTransactions.map { it.id }
-                        userFines = allFines.filter { it.transaksiId in transactionIds }
-                        
+
+                        // Ambil daftar ID transaksi milik user ini
+                        val userTransactionIds = userTransactions.map { it.id }
+
+                        // Filter denda: Cari yang transaksi_id nya ada di riwayat transaksi user ini
+                        userFines = allFines.filter { fine ->
+                            userTransactionIds.contains(fine.transaksiId)
+                        }
+
                         updateUI()
-                    } else {
-                        handleError("Gagal memuat data denda")
                     }
                 }
             }
@@ -149,18 +154,33 @@ class DetailDendaFragment : Fragment() {
     }
 
     private fun updateUI() {
-        var total = 0
-        userFines.forEach { 
-            total += it.totalDenda.toIntOrNull() ?: 0 
-        }
 
-        binding.tvDetailTotalDenda.text = "Rp: $total"
-        binding.tvJumlahBukuDenda.text = "${userFines.size} Buku Bermasalah"
+       // Menjumlahkan HANYA denda yang memiliki status "belumdibayar"
+       val totalDendaBelumBayar = userFines
+           .filter { it.status == "belumdibayar" }
+           .sumOf { it.totalDenda.toIntOrNull() ?: 0 }
 
+        // Tampilkan total denda yang belum dibayar di Header
+            binding.tvDetailTotalDenda.text = "Rp $totalDendaBelumBayar"
+        
+        // Jumlah buku bermasalah (semua buku yang ada di list denda user)
+        binding.tvJumlahBukuDenda.text = "${userFines.size} Tidak di temukan"
+
+        // Ambil ID transaksi yang memiliki denda (baik lunas maupun belum)
         val fineTransactionIds = userFines.map { it.transaksiId }
         val transactionsWithFine = userTransactions.filter { it.id in fineTransactionIds }
 
-        historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, userFines)
+        // Urutkan transaksi terbaru di atas
+        val sortedTransactions = transactionsWithFine.sortedByDescending { it.id }
+
+        // Update adapter dengan data denda yang sudah difilter
+        historyAdapter.updateData(sortedTransactions, allBooks, allAuthors, userFines)
+
+        if (userFines.isEmpty()) {
+            binding.rvBukuDenda.visibility = View.GONE
+        } else {
+            binding.rvBukuDenda.visibility = View.VISIBLE
+        }
     }
 
     private fun handleError(message: String?) {
