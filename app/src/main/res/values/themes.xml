@@ -43,6 +43,13 @@
 
     <style name="Theme.ElibraryPetik" parent="Base.Theme.ElibraryPetik" />
 
+    <!-- TEMA KHUSUS SPLASH SCREEN (MENGHILANGKAN LINGKARAN PUTIH) -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_petbook</item>
+        <item name="postSplashScreenTheme">@style/Theme.ElibraryPetik</item>
+    </style>
+
     <!-- Style for Toolbar Titles -->
     <style name="ToolbarTitleStyle" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:fontFamily">@font/poppins_semibold</item>
@@ -52,23 +59,13 @@
 
     <!-- Custom Chip Style -->
     <style name="CustomChipStyle" parent="Widget.Material3.Chip.Filter">
-        <!-- Gunakan selector background -->
         <item name="chipBackgroundColor">@color/chip_background_selector</item>
-
-        <!-- Gunakan selector teks agar warna teks ikut berubah -->
         <item name="android:textColor">@color/chip_text_selector</item>
-        
         <item name="checkedIconVisible">false</item>
-
-        <!-- Warna Garis Pinggir (opsional) -->
         <item name="chipStrokeColor">?attr/colorPrimaryFixed</item>
         <item name="chipStrokeWidth">1dp</item>
-
-        <!-- Padding dalam chip -->
         <item name="chipStartPadding">12dp</item>
         <item name="chipEndPadding">12dp</item>
-        
-        <!-- Font -->
         <item name="android:fontFamily">@font/poppins_medium</item>
         <item name="android:textSize">12sp</item>
     </style>
