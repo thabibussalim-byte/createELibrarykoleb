@@ -8,81 +8,58 @@
     android:background="@color/white"
     tools:context="com.example.petbook.ui.splash.SplashActivity">
 
-    <!-- Container Logo dengan Bayangan Halus -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="0dp"
-        app:strokeColor="#F1F5F9"
-        app:strokeWidth="1dp"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_app"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="24dp">
-
-        <ImageView
-            android:id="@+id/iv_petik"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:padding="20dp"
-            android:src="@drawable/petbook"
-            android:contentDescription="Logo PeTIK"/>
-
-    </com.google.android.material.card.MaterialCardView>
+    <!-- KITA HAPUS CARD LOGO AGAR TIDAK DUPLIKAT DENGAN SPLASH BAWAAN ANDROID 12+ -->
     
-    <TextView
-        android:id="@+id/tv_app"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PeTbook"
-        android:textSize="32sp"
-        android:fontFamily="@font/poppins_bold"
-        android:textColor="@color/color_primary"
-        android:letterSpacing="0.05"
-        app:layout_constraintTop_toBottomOf="@id/card_logo"
-        app:layout_constraintBottom_toTopOf="@id/tv_desc"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-    
-    <TextView
-        android:id="@+id/tv_desc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pesantren Teknologi Informasi dan Komunikasi"
-        android:textSize="13sp"
-        android:fontFamily="@font/roboto_regular"
-        android:textColor="@color/text_secondary"
-        android:alpha="0.8"
-        app:layout_constraintTop_toBottomOf="@id/tv_app"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp"/>
-
-    <!-- Loading Indicator -->
-    <ProgressBar
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginBottom="64dp"
-        android:indeterminateTint="@color/color_primary"
+        android:gravity="center"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_bold"
+            android:letterSpacing="0.05"
+            android:text="PeTbook"
+            android:textColor="@color/color_primary"
+            android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:alpha="0.8"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Pesantren Teknologi Informasi dan Komunikasi"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <!-- Loading Indicator diletakkan di bawah teks agar manis -->
+        <ProgressBar
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="32dp"
+            android:indeterminateTint="@color/color_primary" />
+
+    </LinearLayout>
 
     <!-- Branding Footer -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="32dp"
         android:fontFamily="@font/poppins_medium"
+        android:letterSpacing="0.2"
         android:text="DIGITAL LIBRARY"
         android:textColor="#CBD5E1"
         android:textSize="10sp"
-        android:letterSpacing="0.2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

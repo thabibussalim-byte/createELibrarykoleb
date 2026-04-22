@@ -10,9 +10,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_petbook"
+        android:icon="@mipmap/ic_petbook1"
         android:label="@string/elibrary"
-        android:roundIcon="@mipmap/ic_petbook"
+        android:roundIcon="@mipmap/ic_petbook1"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.ElibraryPetik">
@@ -20,14 +20,18 @@
         <activity
             android:name="com.example.petbook.ui.auth.AuthActivity"
             android:exported="false" />
+
+        <!-- GUNAKAN TEMA KHUSUS STARTING AGAR LINGKARAN PUTIH HILANG -->
         <activity
             android:name="com.example.petbook.ui.splash.SplashActivity"
+            android:theme="@style/Theme.App.Starting"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.example.petbook.ui.main.MainActivity"
             android:exported="true" />
@@ -37,7 +41,6 @@
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="merge">
-            <!-- This entry enables the default WorkManager initializer. -->
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup" />
