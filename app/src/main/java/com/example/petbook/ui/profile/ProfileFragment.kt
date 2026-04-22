@@ -2,7 +2,6 @@ package com.example.petbook.ui.profile
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,7 +64,7 @@ class ProfileFragment : Fragment() {
     private fun displayDataFromPrefs() {
         binding.apply {
             val nama = prefManager.getMahasantriNama()
-            tvProfileFullName.text = if (nama.isNotEmpty()) nama else prefManager.getUsername()
+            tvProfileFullName.text = nama.ifEmpty { prefManager.getUsername() ?: "-" }
             
             tvProfileJurusan.text = prefManager.getMahasantriJurusan().ifEmpty { "-" }
             tvProfileAlamat.text = prefManager.getMahasantriAlamat().ifEmpty { "-" }
@@ -97,12 +96,14 @@ class ProfileFragment : Fragment() {
                 if (_binding != null && response.isSuccessful) {
                     val userList = response.body()?.data ?: emptyList()
                     val myAccount = userList.find { it.id == currentUserId }
-                    if (myAccount != null && !myAccount.profil.isNullOrEmpty()) {
+                    if (myAccount != null) {
+                        // FIX: Kirim 5 parameter sesuai fungsi saveUser di PreferenceManager
                         prefManager.saveUser(
-                            currentUserId, 
-                            prefManager.getToken() ?: "", 
-                            prefManager.getUsername() ?: "", 
-                            myAccount.profil
+                            myAccount.id,
+                            prefManager.getToken() ?: "",
+                            myAccount.username,
+                            prefManager.getPassword() ?: "", // Ambil password lama dari prefs
+                            myAccount.profil ?: ""
                         )
                         displayDataFromPrefs()
                     }
@@ -187,8 +188,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // Klik tombol kamera untuk ganti foto
-        binding.btnEditPhoto.setOnClickListener {
+        binding.btnViewPhoto.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 

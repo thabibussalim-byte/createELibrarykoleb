@@ -60,10 +60,10 @@
                     app:layout_constraintEnd_toEndOf="@id/card_profile_image">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_camera" 
+                        android:src="@drawable/ic_camera"
                         app:tint="@color/white" />
                 </com.google.android.material.card.MaterialCardView>
 
