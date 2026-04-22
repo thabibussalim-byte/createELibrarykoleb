@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+//    alias(libs.plugins.google.devtools.ksp)
     id("kotlin-parcelize")
 }
 
@@ -56,7 +57,15 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    
-    // MPAndroidChart Library
+    implementation(libs.material.v1110)
+
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.mpandroidchart)
+    implementation(libs.androidx.work.runtime.ktx)
+
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+//    implementation("androidx.room:room-runtime:2.6.1")
+//    ksp("androidx.room:room-compiler:2.6.1")
+//    implementation("androidx.room:room-ktx:2.6.1")
 }

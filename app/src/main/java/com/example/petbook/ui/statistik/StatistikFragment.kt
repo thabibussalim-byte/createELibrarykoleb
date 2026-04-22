@@ -18,6 +18,7 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,16 +54,16 @@ class StatistikFragment : Fragment() {
         if (token.isNullOrEmpty()) return
 
         val authHeader = "Bearer $token"
+        showLoading(true)
 
-        // Mencoba mengambil history spesifik user
         ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
                     if (response.isSuccessful && !response.body()?.data.isNullOrEmpty()) {
+                        showLoading(false)
                         val data = response.body()?.data ?: emptyList()
                         setupChartAndDetails(data)
                     } else {
-                        // FALLBACK: Jika endpoint spesifik gagal, ambil semua lalu filter manual (seperti di HistoryFragment)
                         loadAllTransactionsFallback(authHeader, userId)
                     }
                 }
@@ -76,17 +77,21 @@ class StatistikFragment : Fragment() {
     private fun loadAllTransactionsFallback(authHeader: String, userId: Int) {
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    val rawData = response.body()?.data ?: emptyList()
-                    val filteredData = rawData.filter { it.userId == userId }
-                    
-                    if (filteredData.isEmpty()) {
-                        Toast.makeText(requireContext(), "Tidak ada data untuk statistik", Toast.LENGTH_SHORT).show()
+                if (_binding != null) {
+                    showLoading(false)
+                    if (response.isSuccessful) {
+                        val rawData = response.body()?.data ?: emptyList()
+                        val filteredData = rawData.filter { it.userId == userId }
+                        
+                        if (filteredData.isEmpty()) {
+                            Toast.makeText(requireContext(), "Tidak ada data untuk statistik", Toast.LENGTH_SHORT).show()
+                        }
+                        setupChartAndDetails(filteredData)
                     }
-                    setupChartAndDetails(filteredData)
                 }
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                if (_binding != null) showLoading(false)
                 Log.e("Statistik", "Fallback Failure: ${t.message}")
             }
         })
@@ -97,15 +102,12 @@ class StatistikFragment : Fragment() {
         val countSelesai = list.count { it.status.lowercase() == "dikembalikan" || it.status.lowercase() == "selesai" }
         val countPending = list.count { it.status.lowercase() == "pending" }
 
-        // Update Text Details
         binding.tvCountDipinjam.text = countDipinjam.toString()
         binding.tvCountSelesai.text = countSelesai.toString()
         binding.tvCountPending.text = countPending.toString()
 
-        // Jika tidak ada data, jangan gambar grafik agar tidak error
         if (list.isEmpty()) return
 
-        // Setup Chart
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(0f, countDipinjam.toFloat()))
         entries.add(BarEntry(1f, countSelesai.toFloat()))
@@ -113,39 +115,55 @@ class StatistikFragment : Fragment() {
 
         val dataSet = BarDataSet(entries, "")
         dataSet.colors = listOf(
-            Color.parseColor("#60A5FA"), // Blue
-            Color.parseColor("#34D399"), // Green
-            Color.parseColor("#FBBF24")  // Amber
+            Color.parseColor("#60A5FA"),
+            Color.parseColor("#34D399"),
+            Color.parseColor("#FBBF24")
         )
         dataSet.valueTextColor = Color.BLACK
         dataSet.valueTextSize = 12f
+        
+        // Menghilangkan koma (desimal) pada angka di atas batang
+        dataSet.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return value.toInt().toString()
+            }
+        }
 
         val barData = BarData(dataSet)
-        barData.barWidth = 0.5f // Membuat batang tidak terlalu lebar
+        barData.barWidth = 0.5f
 
         binding.barChartStatistik.apply {
             data = barData
             description.isEnabled = false
             legend.isEnabled = false
             
-            // Konfigurasi Sumbu X
-            val labels = arrayOf("Dipinjam", "Selesai", "Pending")
-            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("Dipinjam", "Selesai", "Pending"))
             xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
             xAxis.setDrawGridLines(false)
             xAxis.granularity = 1f
             xAxis.labelCount = 3
             xAxis.setDrawAxisLine(true)
             
-            // Konfigurasi Sumbu Y
+            // Menghilangkan koma (desimal) pada sumbu Y
             axisLeft.setDrawGridLines(false)
-            axisLeft.axisMinimum = 0f // Mulai dari angka 0
+            axisLeft.axisMinimum = 0f
+            axisLeft.granularity = 1f
+            axisLeft.valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    return value.toInt().toString()
+                }
+            }
+            
             axisRight.isEnabled = false
             
             setFitBars(true)
             animateY(1000)
             invalidate()
         }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

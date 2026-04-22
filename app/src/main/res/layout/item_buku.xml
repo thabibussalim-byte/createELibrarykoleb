@@ -8,8 +8,8 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="3dp"
     app:strokeWidth="1dp"
-    app:strokeColor="#F1F5F9"
-    android:backgroundTint="@color/white">
+    app:strokeColor="?attr/colorOnSecondaryFixed"
+    android:backgroundTint="?attr/colorOnSecondaryContainer">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:maxLines="1"
                 tools:text="Bintang"
-                android:textColor="@color/text_primary"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="14sp" />
 
             <TextView
@@ -49,7 +49,7 @@
                 android:layout_marginTop="2dp"
                 android:fontFamily="@font/roboto_regular"
                 tools:text="Tere Liye"
-                android:textColor="@color/text_secondary"
+                android:textColor="?android:textColorSecondary"
                 android:textSize="12sp" />
 
             <RatingBar

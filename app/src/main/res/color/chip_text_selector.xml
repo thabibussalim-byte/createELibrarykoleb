@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Warna teks saat chip terpilih (Checked) -->
+    <item android:color="?attr/colorOnSecondary" android:state_checked="true" />
+    
+    <!-- Warna teks default saat tidak terpilih -->
+    <item android:color="?attr/colorControlNormal" />
+</selector>

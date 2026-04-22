@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <!-- Brand Colors -->
     <color name="primary_blue">#1E3C72</color>
     <color name="primary_blue_light">#2A5298</color>
@@ -38,4 +39,45 @@
     <color name="filter_text">#2563EB</color>
     <color name="filter_stroke">#2563EB</color>
     <color name="red">#E53935</color>
+
+
+    <!-- Brand Colors (Dark Mode) -->
+    <color name="primary_blue_mode_dark">#132242</color>
+    <color name="primary_blue_light_mode_dark">#1D3868</color>
+    <color name="accent_blue_mode_dark">#315590</color>
+
+    <!-- Status Colors (Dark Mode) -->
+    <color name="success_green_mode_dark">#3C833C</color>
+    <color name="error_red_mode_dark">#872220</color>
+    <color name="pending_orange_mode_dark">#7A5928</color> <!-- sedikit lebih terang agar kontras -->
+
+    <!-- Neutral Colors (Dark Mode) -->
+    <color name="black_mode_dark">#FFFFFF</color>
+    <color name="white_mode_dark">#000000</color>
+    <color name="background_dark_mode_dark">#121212</color>
+    <color name="surface_dark_mode_dark">#1E1E1E</color>
+
+    <!-- Text Colors (Dark Mode) -->
+    <color name="text_primary_mode_dark">#F9FAFB</color>
+    <color name="text_secondary_mode_dark">#D1D5DB</color>
+    <color name="text_hint_mode_dark">#AFB2B8</color>
+
+    <!-- Existing Colors (Preserved for compatibility, adjusted for dark mode) -->
+    <color name="blue_mode_dark">#11467A</color>
+    <color name="gray_mode_dark">#626262</color>
+    <color name="light_gray_mode_dark">#141414</color>
+    <color name="gray1_mode_dark">#3A3A3A</color>
+    <color name="primary_mode_dark">#252E6A</color>
+    <color name="primary_dark_mode_dark">#151A42</color>
+    <color name="search_bg_mode_dark">#1F2937</color>
+    <color name="color_primary_mode_dark">#15337A</color>
+    <color name="filter_bg_default_mode_dark">#111721</color>
+    <color name="filter_text_default_mode_dark">#53555B</color>
+    <color name="filter_active_mode_dark">#17347A</color>
+    <color name="filter_text_active_mode_dark">#090909</color>
+    <color name="filter_bg_mode_dark">#090909</color>
+    <color name="filter_text_mode_dark">#11275B</color>
+    <color name="filter_stroke_mode_dark">#10265B</color>
+    <color name="red_mode_dark">#761E1C</color>
+
 </resources>

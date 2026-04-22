@@ -41,7 +41,7 @@ class HelpFragment : Fragment() {
         binding.btnFaq2.setOnClickListener {
             navigateToDetail(
                 "Berapa lama waktu peminjaman?",
-                "Waktu peminjaman buku standarnya adalah 7 hari kalender. Anda dapat melihat tanggal jatuh tempo pengembalian di menu Riwayat Peminjaman."
+                "Waktu peminjaman buku standarnya adalah 7 hari kalender sampai maksimal waktu peminjaman 14 hari kalender. Anda dapat melihat tanggal jatuh tempo pengembalian di menu Riwayat Peminjaman."
             )
         }
 
@@ -65,7 +65,7 @@ class HelpFragment : Fragment() {
         binding.btnFaq5.setOnClickListener {
             navigateToDetail(
                 "Apakah ada denda keterlambatan?",
-                "Ya, denda keterlambatan berlaku sebesar Rp 1.000 per hari untuk setiap buku yang terlambat dikembalikan. Pastikan mengembalikan tepat waktu untuk menghindari denda."
+                "Ya, denda keterlambatan berlaku sebesar Rp 2.000 per hari untuk setiap buku yang terlambat dikembalikan. Pastikan mengembalikan tepat waktu untuk menghindari denda."
             )
         }
 

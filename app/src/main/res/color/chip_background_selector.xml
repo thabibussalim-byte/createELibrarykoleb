@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Saat Chip dipilih (checked) -->
+    <item android:color="?attr/colorPrimaryFixed" android:state_checked="true" />
+    
+    <!-- Saat Chip tidak dipilih (default) -->
+    <item android:color="?attr/colorOnSecondaryContainer" />
+</selector>

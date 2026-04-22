@@ -57,7 +57,14 @@ interface ApiService {
     @GET("api/mahasantri")
     fun getMahasantri(@Header("Authorization") token: String): Call<MahasantriResponse>
 
+    @PATCH("api/user/update/{id}")
+    fun updateUser(
+        @Header("Authorization") token: String,
+        @Path("id") userId: Int,
+        @Body request: UpdateUserRequest
+    ): Call<BorrowResponse>
+
+
     @GET("api/user")
     fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
-
 }

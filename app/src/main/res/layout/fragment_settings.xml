@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F7FA"
+    android:fillViewport="true"
     tools:context=".ui.pengaturan.SettingsFragment">
 
     <LinearLayout
@@ -28,9 +29,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
-            app:strokeWidth="0dp">
+            app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -63,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/roboto_regular"
-                    android:text="Ganti tema aplikasi menjadi gelap atau terang."
+                    android:text="Ganti tema aplikasi menjadi \ngelap atau terang"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
                     app:layout_constraintStart_toEndOf="@id/iv_dark_mode"
@@ -95,9 +96,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
-            app:strokeWidth="0dp">
+            app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -130,7 +131,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/roboto_regular"
-                    android:text="Atur pengingat dan promosi aplikasi."
+                    android:text="Atur pengingat dan promosi \naplikasi."
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
                     app:layout_constraintStart_toEndOf="@id/iv_notif"
@@ -153,9 +154,9 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
-            app:strokeWidth="0dp">
+            app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
