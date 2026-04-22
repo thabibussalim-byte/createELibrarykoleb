@@ -9,7 +9,7 @@ import org.json.JSONObject
 class PreferenceManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    fun saveUser(id: Int, token: String, username: String,password: String, profileUrl: String) {
+    fun saveUser(id: Int, token: String,password: String ,username: String, profileUrl: String) {
         val editor = prefs.edit()
         editor.putInt("user_id", id)
         editor.putString("token", token)
@@ -72,11 +72,9 @@ class PreferenceManager(context: Context) {
 
     fun getUsername(): String? = prefs.getString("username", "")
     fun getProfileUrl(): String? = prefs.getString("profile_url", "")
-
     fun getToken(): String? = prefs.getString("token", "")
-
     fun getPassword(): String? = prefs.getString("password", "")
-    
+
     fun clear() {
         prefs.edit().clear().apply()
     }

@@ -83,19 +83,15 @@ class HistoryAdapter(
 
             // LOGIKA BARU: Denda hanya muncul jika status sudah DIKEMBALIKAN atau SELESAI
             val isReturned = status == "dikembalikan" || status == "selesai"
-            // Di dalam HistoryAdapter.kt, bagian onBindViewHolder
-            // Di dalam onBindViewHolder HistoryAdapter.kt
-            val fine = listFines.find { it.transaksiId == history.id }
             val dendaAmount = fine?.totalDenda?.toIntOrNull() ?: 0
 
-            if (dendaAmount > 0) {
+            if (isReturned && dendaAmount > 0) {
                 tvHistoryFine.visibility = View.VISIBLE
                 val statusBayar = if (fine?.status == "dibayar") "(Lunas)" else "(Belum Bayar)"
                 tvHistoryFine.text = "Denda: Rp $dendaAmount $statusBayar"
             } else {
                 tvHistoryFine.visibility = View.GONE
             }
-//            }
 
             Glide.with(holder.itemView.context)
                 .load(book?.foto)

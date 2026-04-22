@@ -75,6 +75,7 @@ class BookFragment : Fragment() {
 
         bookKatalogAdapter.updateData(filteredList)
         binding.tvStatusLabel.text = "Hasil pencarian: '${query}' (${filteredList.size} buku)"
+        
         binding.layoutEmptyState.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
     }
 
@@ -84,8 +85,6 @@ class BookFragment : Fragment() {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allGenres = response.body()?.data ?: emptyList()
-                    bookKatalogAdapter.updateGenres(allGenres) // UPDATE GENRE KE ADAPTER
-                    
                     binding.chipGroupBookFilter.removeAllViews()
                     addChipToGroup(-1, "Semua", true)
                     for (genre in allGenres) {
@@ -130,7 +129,7 @@ class BookFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        bookKatalogAdapter = BookKatalogAdapter(emptyList(), emptyList(), emptyList()) { book, rating ->
+        bookKatalogAdapter = BookKatalogAdapter(emptyList(), emptyList()) { book, rating ->
             val authorName = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
             val publisherName = allPublishers.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
             val genreName = allGenres.find { it.id == book.genreId }?.namaGenre ?: "Umum"
@@ -177,26 +176,27 @@ class BookFragment : Fragment() {
         chip.isCheckable = true
         chip.isChecked = isDefault
         
+        // 1. Background State
         val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
         val backgroundColors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
         chip.chipBackgroundColor = ColorStateList(states, backgroundColors)
 
+        // 2. Text Color State (PERBAIKAN: setTextColor)
         val textColors = intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))
         chip.setTextColor(ColorStateList(states, textColors))
+        
         chip.chipStrokeWidth = 0f
 
-        chip.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                if (genreId == -1) {
-                    bookKatalogAdapter.updateData(allBooks)
-                    binding.tvStatusLabel.text = "Menampilkan semua koleksi"
-                } else {
-                    val filtered = allBooks.filter { it.genreId == genreId }
-                    bookKatalogAdapter.updateData(filtered)
-                    binding.tvStatusLabel.text = "Kategori: $name (${filtered.size} buku)"
-                }
-                binding.searchViewBook.setQuery("", false)
+        chip.setOnClickListener {
+            if (genreId == -1) {
+                bookKatalogAdapter.updateData(allBooks)
+                binding.tvStatusLabel.text = "Menampilkan semua koleksi"
+            } else {
+                val filtered = allBooks.filter { it.genreId == genreId }
+                bookKatalogAdapter.updateData(filtered)
+                binding.tvStatusLabel.text = "Kategori: $name (${filtered.size} buku)"
             }
+            binding.searchViewBook.setQuery("", false)
         }
         binding.chipGroupBookFilter.addView(chip)
     }
