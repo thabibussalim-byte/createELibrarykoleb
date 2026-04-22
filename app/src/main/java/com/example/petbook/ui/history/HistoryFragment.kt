@@ -15,9 +15,12 @@ import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentHistoryBinding
+import com.example.petbook.utils.NotificationHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HistoryFragment : Fragment() {
 
@@ -26,6 +29,7 @@ class HistoryFragment : Fragment() {
 
     private lateinit var historyAdapter: HistoryAdapter
     private lateinit var prefManager: PreferenceManager
+    private lateinit var notificationHelper: NotificationHelper
     
     private var allHistory: List<HistoryDataItem> = emptyList()
     private var allBooks: List<BookItem> = emptyList()
@@ -38,6 +42,7 @@ class HistoryFragment : Fragment() {
     ): View {
         _binding = FragmentHistoryBinding.inflate(inflater, container, false)
         prefManager = PreferenceManager(requireContext())
+        notificationHelper = NotificationHelper(requireContext())
         return binding.root
     }
 
@@ -45,7 +50,7 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        applyChipStyles() // TERAPKAN WARNA YANG SAMA DENGAN HOME/KATALOG
+        applyChipStyles()
         setupFilters()
         loadRequiredData()
     }
@@ -56,18 +61,17 @@ class HistoryFragment : Fragment() {
             intArrayOf(-android.R.attr.state_checked)
         )
         val backgroundColors = intArrayOf(
-            Color.parseColor("#DBEAFE"), // Biru Muda (Selected)
-            Color.parseColor("#F1F5F9")  // Abu-abu (Unselected)
+            Color.parseColor("#DBEAFE"),
+            Color.parseColor("#F1F5F9")
         )
         val textColors = intArrayOf(
-            Color.parseColor("#1E40AF"), // Biru Tua (Selected)
-            Color.parseColor("#64748B")  // Abu-abu (Unselected)
+            Color.parseColor("#1E40AF"),
+            Color.parseColor("#64748B")
         )
 
         val colorStateListBg = ColorStateList(states, backgroundColors)
         val colorStateListText = ColorStateList(states, textColors)
 
-        // List semua chip yang ada di layout history
         val chips = listOf(
             binding.chipAll,
             binding.chipPending,
@@ -180,9 +184,10 @@ class HistoryFragment : Fragment() {
         ApiConfig.getApiService().getHistoryByUser(authHeader, currentUserId).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
+                    binding.progressBarHistory.visibility = View.GONE
                     if (response.isSuccessful) {
-                        binding.progressBarHistory.visibility = View.GONE
                         allHistory = response.body()?.data ?: emptyList()
+                        checkStatusChangesAndNotify(allHistory)
                         historyAdapter.updateData(allHistory, allBooks, allAuthors, allFines)
                     } else {
                         loadAllTransactionsFallback(authHeader, currentUserId)
@@ -203,6 +208,7 @@ class HistoryFragment : Fragment() {
                     if (response.isSuccessful) {
                         val rawData = response.body()?.data ?: emptyList()
                         allHistory = rawData.filter { it.userId == userId }
+                        checkStatusChangesAndNotify(allHistory)
                         historyAdapter.updateData(allHistory, allBooks, allAuthors, allFines)
                     }
                 }
@@ -211,6 +217,62 @@ class HistoryFragment : Fragment() {
                 if (_binding != null) binding.progressBarHistory.visibility = View.GONE
             }
         })
+    }
+
+    private fun checkStatusChangesAndNotify(historyList: List<HistoryDataItem>) {
+        val now = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC") // Sesuaikan timezone server
+
+        for (item in historyList) {
+            val lastStatus = prefManager.getLastTransactionStatus(item.id)
+            val currentStatus = item.status.lowercase()
+            val book = allBooks.find { it.id == item.bukuId }
+            val bookTitle = book?.judulBuku ?: "Buku"
+
+            // 1. Cek jika baru meminjam (status pending/dipinjam & baru dibuat < 10 menit)
+            try {
+                val tglPinjamDate = dateFormat.parse(item.tglPinjam)
+                val diffMinutes = if (tglPinjamDate != null) (now - tglPinjamDate.time) / (1000 * 60) else Long.MAX_VALUE
+                
+                if (diffMinutes < 10 && !prefManager.isStatusNotified(item.id, "new_loan")) {
+                    notificationHelper.showNotification(
+                        item.id,
+                        "Peminjaman Berhasil",
+                        "Anda telah meminjam buku $bookTitle. Harap dikembalikan tepat waktu."
+                    )
+                    prefManager.setStatusNotified(item.id, "new_loan")
+                }
+            } catch (e: Exception) {
+                Log.e("History", "Error parsing date: ${e.message}")
+            }
+
+            // 2. Cek perubahan dari pending ke dipinjam (kurang dari 10 menit sejak perubahan/load)
+            if (lastStatus == "pending" && currentStatus == "dipinjam") {
+                if (!prefManager.isStatusNotified(item.id, "dipinjam")) {
+                    notificationHelper.showNotification(
+                        item.id + 1000, // ID unik
+                        "Status Diperbarui",
+                        "Permintaan pinjam buku $bookTitle telah disetujui."
+                    )
+                    prefManager.setStatusNotified(item.id, "dipinjam")
+                }
+            }
+
+            // 3. Cek perubahan ke dikembalikan & arahkan ke fragment sukses
+            if (currentStatus == "dikembalikan" && lastStatus != "dikembalikan") {
+                if (!prefManager.isSuccessScreenShown(item.id)) {
+                    prefManager.setSuccessScreenShown(item.id)
+                    val bundle = Bundle().apply {
+                        putString("book_title", bookTitle)
+                    }
+                    findNavController().navigate(R.id.successReturnFragment, bundle)
+                }
+            }
+
+            // Simpan status terakhir
+            prefManager.saveLastTransactionStatus(item.id, currentStatus)
+        }
     }
 
     private fun setupFilters() {

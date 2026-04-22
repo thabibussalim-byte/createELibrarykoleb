@@ -4,11 +4,15 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.petbook.data.api.ApiConfig
+import com.example.petbook.data.api.model.FineDataItem
 import com.example.petbook.data.pref.PreferenceManager
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+
+    private var unpaidFines: List<FineDataItem> = emptyList()
 
     override fun doWork(): Result {
         val prefManager = PreferenceManager(applicationContext)
@@ -77,20 +81,27 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                 for (fine in finesList) {
                     val lastStatus = sharedPrefs.getString("fine_status_${fine.id}", null)
                     val currentStatus = fine.status.lowercase()
+                    var total = 0
+                    unpaidFines.forEach { fine ->
+                        val cleanAmount = fine.totalDenda.replace(Regex("[^0-9]"), "")
+                        total += cleanAmount.toIntOrNull() ?: 0
+                    }
+                    val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
 
                     // Jika status "belum dibayar" atau "belum_lunas" (tergantung string API)
                     if (currentStatus.contains("belumdibayar")) {
                         notificationHelper.showNotification(
                             NotificationHelper.NOTIFICATION_ID_REMINDER,
                             "Tagihan Denda Aktif",
-                            "Anda memiliki denda sebesar Rp ${fine.totalDenda} yang belum dibayar."
+                            "Anda memiliki denda sebesar Rp ${formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp: ")} yang belum dibayar."
                         )
+
                     } else if (lastStatus != null && lastStatus.contains("belumdibayar") && currentStatus.contains("lunas") || currentStatus.contains("dibayar")) {
                         // Notifikasi jika denda baru saja dibayar
                         notificationHelper.showNotification(
                             NotificationHelper.NOTIFICATION_ID_REMINDER,
                             "Pembayaran Berhasil",
-                            "Terima kasih, denda #${fine.totalDenda} untuk transaksi telah berhasil dibayar."
+                            "Terima kasih, denda #${formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp: ")} untuk transaksi telah berhasil dibayar."
                         )
                     }
                     

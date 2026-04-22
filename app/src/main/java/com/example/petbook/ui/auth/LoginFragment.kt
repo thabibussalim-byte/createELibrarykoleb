@@ -60,8 +60,8 @@ class LoginFragment : Fragment() {
                             prefManager.saveUser(
                                 data?.id ?: -1, // Menyimpan ID User dari API
                                 data?.token ?: "",
-                                data?.username ?: username,
                                 data?.password ?: password,
+                                data?.username ?: username,
                                 data?.profil ?: ""
                             )
 

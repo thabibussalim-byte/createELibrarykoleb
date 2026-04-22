@@ -25,6 +25,10 @@ class SuccessReturnFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Ambil nama buku dari bundle
+        val bookTitle = arguments?.getString("book_title") ?: "Buku"
+        binding.tvSuccessMessage.text = "Buku $bookTitle berhasil dikembalikan. Teruslah membaca untuk memperluas wawasan!"
+
         // 1. Tombol Utama: Pinjam Buku Lagi (Arahkan ke Katalog)
         binding.btnToCatalog.setOnClickListener {
             findNavController().navigate(R.id.bookFragment)

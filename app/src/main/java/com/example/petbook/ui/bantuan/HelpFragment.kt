@@ -57,7 +57,7 @@ class HelpFragment : Fragment() {
         binding.btnFaq4.setOnClickListener {
             navigateToDetail(
                 "Bagaimana cara mengembalikan buku?",
-                "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Selesai'."
+                "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Dikembalikan'."
             )
         }
 

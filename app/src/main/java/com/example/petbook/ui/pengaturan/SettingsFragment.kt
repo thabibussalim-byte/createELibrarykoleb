@@ -30,7 +30,10 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var prefManager: PreferenceManager
+
+    private val prefManager: PreferenceManager by lazy {
+        PreferenceManager(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +50,7 @@ class SettingsFragment : Fragment() {
         val pref = SettingPreferences.getInstance(requireContext().dataStore)
         val settingsViewModel =
             ViewModelProvider(this, ViewModelFactory(pref))[SettingsViewModel::class.java]
-        prefManager = PreferenceManager(requireContext())
+
 
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.saveThemeSetting(isChecked)

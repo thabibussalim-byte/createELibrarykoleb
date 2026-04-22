@@ -17,6 +17,7 @@ import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.BookItem
 import com.example.petbook.data.api.model.BorrowRequest
 import com.example.petbook.data.api.model.BorrowResponse
+import com.example.petbook.data.api.model.HistoryResponse
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailpeminjamanBinding
 import com.example.petbook.utils.StatusCheckWorker
@@ -58,10 +59,60 @@ class DetailpeminjamanFragment : Fragment() {
         setupAutoCalculateReturnDate()
 
         binding.btnPinjamFinal.setOnClickListener {
-            if (book != null) {
-                performBorrowAction(book.id)
+            if (book == null) {
+                Toast.makeText(requireContext(), "Buku tidak ditemukan", Toast.LENGTH_SHORT).show()
+            } else if (book.stok <= 0) {
+                Toast.makeText(requireContext(), "Maaf, stok buku sedang kosong", Toast.LENGTH_SHORT).show()
+            } else {
+                checkHistoryAndBorrow(book)
             }
         }
+    }
+
+    private fun checkHistoryAndBorrow(book: BookItem) {
+        val token = prefManager.getToken()
+        if (token.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Sesi habis, login kembali", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        binding.progressBarBorrow.visibility = View.VISIBLE
+        binding.btnPinjamFinal.isEnabled = false
+
+        val authHeader = "Bearer $token"
+        
+        // Cek history transaksi user secara keseluruhan
+        ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
+            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                if (response.isSuccessful) {
+                    val history = response.body()?.data ?: emptyList()
+                    
+                    // Cek apakah ada status 'dipinjam' atau 'pending' di seluruh list history
+                    val hasActiveLoan = history.any { 
+                        it.status.lowercase() == "dipinjam" || it.status.lowercase() == "pending" 
+                    }
+
+                    if (hasActiveLoan) {
+                        binding.progressBarBorrow.visibility = View.GONE
+                        binding.btnPinjamFinal.isEnabled = true
+                        Toast.makeText(requireContext(), "Gagal! Anda masih memiliki peminjaman aktif atau pending.", Toast.LENGTH_LONG).show()
+                    } else {
+                        // Jika tidak ada status dipinjam/pending di history, lanjutkan peminjaman
+                        performBorrowAction(book.id)
+                    }
+                } else {
+                    binding.progressBarBorrow.visibility = View.GONE
+                    binding.btnPinjamFinal.isEnabled = true
+                    Toast.makeText(requireContext(), "Gagal memvalidasi riwayat peminjaman", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                binding.progressBarBorrow.visibility = View.GONE
+                binding.btnPinjamFinal.isEnabled = true
+                Toast.makeText(requireContext(), "Terjadi kesalahan koneksi", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun setupMaterialDatePicker() {
@@ -87,6 +138,8 @@ class DetailpeminjamanFragment : Fragment() {
 
         if (lamaPinjamStr.isEmpty()) {
             binding.etLamaPinjam.error = "Harap isi durasi"
+            binding.progressBarBorrow.visibility = View.GONE
+            binding.btnPinjamFinal.isEnabled = true
             return
         }
 
@@ -94,17 +147,13 @@ class DetailpeminjamanFragment : Fragment() {
         
         if (days > 14) {
             Toast.makeText(requireContext(), "Maksimal peminjaman 14 hari", Toast.LENGTH_LONG).show()
+            binding.progressBarBorrow.visibility = View.GONE
+            binding.btnPinjamFinal.isEnabled = true
             return
         }
 
-        val token = prefManager.getToken()
-        if (token.isNullOrEmpty()) {
-            Toast.makeText(requireContext(), "Sesi habis, login kembali", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        binding.progressBarBorrow.visibility = View.VISIBLE
-        binding.btnPinjamFinal.isEnabled = false
+        val token = prefManager.getToken() ?: ""
+        val authHeader = "Bearer $token"
 
         val sdfApi = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val tglPinjam = sdfApi.format(calendar.time)
@@ -114,7 +163,6 @@ class DetailpeminjamanFragment : Fragment() {
         val tglKembali = sdfApi.format(returnCalendar.time)
 
         val request = BorrowRequest(tglPinjam, tglKembali, bookId)
-        val authHeader = "Bearer $token"
 
         ApiConfig.getApiService().createBorrow(authHeader, request).enqueue(object : Callback<BorrowResponse> {
             override fun onResponse(call: Call<BorrowResponse>, response: Response<BorrowResponse>) {
@@ -123,12 +171,8 @@ class DetailpeminjamanFragment : Fragment() {
                 
                 if (response.isSuccessful && response.body()?.status == "success") {
                     Toast.makeText(requireContext(), "Permintaan peminjaman berhasil \n Silakan tunggu konfirmasi admin!", Toast.LENGTH_SHORT).show()
-                    
-                    // START WORKER UNTUK CEK STATUS
                     startStatusCheckWorker()
-                    
                     findNavController().navigate(R.id.historyFragment)
-                    
                 } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = if (errorBody != null) {
@@ -167,7 +211,7 @@ class DetailpeminjamanFragment : Fragment() {
 
         WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
             "BorrowStatusCheck",
-            ExistingPeriodicWorkPolicy.REPLACE, // Pakai REPLACE agar reset timer 3 hari jika ada pinjaman baru
+            ExistingPeriodicWorkPolicy.REPLACE,
             statusWorkRequest
         )
     }

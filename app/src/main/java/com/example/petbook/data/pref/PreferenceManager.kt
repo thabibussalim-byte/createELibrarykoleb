@@ -75,6 +75,33 @@ class PreferenceManager(context: Context) {
     fun getToken(): String? = prefs.getString("token", "")
     fun getPassword(): String? = prefs.getString("password", "")
 
+    // Simpan status terakhir transaksi untuk deteksi perubahan
+    fun saveLastTransactionStatus(transactionId: Int, status: String) {
+        prefs.edit().putString("trans_status_$transactionId", status).apply()
+    }
+
+    fun getLastTransactionStatus(transactionId: Int): String? {
+        return prefs.getString("trans_status_$transactionId", null)
+    }
+
+    // Tandai jika notifikasi perubahan status sudah ditampilkan
+    fun setStatusNotified(transactionId: Int, status: String) {
+        prefs.edit().putBoolean("notified_${transactionId}_$status", true).apply()
+    }
+
+    fun isStatusNotified(transactionId: Int, status: String): Boolean {
+        return prefs.getBoolean("notified_${transactionId}_$status", false)
+    }
+
+    // Tandai jika success screen sudah ditampilkan untuk buku tertentu
+    fun setSuccessScreenShown(transactionId: Int) {
+        prefs.edit().putBoolean("success_shown_$transactionId", true).apply()
+    }
+
+    fun isSuccessScreenShown(transactionId: Int): Boolean {
+        return prefs.getBoolean("success_shown_$transactionId", false)
+    }
+
     fun clear() {
         prefs.edit().clear().apply()
     }
