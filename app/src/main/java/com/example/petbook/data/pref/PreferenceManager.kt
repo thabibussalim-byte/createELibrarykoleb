@@ -20,7 +20,6 @@ class PreferenceManager(context: Context) {
         editor.apply()
     }
 
-    // Fungsi untuk menyimpan URI foto yang dipilih dari galeri secara lokal
     fun saveLocalProfileUri(uri: String) {
         prefs.edit().putString("local_profile_uri", uri).apply()
     }

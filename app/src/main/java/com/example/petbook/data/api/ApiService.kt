@@ -30,13 +30,6 @@ interface ApiService {
         @Body request: BorrowRequest
     ): Call<BorrowResponse>
 
-    @PATCH("api/transaksi/update/{id}")
-    fun updateTransaction(
-        @Header("Authorization") token: String,
-        @Path("id") transactionId: Int,
-        @Body request: BorrowRequest
-    ): Call<BorrowResponse>
-
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
 
@@ -64,6 +57,12 @@ interface ApiService {
         @Body request: UpdateUserRequest
     ): Call<BorrowResponse>
 
+    @PATCH("api/buku/update/{id}")
+    fun updateBook(
+        @Header("Authorization") token: String,
+        @Path("id") bookId: Int,
+        @Body request: Map<String, @JvmSuppressWildcards Any>
+    ): Call<UpdateBookResponse>
 
     @GET("api/user")
     fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
