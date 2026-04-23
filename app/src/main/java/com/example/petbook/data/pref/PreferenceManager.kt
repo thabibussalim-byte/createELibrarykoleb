@@ -9,7 +9,13 @@ import org.json.JSONObject
 class PreferenceManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    fun saveUser(id: Int, token: String,password: String ,username: String, profileUrl: String) {
+    companion object {
+        private const val SESSION_TIMEOUT = 30 * 60 * 1000 // 30 menit
+        private const val LAST_ACTIVE_TIMESTAMP = "last_active_timestamp"
+        private const val IS_LOGGED_IN = "is_logged_in"
+    }
+
+    fun saveUser(id: Int, token: String, password: String, username: String, profileUrl: String) {
         val editor = prefs.edit()
         editor.putInt("user_id", id)
         editor.putString("token", token)
@@ -17,8 +23,36 @@ class PreferenceManager(context: Context) {
         editor.putString("password", password)
         editor.putString("profile_url", profileUrl)
         editor.putBoolean("is_logged_in", true)
+        editor.putLong("login_timestamp", System.currentTimeMillis())
+        editor.putBoolean(IS_LOGGED_IN, true)
+        editor.putLong(LAST_ACTIVE_TIMESTAMP, System.currentTimeMillis())
         editor.apply()
     }
+
+    // Fungsi untuk memperbarui waktu aktivitas (panggil ini agar session diperpanjang)
+    fun refreshSession() {
+        if (prefs.getBoolean(IS_LOGGED_IN, false)) {
+            prefs.edit().putLong(LAST_ACTIVE_TIMESTAMP, System.currentTimeMillis()).apply()
+        }
+    }
+
+    fun isLoggedIn(): Boolean {
+        val isLoggedIn = prefs.getBoolean(IS_LOGGED_IN, false)
+        if (!isLoggedIn) return false
+
+        val lastActive = prefs.getLong(LAST_ACTIVE_TIMESTAMP, 0L)
+        val currentTime = System.currentTimeMillis()
+
+
+        if (currentTime - lastActive > SESSION_TIMEOUT) {
+            clear()
+            return false
+        }
+
+        refreshSession()
+        return true
+    }
+
 
     fun saveLocalProfileUri(uri: String) {
         prefs.edit().putString("local_profile_uri", uri).apply()
@@ -83,7 +117,7 @@ class PreferenceManager(context: Context) {
         return prefs.getString("trans_status_$transactionId", null)
     }
 
-    // Tandai jika notifikasi perubahan status sudah ditampilkan
+
     fun setStatusNotified(transactionId: Int, status: String) {
         prefs.edit().putBoolean("notified_${transactionId}_$status", true).apply()
     }

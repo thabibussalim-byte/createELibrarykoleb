@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    // FUNGSI UNTUK UPDATE FOTO DAN NAMA DI DRAWER
+
     fun updateDrawerHeader() {
         val headerView: View = binding.navigationView.getHeaderView(0)
         val ivProfileHeader: ImageView = headerView.findViewById(R.id.iv_profile_header)
@@ -194,11 +194,19 @@ class MainActivity : AppCompatActivity() {
             .error(R.drawable.ic_profile)
             .into(ivProfileHeader)
     }
-
-    // Pastikan header di-update setiap kali activity kembali aktif (misal dari Profile)
     override fun onResume() {
         super.onResume()
-        updateDrawerHeader()
+        val prefManager = PreferenceManager(this)
+
+        if (!prefManager.isLoggedIn()) {
+            val intent = Intent(this, AuthActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        } else {
+            updateDrawerHeader()
+            prefManager.refreshSession()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

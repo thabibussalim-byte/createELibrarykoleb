@@ -33,6 +33,7 @@ class DetailHistoryFragment : Fragment() {
     private lateinit var prefManager: PreferenceManager
     private var currentFine: FineDataItem? = null
     private var currentHistory: HistoryDataItem? = null
+    private var currentBook: BookItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,18 +48,26 @@ class DetailHistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         currentHistory = arguments?.let { BundleCompat.getParcelable(it, "history", HistoryDataItem::class.java) }
-        val book = arguments?.let { BundleCompat.getParcelable(it, "book", BookItem::class.java) }
+        currentBook = arguments?.let { BundleCompat.getParcelable(it, "book", BookItem::class.java) }
         val authorName = arguments?.getString("author")
         currentFine = arguments?.let { BundleCompat.getParcelable(it, "fine", FineDataItem::class.java) }
 
-        if (currentHistory != null && book != null) {
-            setupUI(currentHistory!!, book, authorName)
+        if (currentHistory != null && currentBook != null) {
+            setupUI(currentHistory!!, currentBook!!, authorName)
         }
         binding.tvHelp.setOnClickListener {
             navigateToDetail(
                 "Bagaimana cara mengembalikan buku?",
                 "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Dikembalikan'."
             )
+        }
+        binding.llHistory.setOnClickListener {
+            currentBook?.let { book ->
+                val bundle = Bundle().apply {
+                    putParcelable("book", book)
+                }
+                findNavController().navigate(R.id.action_detailHistoryFragment_to_detailbookFragment, bundle)
+            }
         }
     }
     private fun navigateToDetail(title: String, answer: String) {

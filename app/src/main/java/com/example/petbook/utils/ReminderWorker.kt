@@ -9,10 +9,9 @@ import com.example.petbook.data.pref.PreferenceManager
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.content.edit
 
 class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
-
-    private var unpaidFines: List<FineDataItem> = emptyList()
 
     override fun doWork(): Result {
         val prefManager = PreferenceManager(applicationContext)
@@ -27,6 +26,7 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
         try {
             val booksResponse = ApiConfig.getApiService().getBooks().execute()
             val bookList = if (booksResponse.isSuccessful) booksResponse.body()?.data ?: emptyList() else emptyList()
+            
             // 1. CEK JATUH TEMPO & TERLAMBAT
             val historyResponse = ApiConfig.getApiService().getHistoryByUser(formattedToken, userId).execute()
             if (historyResponse.isSuccessful) {
@@ -76,37 +76,38 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
             // 2. CEK STATUS DENDA
             val fineResponse = ApiConfig.getApiService().getFines(formattedToken).execute()
             if (fineResponse.isSuccessful) {
-                val finesList = fineResponse.body()?.data ?: emptyList()
+                val allFinesList = fineResponse.body()?.data ?: emptyList()
                 
-                for (fine in finesList) {
+
+                val userHistory = if (historyResponse.isSuccessful) historyResponse.body()?.data ?: emptyList() else emptyList()
+                val userTransactionIds = userHistory.map { it.id }.toSet()
+                
+                val userFines = allFinesList.filter { userTransactionIds.contains(it.transaksiId) }
+                
+                for (fine in userFines) {
                     val lastStatus = sharedPrefs.getString("fine_status_${fine.id}", null)
                     val currentStatus = fine.status.lowercase()
-                    var total = 0
-                    unpaidFines.forEach { fine ->
-                        val cleanAmount = fine.totalDenda.replace(Regex("[^0-9]"), "")
-                        total += cleanAmount.toIntOrNull() ?: 0
-                    }
+                    
+                    val cleanAmount = fine.totalDenda.replace(Regex("[^0-9]"), "")
+                    val amountInt = cleanAmount.toIntOrNull() ?: 0
                     val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+                    val formattedAmount = formatRupiah.format(amountInt).replace(",00", "").replace("Rp", "Rp: ")
 
-                    // Jika status "belum dibayar" atau "belum_lunas" (tergantung string API)
                     if (currentStatus.contains("belumdibayar")) {
                         notificationHelper.showNotification(
-                            NotificationHelper.NOTIFICATION_ID_REMINDER,
+                            NotificationHelper.NOTIFICATION_ID_REMINDER + fine.id,
                             "Tagihan Denda Aktif",
-                            "Anda memiliki denda sebesar Rp ${formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp: ")} yang belum dibayar."
+                            "Anda memiliki denda sebesar $formattedAmount yang belum dibayar."
                         )
-
-                    } else if (lastStatus != null && lastStatus.contains("belumdibayar") && currentStatus.contains("lunas") || currentStatus.contains("dibayar")) {
-                        // Notifikasi jika denda baru saja dibayar
+                    } else if (lastStatus != null && lastStatus.contains("belumdibayar") && (currentStatus.contains("lunas") || currentStatus.contains("dibayar"))) {
                         notificationHelper.showNotification(
-                            NotificationHelper.NOTIFICATION_ID_REMINDER,
+                            NotificationHelper.NOTIFICATION_ID_REMINDER + fine.id,
                             "Pembayaran Berhasil",
-                            "Terima kasih, denda #${formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp: ")} untuk transaksi telah berhasil dibayar."
+                            "Terima kasih, denda $formattedAmount untuk transaksi telah berhasil dibayar."
                         )
                     }
                     
-                    // Simpan status terbaru
-                    sharedPrefs.edit().putString("fine_status_${fine.id}", currentStatus).apply()
+                    sharedPrefs.edit { putString("fine_status_${fine.id}", currentStatus) }
                 }
             }
 

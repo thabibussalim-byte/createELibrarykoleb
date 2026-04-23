@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
@@ -48,13 +50,6 @@ class DetailDendaFragment : Fragment() {
         loadInitialData()
     }
 
-    private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { }
-        binding.rvBukuDenda.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = historyAdapter
-        }
-    }
 
     private fun loadInitialData() {
         binding.progressBarDenda.visibility = View.VISIBLE
@@ -125,6 +120,38 @@ class DetailDendaFragment : Fragment() {
                 handleError("Gagal koneksi")
             }
         })
+    }
+    // Di dalam DetailDendaFragment.kt
+
+    private fun setupRecyclerView() {
+        // Memberikan aksi klik pada adapter
+        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { history ->
+            // 1. Cari data buku yang sesuai dengan transaksi ini
+            val book = allBooks.find { it.id == history.bukuId }
+
+            // 2. Jika buku ditemukan, pindah ke DetailbookFragment
+            if (book != null) {
+                val writer = allAuthors.find { it.id == book.penulisId }?.namaPenulis
+
+                val bundle = Bundle().apply {
+                    putParcelable("book", book)
+                    putString("book_writer", writer)
+                    // Tambahkan data lain jika diperlukan oleh DetailbookFragment
+                }
+
+                findNavController().navigate(
+                    R.id.action_detailDendaFragment_to_detailbookFragment,
+                    bundle
+                )
+            } else {
+                Toast.makeText(requireContext(), "Data buku tidak ditemukan", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.rvBukuDenda.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = historyAdapter
+        }
     }
 
     private fun loadFines(authHeader: String) {
