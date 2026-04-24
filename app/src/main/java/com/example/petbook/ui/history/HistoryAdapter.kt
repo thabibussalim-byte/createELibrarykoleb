@@ -11,7 +11,9 @@ import com.example.petbook.R
 import com.example.petbook.data.api.model.AuthorItem
 import com.example.petbook.data.api.model.BookItem
 import com.example.petbook.data.api.model.FineDataItem
+import com.example.petbook.data.api.model.GenreItem
 import com.example.petbook.data.api.model.HistoryDataItem
+import com.example.petbook.data.api.model.PublisherItem
 import com.example.petbook.databinding.ItemHistoryBinding
 
 class HistoryAdapter(
@@ -19,6 +21,8 @@ class HistoryAdapter(
     private var listBooks: List<BookItem>,
     private var listAuthors: List<AuthorItem>,
     private var listFines: List<FineDataItem> = emptyList(),
+    private var listPublisher: List<PublisherItem> = emptyList(),
+    private var listGenre: List<GenreItem> = emptyList(),
     private val onItemClick: (HistoryDataItem) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
@@ -29,12 +33,16 @@ class HistoryAdapter(
         newHistory: List<HistoryDataItem>,
         books: List<BookItem>,
         authors: List<AuthorItem>,
-        fines: List<FineDataItem>
+        fines: List<FineDataItem>,
+        publisher: List<PublisherItem>,
+        genre: List<GenreItem>
     ) {
         listHistory = newHistory
         listBooks = books
         listAuthors = authors
         listFines = fines
+        listPublisher = publisher
+        listGenre = genre
         notifyDataSetChanged()
     }
 
@@ -48,10 +56,8 @@ class HistoryAdapter(
         
         val book = listBooks.find { it.id == history.bukuId }
         val authorName = listAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
+        val fine = listFines.find { it.transaksiId == history.id }
 
-        val transactionFines = listFines.filter { it.transaksiId == history.id }
-        val totalDendaBuku = transactionFines.sumOf { it.totalDenda.filter { c -> c.isDigit() }.toIntOrNull() ?: 0 }
-        val isLunas = transactionFines.all { it.status.lowercase() == "dibayar" } && transactionFines.isNotEmpty()
 
         holder.binding.apply {
             tvHistoryTitle.text = book?.judulBuku ?: "Buku tidak ditemukan"
@@ -61,42 +67,37 @@ class HistoryAdapter(
             val tglKembali = history.tglKembali.take(10)
             tvHistoryDateRange.text = "$tglPinjam s/d $tglKembali"
 
+            // Setup Status Badge & Indicator Color
             val status = history.status.lowercase()
             tvHistoryStatusBadge.text = status.uppercase()
             
             when (status) {
                 "pending" -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#9A3412"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#F59E0B")) 
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#F59E0B")) // Orange
                 }
                 "dipinjam" -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#1E40AF"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#3B82F6"))
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#3B82F6")) // Blue
                 }
                 "dikembalikan", "selesai" -> {
-                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dikembalikan)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#065F46"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#10B981"))
+                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#10B981")) // Green
                 }
                 else -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#991B1B"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444"))
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444")) // Red
                 }
             }
 
-            // Area Denda (Menampilkan total denda per buku)
-            if (totalDendaBuku > 0) {
+            // LOGIKA BARU: Denda hanya muncul jika status sudah DIKEMBALIKAN atau SELESAI
+            val isReturned = status == "dikembalikan" || status == "selesai"
+            val dendaAmount = fine?.totalDenda?.toIntOrNull() ?: 0
+
+            if (isReturned && dendaAmount > 0) {
                 tvHistoryFine.visibility = View.VISIBLE
-                if (isLunas) {
-                    tvHistoryFine.text = "Denda: Rp $totalDendaBuku (Lunas)"
-                    tvHistoryFine.setTextColor(Color.parseColor("#10B981"))
-                } else {
-                    tvHistoryFine.text = "Denda: Rp $totalDendaBuku (Belum Bayar)"
-                    tvHistoryFine.setTextColor(Color.parseColor("#EF4444"))
-                }
+                val statusBayar = if (fine?.status == "dibayar") "(Lunas)" else "(Belum Bayar)"
+                tvHistoryFine.text = "Denda: Rp $dendaAmount $statusBayar"
             } else {
                 tvHistoryFine.visibility = View.GONE
             }
@@ -109,6 +110,7 @@ class HistoryAdapter(
             root.setOnClickListener { onItemClick(history) }
         }
     }
+
 
     override fun getItemCount(): Int = listHistory.size
 }

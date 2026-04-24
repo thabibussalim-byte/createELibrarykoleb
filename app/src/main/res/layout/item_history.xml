@@ -27,6 +27,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card_denda"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="12dp"

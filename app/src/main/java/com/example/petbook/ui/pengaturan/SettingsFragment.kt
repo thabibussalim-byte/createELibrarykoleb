@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.petbook.data.datastore.SettingPreferences
-import com.example.petbook.data.datastore.ViewModelFactory
-import com.example.petbook.data.datastore.dataStore
+import com.example.petbook.data.local.datastore.SettingPreferences
+import com.example.petbook.data.local.datastore.ViewModelFactory
+import com.example.petbook.data.local.datastore.dataStore
 import com.example.petbook.databinding.FragmentSettingsBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -30,7 +30,10 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var prefManager: PreferenceManager
+
+    private val prefManager: PreferenceManager by lazy {
+        PreferenceManager(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +50,7 @@ class SettingsFragment : Fragment() {
         val pref = SettingPreferences.getInstance(requireContext().dataStore)
         val settingsViewModel =
             ViewModelProvider(this, ViewModelFactory(pref))[SettingsViewModel::class.java]
-        prefManager = PreferenceManager(requireContext())
+
 
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.saveThemeSetting(isChecked)

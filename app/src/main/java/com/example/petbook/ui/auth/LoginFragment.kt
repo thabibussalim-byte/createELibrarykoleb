@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.LoginData
 import com.example.petbook.data.api.model.LoginRequest
 import com.example.petbook.data.api.model.LoginResponse
 import com.example.petbook.data.pref.PreferenceManager
@@ -18,7 +17,6 @@ import com.example.petbook.ui.main.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
 
 class LoginFragment : Fragment() {
 
@@ -49,25 +47,26 @@ class LoginFragment : Fragment() {
             val loginRequest = LoginRequest(username, password)
             ApiConfig.getApiService().login(loginRequest).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+
+                    if (!isAdded || context == null) return
+
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse?.status == "success") {
-                            
-                            // SIMPAN DATA KE PREFERENCES (termasuk user_id)
+
                             val data = loginResponse.data
                             val prefManager = PreferenceManager(requireContext())
-                            
+
                             prefManager.saveUser(
-                                data?.id ?: -1, // Menyimpan ID User dari API
+                                data?.id ?: -1,
                                 data?.token ?: "",
-                                data?.username ?: username,
                                 data?.password ?: password,
+                                data?.username ?: username,
                                 data?.profil ?: ""
                             )
 
                             Toast.makeText(requireContext(), "Login Berhasil: ${loginResponse.message}", Toast.LENGTH_SHORT).show()
-                            
-                            // Berpindah ke MainActivity
+
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             startActivity(intent)
                             requireActivity().finish()
@@ -80,6 +79,8 @@ class LoginFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    if (!isAdded || context == null) return
+
                     Log.e("LoginFragment", "Failure: ${t.message}")
                     Toast.makeText(requireContext(), "Kesalahan Jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
                 }

@@ -13,8 +13,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.petbook.R
-import com.example.petbook.data.datastore.SettingPreferences
-import com.example.petbook.data.datastore.dataStore
+import com.example.petbook.data.local.datastore.SettingPreferences
+import com.example.petbook.data.local.datastore.dataStore
 import com.example.petbook.ui.main.MainActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

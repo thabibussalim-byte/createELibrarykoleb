@@ -1,9 +1,12 @@
 package com.example.petbook.ui.history
 
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.petbook.R
@@ -25,12 +28,33 @@ class SuccessReturnFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Tombol Utama: Pinjam Buku Lagi (Arahkan ke Katalog)
+
+        val bookTitle = arguments?.getString("book_title") ?: "Buku"
+        
+
+        val fullText = "Buku $bookTitle berhasil dikembalikan. Teruslah membaca untuk memperluas wawasan!"
+        val spannable = SpannableStringBuilder(fullText)
+        
+        val startIndex = fullText.indexOf(bookTitle)
+        val endIndex = startIndex + bookTitle.length
+        
+        if (startIndex != -1) {
+            spannable.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.accent_blue)),
+                startIndex,
+                endIndex,
+                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        
+        binding.tvSuccessMessage.text = spannable
+
+
         binding.btnToCatalog.setOnClickListener {
             findNavController().navigate(R.id.bookFragment)
         }
 
-        // 2. Tombol Sekunder: Kembali ke Beranda
+
         binding.btnBackToHome.setOnClickListener {
             findNavController().navigate(R.id.homeFragment)
         }

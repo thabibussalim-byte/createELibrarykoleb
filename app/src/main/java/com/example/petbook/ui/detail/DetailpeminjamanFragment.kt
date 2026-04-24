@@ -3,6 +3,7 @@ package com.example.petbook.ui.detail
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +15,7 @@ import androidx.work.*
 import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.BookItem
-import com.example.petbook.data.api.model.BorrowRequest
-import com.example.petbook.data.api.model.BorrowResponse
+import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailpeminjamanBinding
 import com.example.petbook.utils.StatusCheckWorker
@@ -58,28 +57,101 @@ class DetailpeminjamanFragment : Fragment() {
         setupAutoCalculateReturnDate()
 
         binding.btnPinjamFinal.setOnClickListener {
-            if (book != null) {
-                performBorrowAction(book.id)
+            if (book == null) {
+                Toast.makeText(requireContext(), "Buku tidak ditemukan", Toast.LENGTH_SHORT).show()
+            } else if (book.stok <= 0) {
+                Toast.makeText(requireContext(), "Maaf, stok buku sedang kosong", Toast.LENGTH_SHORT).show()
+            } else {
+                checkHistoryAndBorrow(book)
             }
         }
     }
 
-    private fun setupMaterialDatePicker() {
-        updateDateLabel()
+    private fun checkHistoryAndBorrow(book: BookItem) {
+        val currentUserId = prefManager.getUserId()
+        if (currentUserId <= 0) {
+            Toast.makeText(requireContext(), "Sesi habis, silakan login kembali", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        binding.etTglPinjam.setOnClickListener {
-            val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Pilih Tanggal Pinjam")
-                .setSelection(calendar.timeInMillis)
-                .build()
+        binding.progressBarBorrow.visibility = View.VISIBLE
+        binding.btnPinjamFinal.isEnabled = false
 
-            datePicker.addOnPositiveButtonClickListener { selection ->
-                calendar.timeInMillis = selection
-                updateDateLabel()
+        // Step 1: Login Admin untuk mendapatkan token terbaru (sesuai instruksi)
+        val adminLoginRequest = LoginRequest("admin", "admin123")
+        ApiConfig.getApiService().login(adminLoginRequest).enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful) {
+                    val adminToken = response.body()?.data?.token
+                    if (adminToken != null) {
+                        // Step 2: Gunakan token admin untuk cek riwayat user ini
+                        fetchHistoryWithAdminToken("Bearer $adminToken", currentUserId, book)
+                    } else {
+                        handleError("Gagal mendapatkan token admin")
+                    }
+                } else {
+                    handleError("Gagal validasi admin: ${response.code()}")
+                }
             }
 
-            datePicker.show(parentFragmentManager, "DATE_PICKER")
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                handleError("Koneksi admin bermasalah")
+            }
+        })
+    }
+
+    private fun fetchHistoryWithAdminToken(adminHeader: String, userId: Int, book: BookItem) {
+        ApiConfig.getApiService().getHistoryByUser(adminHeader, userId).enqueue(object : Callback<HistoryResponse> {
+            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                if (response.isSuccessful) {
+                    validateHistoryAndProceed(response.body()?.data ?: emptyList(), book)
+                } else {
+                    fallbackGetAllTransactions(adminHeader, userId, book)
+                }
+            }
+
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                fallbackGetAllTransactions(adminHeader, userId, book)
+            }
+        })
+    }
+
+    private fun fallbackGetAllTransactions(adminHeader: String, userId: Int, book: BookItem) {
+        ApiConfig.getApiService().getAllTransactions(adminHeader).enqueue(object : Callback<HistoryResponse> {
+            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                if (response.isSuccessful) {
+                    val history = (response.body()?.data ?: emptyList()).filter { it.userId == userId }
+                    validateHistoryAndProceed(history, book)
+                } else {
+                    handleError("Gagal memvalidasi riwayat (Admin Fallback)")
+                }
+            }
+
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                handleError("Kesalahan jaringan saat validasi")
+            }
+        })
+    }
+
+    private fun validateHistoryAndProceed(history: List<HistoryDataItem>, book: BookItem) {
+        val hasActiveLoan = history.any { 
+            it.status.lowercase() == "dipinjam" || it.status.lowercase() == "pending"
         }
+
+        if (hasActiveLoan) {
+            binding.progressBarBorrow.visibility = View.GONE
+            binding.btnPinjamFinal.isEnabled = true
+            Toast.makeText(requireContext(), "Gagal! Anda masih memiliki peminjaman aktif atau pending.", Toast.LENGTH_LONG).show()
+        } else {
+            // Validasi sukses, lakukan peminjaman dengan token USER asli
+            performBorrowAction(book.id)
+        }
+    }
+
+    private fun handleError(message: String) {
+        binding.progressBarBorrow.visibility = View.GONE
+        binding.btnPinjamFinal.isEnabled = true
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun performBorrowAction(bookId: Int) {
@@ -87,24 +159,21 @@ class DetailpeminjamanFragment : Fragment() {
 
         if (lamaPinjamStr.isEmpty()) {
             binding.etLamaPinjam.error = "Harap isi durasi"
+            binding.progressBarBorrow.visibility = View.GONE
+            binding.btnPinjamFinal.isEnabled = true
             return
         }
 
         val days = lamaPinjamStr.toIntOrNull() ?: 0
-        
         if (days > 14) {
             Toast.makeText(requireContext(), "Maksimal peminjaman 14 hari", Toast.LENGTH_LONG).show()
+            binding.progressBarBorrow.visibility = View.GONE
+            binding.btnPinjamFinal.isEnabled = true
             return
         }
 
-        val token = prefManager.getToken()
-        if (token.isNullOrEmpty()) {
-            Toast.makeText(requireContext(), "Sesi habis, login kembali", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        binding.progressBarBorrow.visibility = View.VISIBLE
-        binding.btnPinjamFinal.isEnabled = false
+        val userToken = prefManager.getToken() ?: ""
+        val authHeader = "Bearer $userToken"
 
         val sdfApi = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val tglPinjam = sdfApi.format(calendar.time)
@@ -114,7 +183,6 @@ class DetailpeminjamanFragment : Fragment() {
         val tglKembali = sdfApi.format(returnCalendar.time)
 
         val request = BorrowRequest(tglPinjam, tglKembali, bookId)
-        val authHeader = "Bearer $token"
 
         ApiConfig.getApiService().createBorrow(authHeader, request).enqueue(object : Callback<BorrowResponse> {
             override fun onResponse(call: Call<BorrowResponse>, response: Response<BorrowResponse>) {
@@ -122,23 +190,13 @@ class DetailpeminjamanFragment : Fragment() {
                 binding.btnPinjamFinal.isEnabled = true
                 
                 if (response.isSuccessful && response.body()?.status == "success") {
-                    Toast.makeText(requireContext(), "Permintaan peminjaman berhasil \n Silakan tunggu konfirmasi admin!", Toast.LENGTH_SHORT).show()
-                    
-                    // START WORKER UNTUK CEK STATUS
+                    Toast.makeText(requireContext(), "Permintaan peminjaman berhasil!", Toast.LENGTH_SHORT).show()
                     startStatusCheckWorker()
-                    
                     findNavController().navigate(R.id.historyFragment)
-                    
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    val errorMessage = if (errorBody != null) {
-                        try {
-                            val errorResponse = Gson().fromJson(errorBody, BorrowResponse::class.java)
-                            errorResponse.errors?.firstOrNull()?.message ?: errorResponse.message
-                        } catch (e: Exception) { "Terjadi kesalahan server" }
-                    } else { response.body()?.message ?: "Gagal memproses" }
-                    
-                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+                    Log.e("Borrow", "Gagal: $errorBody")
+                    Toast.makeText(requireContext(), "Gagal memproses peminjaman", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -150,33 +208,49 @@ class DetailpeminjamanFragment : Fragment() {
         })
     }
 
+    private fun setupMaterialDatePicker() {
+        updateDateLabel()
+        binding.etTglPinjam.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Pilih Tanggal Pinjam")
+                .setSelection(calendar.timeInMillis)
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                calendar.timeInMillis = selection
+                updateDateLabel()
+            }
+            datePicker.show(parentFragmentManager, "DATE_PICKER")
+        }
+    }
+
     private fun startStatusCheckWorker() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val data = Data.Builder()
-            .putLong("start_time", System.currentTimeMillis())
-            .build()
-
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val data = Data.Builder().putLong("start_time", System.currentTimeMillis()).build()
         val statusWorkRequest = PeriodicWorkRequestBuilder<StatusCheckWorker>(15, TimeUnit.MINUTES)
             .setConstraints(constraints)
             .setInputData(data)
             .addTag("StatusCheckWorker")
             .build()
-
-        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
-            "BorrowStatusCheck",
-            ExistingPeriodicWorkPolicy.REPLACE, // Pakai REPLACE agar reset timer 3 hari jika ada pinjaman baru
-            statusWorkRequest
-        )
+        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork("BorrowStatusCheck", ExistingPeriodicWorkPolicy.REPLACE, statusWorkRequest)
     }
 
     private fun setupBookPreview(book: BookItem?, writerName: String?) {
         if (book != null) {
             binding.tvBorrowTitle.text = book.judulBuku
             binding.tvBorrowAuthor.text = writerName ?: "Penulis Anonim"
-            Glide.with(this).load(book.foto).placeholder(R.drawable.bintang).into(binding.ivBorrowPreview)
+
+
+            if (book.foto.isNotEmpty()) {
+                Glide.with(this)
+                    .load(book.foto)
+                    .placeholder(R.drawable.bintang)
+                    .error(R.drawable.bintang)
+                    .into(binding.ivBorrowPreview)
+            } else {
+                // Jika foto kosong/null, tampilkan placeholder saja
+                binding.ivBorrowPreview.setImageResource(R.drawable.bintang)
+            }
         }
     }
 
