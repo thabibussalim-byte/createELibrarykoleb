@@ -63,9 +63,13 @@ class ProfileFragment : Fragment() {
 
     private fun displayDataFromPrefs() {
         binding.apply {
-            val nama = prefManager.getMahasantriNama()
-            tvProfileFullName.text = nama.ifEmpty { prefManager.getUsername() ?: "-" }
-            
+            // Ambil data dari pref
+            val namaMhs = prefManager.getMahasantriNama()
+            val username = prefManager.getUsername()
+
+            // Logika: Jika nama mahasantri kosong, pakai username. Jika username kosong, baru "-"
+            tvProfileFullName.text = namaMhs.ifEmpty { username ?: "-" }
+
             tvProfileJurusan.text = prefManager.getMahasantriJurusan().ifEmpty { "-" }
             tvProfileAlamat.text = prefManager.getMahasantriAlamat().ifEmpty { "-" }
             tvProfilePhone.text = prefManager.getMahasantriPhone().ifEmpty { "-" }
@@ -73,7 +77,7 @@ class ProfileFragment : Fragment() {
             // LOGIKA PHOTO: Cek lokal dulu, kalau tidak ada baru dari server
             val localUri = prefManager.getLocalProfileUri()
             val serverUrl = prefManager.getProfileUrl()
-            
+
             val photoSource = if (!localUri.isNullOrEmpty()) {
                 Uri.parse(localUri)
             } else {
@@ -87,6 +91,31 @@ class ProfileFragment : Fragment() {
                 .circleCrop()
                 .into(ivProfilePicture)
         }
+
+    }
+
+    private fun fetchMahasantriData(authHeader: String) {    val currentUserId = prefManager.getUserId()
+        ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
+            override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    val list = response.body()?.data ?: emptyList()
+
+                    // FILTER HANYA BERDASARKAN USER_ID agar tidak tertukar dengan user lain
+                    val myData = list.find { it.userId == currentUserId }
+
+                    if (myData != null) {
+                        prefManager.saveMahasantriDetail(myData.namaMahasantri, myData.jurusan, myData.alamat, myData.noHp)
+                    } else {
+                        // Jika data mahasantri tidak ditemukan untuk user ini, kosongkan pref
+                        prefManager.saveMahasantriDetail("", "", "", "")
+                    }
+                    displayDataFromPrefs()
+                }
+            }
+            override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {
+                displayDataFromPrefs()
+            }
+        })
     }
 
     private fun fetchUserData(authHeader: String) {
@@ -110,24 +139,6 @@ class ProfileFragment : Fragment() {
                 }
             }
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {}
-        })
-    }
-
-    private fun fetchMahasantriData(authHeader: String) {
-        val currentUserId = prefManager.getUserId()
-        val currentUsername = prefManager.getUsername()?.lowercase() ?: ""
-        ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
-            override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    val list = response.body()?.data ?: emptyList()
-                    val myData = list.find { it.userId == currentUserId || it.namaMahasantri.lowercase().contains(currentUsername) }
-                    if (myData != null) {
-                        prefManager.saveMahasantriDetail(myData.namaMahasantri, myData.jurusan, myData.alamat, myData.noHp)
-                        displayDataFromPrefs()
-                    }
-                }
-            }
-            override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {}
         })
     }
 

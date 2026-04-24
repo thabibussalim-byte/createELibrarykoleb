@@ -16,9 +16,24 @@ interface BookDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBooks(books: List<BookEntity>)
 
-    @Query("SELECT * FROM history WHERE userId = :UserId")
+    @Query("DELETE FROM books")
+    suspend fun deleteAllBooks()
+
+    @Query("SELECT * FROM histories")
+    fun getAllHistory(): Flow<List<HistoryEntity>>
+
+    @Query("SELECT * FROM histories WHERE userId = :userId")
     fun getHistoryByUserId(userId: String): Flow<List<HistoryEntity>>
+
+    @Query("SELECT * FROM histories WHERE id = :id")
+    suspend fun getHistoryById(id: Int): HistoryEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHistory(history: List<HistoryEntity>)
+
+    @Query("UPDATE histories SET isSuccessShown = :isShown WHERE id = :id")
+    suspend fun updateSuccessStatus(id: Int, isShown: Boolean)
+
+    @Query("DELETE FROM histories")
+    suspend fun deleteAllHistory()
 }

@@ -8,22 +8,34 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
+import com.example.petbook.data.local.datastore.SettingPreferences
+import com.example.petbook.data.local.datastore.ViewModelFactory
+import com.example.petbook.data.local.datastore.dataStore
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentHomeBinding
+import com.example.petbook.ui.history.HistoryViewModel
+import com.example.petbook.utils.DataMapper.toBookItem
 import com.google.android.material.chip.Chip
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.getValue
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: HistoryViewModel by viewModels {
+        ViewModelFactory.getInstance(requireContext(), SettingPreferences.getInstance(requireContext().dataStore))
+    }
     
     private lateinit var rekomendasiAdapter: BookAdapter
     private lateinit var populerAdapter: BookAdapter
@@ -49,7 +61,22 @@ class HomeFragment : Fragment() {
         setupSearch()
         setupSeeAllButtons()
         loadGenres()
+
+        viewModel.getAllBooks().asLiveData().observe(viewLifecycleOwner) { books ->
+            if (books.isNotEmpty()) {
+                binding.progressBar.visibility = View.GONE
+                val bookItems = books.map { it.toBookItem() }
+                allBooksList = bookItems
+                updateDisplay(bookItems)
+            } else {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.refreshBooks()
+        loadGenres()
     }
+
 
     private fun setupGreeting() {
         val prefManager = PreferenceManager(requireContext())
@@ -71,18 +98,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadGenres() {
-        binding.progressBar.visibility = View.VISIBLE
+        if (allBooksList.isEmpty()) binding.progressBar.visibility = View.VISIBLE
+
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     genreList = response.body()?.data ?: emptyList()
-                    
                     binding.chipGroupCategory.removeAllViews()
                     addChipToGroup(-1, "Semua", true)
                     for (genre in genreList.take(6)) {
                         addChipToGroup(genre.id, genre.namaGenre, false)
                     }
-                    
                     loadAuthors()
                 }
             }
@@ -232,6 +258,7 @@ class HomeFragment : Fragment() {
         }
         binding.chipGroupCategory.addView(chip)
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

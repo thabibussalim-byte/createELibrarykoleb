@@ -8,12 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
+import com.example.petbook.data.local.datastore.SettingPreferences
+import com.example.petbook.data.local.datastore.ViewModelFactory
+import com.example.petbook.data.local.datastore.dataStore
 import com.example.petbook.databinding.FragmentBookBinding
+import com.example.petbook.ui.history.HistoryViewModel
+import com.example.petbook.utils.DataMapper.toBookItem
 import com.google.android.material.chip.Chip
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,7 +31,11 @@ class BookFragment : Fragment() {
     private var _binding: FragmentBookBinding? = null
     private val binding get() = _binding!!
     private lateinit var bookKatalogAdapter: BookKatalogAdapter
-    
+
+    private val viewModel: HistoryViewModel by viewModels {
+        ViewModelFactory.getInstance(requireContext(), SettingPreferences.getInstance(requireContext().dataStore))
+    }
+
     private var allBooks: List<BookItem> = emptyList()
     private var allPublishers: List<PublisherItem> = emptyList()
     private var allAuthors: List<AuthorItem> = emptyList()
@@ -43,44 +54,32 @@ class BookFragment : Fragment() {
 
         setupRecyclerView()
         setupSearchView()
+
+        viewModel.getAllBooks().asLiveData().observe(viewLifecycleOwner) { entities ->
+            if (entities.isNotEmpty()) {
+                binding.progressBarBook.visibility = View.GONE
+                val bookItems = entities.map { it.toBookItem() }
+                allBooks = bookItems
+                bookKatalogAdapter.updateData(bookItems)
+                binding.tvStatusLabel.text = "Menampilkan semua koleksi"
+                binding.layoutEmptyState.visibility = View.GONE
+            } else {
+                // Hanya muncul jika data di HP benar-benar kosong
+                binding.progressBarBook.visibility = View.VISIBLE
+            }
+        }
+
+        // 2. Refresh data dari API di background
+        viewModel.refreshBooks()
+
+        // 3. Load data pendukung (Genre, Author, Publisher)
         loadGenres()
     }
 
-    private fun setupSearchView() {
-        binding.searchViewBook.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                filterBooks(newText ?: "")
-                return true
-            }
-        })
-    }
-
-    private fun filterBooks(query: String) {
-        if (query.isEmpty()) {
-            bookKatalogAdapter.updateData(allBooks)
-            binding.tvStatusLabel.text = "Menampilkan semua koleksi"
-            binding.layoutEmptyState.visibility = View.GONE
-            return
-        }
-
-        val filteredList = allBooks.filter { book ->
-            val authorName = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: ""
-            book.judulBuku.contains(query, ignoreCase = true) || 
-            authorName.contains(query, ignoreCase = true)
-        }
-
-        bookKatalogAdapter.updateData(filteredList)
-        binding.tvStatusLabel.text = "Hasil pencarian: '${query}' (${filteredList.size} buku)"
-        
-        binding.layoutEmptyState.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
-    }
-
     private fun loadGenres() {
-        binding.progressBarBook.visibility = View.VISIBLE
+        // Jangan paksa ProgressBar muncul jika sudah ada buku yang tampil
+        if (allBooks.isEmpty()) binding.progressBarBook.visibility = View.VISIBLE
+
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
@@ -117,16 +116,21 @@ class BookFragment : Fragment() {
     private fun fetchPublishers() {
         ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
             override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    allPublishers = response.body()?.data ?: emptyList()
-                    getBooksFromApi()
+                if (_binding != null) {
+                    // Sembunyikan progress bar setelah semua data pendukung selesai
+                    binding.progressBarBook.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        allPublishers = response.body()?.data ?: emptyList()
+                    }
                 }
             }
             override fun onFailure(call: Call<PublisherResponse>, t: Throwable) {
-                if (_binding != null) getBooksFromApi()
+                if (_binding != null) binding.progressBarBook.visibility = View.GONE
             }
         })
     }
+
+    // Fungsi getBooksFromApi() dihapus karena sudah digantikan oleh viewModel.refreshBooks()
 
     private fun setupRecyclerView() {
         bookKatalogAdapter = BookKatalogAdapter(emptyList(), emptyList()) { book, rating ->
@@ -150,23 +154,33 @@ class BookFragment : Fragment() {
         }
     }
 
-    private fun getBooksFromApi() {
-        ApiConfig.getApiService().getBooks().enqueue(object : Callback<BookResponse> {
-            override fun onResponse(call: Call<BookResponse>, response: Response<BookResponse>) {
-                if (_binding != null) {
-                    binding.progressBarBook.visibility = View.GONE
-                    if (response.isSuccessful && response.body() != null) {
-                        allBooks = response.body()?.data ?: emptyList()
-                        bookKatalogAdapter.updateData(allBooks)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<BookResponse>, t: Throwable) {
-                if (_binding != null) {
-                    binding.progressBarBook.visibility = View.GONE
-                }
+    private fun setupSearchView() {
+        binding.searchViewBook.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterBooks(newText ?: "")
+                return true
             }
         })
+    }
+
+    private fun filterBooks(query: String) {
+        if (query.isEmpty()) {
+            bookKatalogAdapter.updateData(allBooks)
+            binding.tvStatusLabel.text = "Menampilkan semua koleksi"
+            binding.layoutEmptyState.visibility = View.GONE
+            return
+        }
+
+        val filteredList = allBooks.filter { book ->
+            val authorName = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: ""
+            book.judulBuku.contains(query, ignoreCase = true) ||
+                    authorName.contains(query, ignoreCase = true)
+        }
+
+        bookKatalogAdapter.updateData(filteredList)
+        binding.tvStatusLabel.text = "Hasil pencarian: '${query}' (${filteredList.size} buku)"
+        binding.layoutEmptyState.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun addChipToGroup(genreId: Int, name: String, isDefault: Boolean) {
@@ -175,16 +189,13 @@ class BookFragment : Fragment() {
         chip.text = name
         chip.isCheckable = true
         chip.isChecked = isDefault
-        
-        // 1. Background State
+
         val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
         val backgroundColors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
         chip.chipBackgroundColor = ColorStateList(states, backgroundColors)
 
-        // 2. Text Color State (PERBAIKAN: setTextColor)
         val textColors = intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))
         chip.setTextColor(ColorStateList(states, textColors))
-        
         chip.chipStrokeWidth = 0f
 
         chip.setOnClickListener {

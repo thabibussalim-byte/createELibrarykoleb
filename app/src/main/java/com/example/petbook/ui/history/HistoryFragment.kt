@@ -19,24 +19,38 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.graphics.toColorInt
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.asLiveData
+import com.example.petbook.utils.DataMapper.toDataItem
+import com.example.petbook.data.local.datastore.SettingPreferences
+import com.example.petbook.data.local.datastore.ViewModelFactory
+import com.example.petbook.data.local.datastore.dataStore
+import kotlinx.coroutines.launch
 
 class HistoryFragment : Fragment() {
 
     private var _binding: FragmentHistoryBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var historyAdapter: HistoryAdapter
     private lateinit var prefManager: PreferenceManager
     private lateinit var notificationHelper: NotificationHelper
-    
+
+    private val viewModel: HistoryViewModel by viewModels {
+        ViewModelFactory.getInstance(
+            requireContext(),
+            SettingPreferences.getInstance(requireContext().dataStore)
+        )
+    }
+
     private var allHistory: List<HistoryDataItem> = emptyList()
     private var allBooks: List<BookItem> = emptyList()
     private var allAuthors: List<AuthorItem> = emptyList()
-
     private var allPublishers: List<PublisherItem> = emptyList()
     private var allGenres: List<GenreItem> = emptyList()
-
     private var allFines: List<FineDataItem> = emptyList()
+
+    private val processedTransactions = HashSet<Int>()
 
 
     override fun onCreateView(
@@ -55,17 +69,100 @@ class HistoryFragment : Fragment() {
         applyChipStyles()
         setupFilters()
         loadRequiredData()
+
+
+        val userId = prefManager.getUserId()
+        val token = prefManager.getToken() ?: ""
+
+        viewModel.getHistoryByUserId(userId).asLiveData().observe(viewLifecycleOwner) { histories ->
+            if (histories.isNotEmpty()) {
+                binding.progressBarHistory.visibility = View.GONE // Hilangkan loading jika ada data
+                allHistory = histories.map { it.toDataItem() }
+
+                // Update UI dengan data yang ada di Room
+                refreshHistoryAdapter()
+
+                // Cek navigasi sukses
+                checkStatusAndSyncStock(allHistory)
+            } else {
+                // Tampilkan loading hanya jika benar-benar kosong
+                binding.progressBarHistory.visibility = View.VISIBLE
+            }
+        }
+
+        // 2. Refresh data dari API di background
+        viewModel.refreshHistory(token, userId)
     }
+
+    private fun checkStatusAndSyncStock(historyList: List<HistoryDataItem>) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            for (item in historyList) {
+                val status = item.status.lowercase()
+
+                // Jika transaksi sudah diproses di sesi fragment ini, lewati
+                if (processedTransactions.contains(item.id)) continue
+
+                if (status == "dikembalikan") {
+                    // 1. Cek data di database lokal
+                    val localData = viewModel.getLocalHistoryById(item.id)
+
+                    // 2. Navigasi HANYA jika di database isSuccessShown masih false
+                    if (localData == null || !localData.isSuccessShown) {
+
+                        // Segera tandai di memori agar tidak diproses lagi oleh loop observer berikutnya
+                        processedTransactions.add(item.id)
+
+                        // Tandai di database secara permanen
+                        viewModel.updateHistoryShown(item.id, true)
+
+                        // Navigasi ke Success Screen
+                        val book = allBooks.find { it.id == item.bukuId }
+                        val bundle = Bundle().apply {
+                            putString("book_title", book?.judulBuku ?: "Buku")
+                        }
+                        findNavController().navigate(R.id.successReturnFragment, bundle)
+                    }
+                }
+
+                // Tambahkan logika stok (tetap gunakan prefManager karena itu flag sistem)
+                handleStockSync(item)
+            }
+        }
+    }
+
+    // Pisahkan logika stok agar lebih rapi
+    private fun handleStockSync(item: HistoryDataItem) {
+        val status = item.status.lowercase()
+        if (status == "dipinjam" || status == "dikembalikan") {
+            if (!prefManager.isStatusNotified(item.id, "stok_kurang")) {
+                updateBookStock(item.bukuId, -1, item.id, "stok_kurang")
+            }
+        }
+        if (status == "dikembalikan") {
+            if (!prefManager.isStatusNotified(item.id, "stok_tambah")) {
+                updateBookStock(item.bukuId, 1, item.id, "stok_tambah")
+            }
+        }
+    }
+
+    private fun refreshHistoryAdapter() {
+        if (allHistory.isNotEmpty()) {
+            historyAdapter.updateData(
+                allHistory, allBooks, allAuthors, allFines, allPublishers, allGenres
+            )
+        }
+    }
+
 
     private fun loadBooks() {
         ApiConfig.getApiService().getBooks().enqueue(object : Callback<BookResponse> {
             override fun onResponse(call: Call<BookResponse>, response: Response<BookResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allBooks = response.body()?.data ?: emptyList()
-                    loadHistory()
+                    refreshHistoryAdapter() // Refresh tampilan history agar nama buku muncul
                 }
             }
-            override fun onFailure(call: Call<BookResponse>, t: Throwable) { if (_binding != null) loadHistory() }
+            override fun onFailure(call: Call<BookResponse>, t: Throwable) { refreshHistoryAdapter() }
         })
     }
 
@@ -73,14 +170,12 @@ class HistoryFragment : Fragment() {
         val token = prefManager.getToken() ?: ""
         val userId = prefManager.getUserId()
         
-        // Menggunakan getAllTransactions karena endpoint per user tidak tersedia
         ApiConfig.getApiService().getAllTransactions("Bearer $token").enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
                     binding.progressBarHistory.visibility = View.GONE
                     if (response.isSuccessful) {
                         val rawData = response.body()?.data ?: emptyList()
-                        // Filter manual berdasarkan user yang login
                         allHistory = rawData.filter { it.userId == userId }
                         
                         checkStatusAndSyncStock(allHistory)
@@ -92,36 +187,6 @@ class HistoryFragment : Fragment() {
                 if (_binding != null) binding.progressBarHistory.visibility = View.GONE
             }
         })
-    }
-
-    private fun checkStatusAndSyncStock(historyList: List<HistoryDataItem>) {
-        for (item in historyList) {
-            val status = item.status.lowercase()
-            
-            if (status == "dipinjam") {
-                if (!prefManager.isStatusNotified(item.id, "stok_kurang")) {
-                    Log.d("StockSync", "Peminjaman Terdeteksi (ID: ${item.id}). Mengurangi stok...")
-                    updateBookStock(item.bukuId, -1, item.id, "stok_kurang")
-                }
-            } else if (status == "dikembalikan") {
-                // Pastikan stok dikurangi dulu jika status loncat
-                if (!prefManager.isStatusNotified(item.id, "stok_kurang")) {
-                    updateBookStock(item.bukuId, -1, item.id, "stok_kurang")
-                }
-                // Tambah stok karena buku kembali
-                if (!prefManager.isStatusNotified(item.id, "stok_tambah")) {
-                    Log.d("StockSync", "Pengembalian Terdeteksi (ID: ${item.id}). Menambah stok...")
-                    updateBookStock(item.bukuId, 1, item.id, "stok_tambah")
-                    
-                    if (!prefManager.isSuccessScreenShown(item.id)) {
-                        prefManager.setSuccessScreenShown(item.id)
-                        val book = allBooks.find { it.id == item.bukuId }
-                        val bundle = Bundle().apply { putString("book_title", book?.judulBuku ?: "Buku") }
-                        findNavController().navigate(R.id.successReturnFragment, bundle)
-                    }
-                }
-            }
-        }
     }
 
     private fun updateBookStock(bookId: Int, change: Int, transactionId: Int, flagKey: String) {
@@ -194,12 +259,11 @@ class HistoryFragment : Fragment() {
     }
     private fun loadRequiredData() {
         binding.progressBarHistory.visibility = View.VISIBLE
-        // Muat Penulis
         ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
             override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
                 if (response.isSuccessful) {
                     allAuthors = response.body()?.data ?: emptyList()
-                    loadPublishers() // Lanjut muat Penerbit
+                    loadPublishers()
                 }
             }
             override fun onFailure(call: Call<AuthorResponse>, t: Throwable) { loadPublishers() }
@@ -210,7 +274,7 @@ class HistoryFragment : Fragment() {
         ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
             override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
                 if (response.isSuccessful) allPublishers = response.body()?.data ?: emptyList()
-                loadGenres() // Lanjut muat Genre
+                loadGenres()
             }
             override fun onFailure(call: Call<PublisherResponse>, t: Throwable) { loadGenres() }
         })
@@ -220,7 +284,7 @@ class HistoryFragment : Fragment() {
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (response.isSuccessful) allGenres = response.body()?.data ?: emptyList()
-                loadBooks() // Terakhir muat Buku
+                loadBooks()
             }
             override fun onFailure(call: Call<GenreResponse>, t: Throwable) { loadBooks() }
         })

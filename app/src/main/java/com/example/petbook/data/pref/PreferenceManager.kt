@@ -128,14 +128,18 @@ class PreferenceManager(context: Context) {
 
     // Tandai jika success screen sudah ditampilkan untuk buku tertentu
     fun setSuccessScreenShown(transactionId: Int) {
-        prefs.edit().putBoolean("success_shown_$transactionId", true).apply()
+        val userId = getUserId()
+        prefs.edit().putBoolean("success_shown_${userId}_$transactionId", true).apply()
     }
 
     fun isSuccessScreenShown(transactionId: Int): Boolean {
-        return prefs.getBoolean("success_shown_$transactionId", false)
+        val userId = getUserId()
+        return prefs.getBoolean("success_shown_${userId}_$transactionId", false)
     }
 
     fun clear() {
-        prefs.edit().clear().apply()
+        val editor = prefs.edit()
+        editor.clear() // Gunakan clear() total untuk memastikan tidak ada data lama yang tersisa
+        editor.apply()
     }
 }
