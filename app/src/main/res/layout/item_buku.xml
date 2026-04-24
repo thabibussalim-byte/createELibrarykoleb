@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Image Section with Rounded Top Corners -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_cover"
             android:layout_width="match_parent"
@@ -38,7 +37,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/poppins_semibold"
                 android:maxLines="1"
-                tools:text="Bintang"
+                tools:text="Judul Buku"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="14sp" />
 
@@ -48,21 +47,34 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:fontFamily="@font/roboto_regular"
-                tools:text="Tere Liye"
+                tools:text="Penulis"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="12sp" />
 
-            <RatingBar
-                android:id="@+id/rating_bar"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
+            <!-- GANTI RATING BAR JADI TANGGAL TERBIT -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:isIndicator="true"
-                android:numStars="5"
-                android:progressTint="#FFB300"
-                android:rating="4.5"
-                android:stepSize="0.5" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_history"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tv_tgl_terbit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    tools:text="2024-10-21" />
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>

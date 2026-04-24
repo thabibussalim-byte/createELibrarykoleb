@@ -21,7 +21,6 @@ class DetailbookFragment : Fragment() {
     private var currentWriter: String? = null
     private var currentPublisher: String? = null
     private var currentGenre: String? = null
-    private var currentRating: Float = 0f
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,29 +33,27 @@ class DetailbookFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ambil data dari arguments
-        currentBook = arguments?.let { BundleCompat.getParcelable(it, "book", BookItem::class.java)
+        // Ambil data dari arguments secara aman
+        arguments?.let {
+            currentBook = BundleCompat.getParcelable(it, "book", BookItem::class.java)
+            currentWriter = it.getString("book_writer")
+            currentPublisher = it.getString("book_publisher")
+            currentGenre = it.getString("book_genre")
         }
-        currentWriter = arguments?.getString("book_writer")
-        currentPublisher = arguments?.getString("book_publisher")
-        currentGenre = arguments?.getString("book_genre")
-        currentRating = arguments?.getFloat("book_rating", 0f) ?: 0f
         
-        currentBook?.let { displayBookDetail(it, currentWriter, currentPublisher, currentGenre, currentRating) }
+        currentBook?.let { displayBookDetail(it, currentWriter, currentPublisher, currentGenre) }
 
-        // LOGIKA KLIK YANG BENAR: Menggunakan Navigation Component
         binding.btnPinjam.setOnClickListener {
             val bundle = Bundle().apply {
                 putParcelable("book", currentBook)
                 putString("book_writer", currentWriter)
                 putString("book_publisher", currentPublisher)
-                putFloat("book_rating", currentRating)
             }
             findNavController().navigate(R.id.action_detailbookFragment_to_detailpeminjamanFragment, bundle)
         }
     }
 
-    private fun displayBookDetail(book: BookItem, writerName: String?, publisherName: String?, genreName: String?, rating: Float) {
+    private fun displayBookDetail(book: BookItem, writerName: String?, publisherName: String?, genreName: String?) {
         binding.apply {
             tvDetailTitle.text = book.judulBuku
             tvDetailDescription.text = book.deskripsi
@@ -65,7 +62,9 @@ class DetailbookFragment : Fragment() {
             tvDetailAuthor.text = writerName ?: "Penulis: ${book.penulisId}"
             tvDetailPublisher.text = publisherName ?: "Penerbit: ${book.penerbitId}"
             
-            tvDetailRating.text = String.format("%.1f", rating)
+            // TAMPILKAN TANGGAL TERBIT ASLI DARI API
+            tvDetailTglTerbit.text = book.tglTerbit
+            
             tvDetailGenreLabel.text = genreName ?: "Umum"
 
             Glide.with(requireContext())

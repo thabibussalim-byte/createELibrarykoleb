@@ -37,7 +37,7 @@ interface ApiService {
         @Body request: FineRequest
     ): Call<FineResponse>
 
-    @PATCH("api/denda/edit/{id}")
+    @PATCH("api/denda/create")
     fun updateFine(
         @Header("Authorization") token: String,
         request1: Int,

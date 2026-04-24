@@ -7,9 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
@@ -30,12 +28,9 @@ class DetailDendaFragment : Fragment() {
     private lateinit var prefManager: PreferenceManager
     
     private var userTransactions: List<HistoryDataItem> = emptyList()
-    private var allHistory: List<HistoryDataItem> = emptyList()
     private var allBooks: List<BookItem> = emptyList()
     private var allAuthors: List<AuthorItem> = emptyList()
     private var unpaidFines: List<FineDataItem> = emptyList()
-    private var allPublishers: List<PublisherItem> = emptyList()
-    private var allGenres: List<GenreItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +48,13 @@ class DetailDendaFragment : Fragment() {
         loadInitialData()
     }
 
+    private fun setupRecyclerView() {
+        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { }
+        binding.rvBukuDenda.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = historyAdapter
+        }
+    }
 
     private fun loadInitialData() {
         binding.progressBarDenda.visibility = View.VISIBLE
@@ -125,39 +127,6 @@ class DetailDendaFragment : Fragment() {
         })
     }
 
-    private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter(allHistory, allBooks, allAuthors, unpaidFines, allPublishers, allGenres) { history ->
-            val book = allBooks.find { it.id == history.bukuId }
-            val fine = unpaidFines.find { it.transaksiId == history.id }
-
-            if (book != null) {
-                val authorName = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
-                val publisherName = allPublishers.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
-                val genreName = allGenres.find { it.id == book.genreId }?.namaGenre ?: "Umum"
-
-                val bundle = Bundle().apply {
-                    putParcelable("history", history)
-                    putParcelable("book", book)
-                    putParcelable("fine", fine)
-                    putString("author", authorName)
-                    putString("book_writer", authorName)
-                    putString("book_publisher", publisherName)
-                    putString("book_genre", genreName)
-                }
-
-                findNavController().navigate(
-                    R.id.action_detailDendaFragment_to_detailHistoryFragment,
-                    bundle
-                )
-            }
-        }
-
-        binding.rvBukuDenda.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = historyAdapter
-        }
-    }
-
     private fun loadFines(authHeader: String) {
         ApiConfig.getApiService().getFines(authHeader).enqueue(object : Callback<FineResponse> {
             override fun onResponse(call: Call<FineResponse>, response: Response<FineResponse>) {
@@ -197,7 +166,7 @@ class DetailDendaFragment : Fragment() {
         val transactionsWithFine = userTransactions.filter { it.id in fineTransactionIds }
 
         // Kirim data denda yang belum dibayar saja ke adapter
-        historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, unpaidFines,allPublishers,allGenres )
+        historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, unpaidFines)
         
         binding.tvInstruction.visibility = if (total > 0) View.VISIBLE else View.GONE
     }

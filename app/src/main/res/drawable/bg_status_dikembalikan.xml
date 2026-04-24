@@ -2,11 +2,10 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
     <solid
-        android:color="#FFF7ED" /> <!-- Sangat Muda (Orange Tint) -->
+        android:color="#F0FDF4" /> <!-- Sangat Muda (Green Tint) -->
     <corners
         android:radius="100dp" />
-
     <stroke
         android:width="1dp"
-        android:color="#FED7AA" /> <!-- Border Tipis -->
+        android:color="#DCFCE7" /> <!-- Border Tipis -->
 </shape>

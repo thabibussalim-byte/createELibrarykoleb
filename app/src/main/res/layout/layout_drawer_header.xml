@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@color/primary_blue">
+    android:background="@drawable/bg_gradient_header">
 
     <!-- 1. Foto Profil -->
     <com.google.android.material.card.MaterialCardView

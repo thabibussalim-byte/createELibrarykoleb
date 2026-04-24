@@ -12,11 +12,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
@@ -32,14 +29,9 @@ import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.LogoutResponse
-import com.example.petbook.data.di.Injection
-import com.example.petbook.data.local.datastore.SettingPreferences
-import com.example.petbook.data.local.datastore.ViewModelFactory
-import com.example.petbook.data.local.datastore.dataStore
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.ActivityMainBinding
 import com.example.petbook.ui.auth.AuthActivity
-import com.example.petbook.ui.pengaturan.SettingsViewModel
 import com.example.petbook.utils.ReminderWorker
 import retrofit2.Call
 import retrofit2.Callback
@@ -68,20 +60,6 @@ class MainActivity : AppCompatActivity() {
 
         checkNotificationPermission()
         setupWorkManager()
-
-        val pref = SettingPreferences.getInstance(dataStore)
-        val settingsViewModel = ViewModelProvider(this,
-            ViewModelFactory(Injection.provideRepository(this), pref))[SettingsViewModel::class.java]
-
-        settingsViewModel.getThemeSettings().observe(this) { isDarkModeActive ->
-            if (isDarkModeActive) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        }
-
-        setContentView(binding.root)
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment

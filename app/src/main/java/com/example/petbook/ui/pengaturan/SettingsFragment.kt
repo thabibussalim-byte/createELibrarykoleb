@@ -17,7 +17,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import androidx.core.graphics.drawable.toDrawable
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
@@ -48,26 +47,19 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val pref = SettingPreferences.getInstance(requireContext().dataStore)
-        val factory = ViewModelFactory.getInstance(requireContext(), pref)
-        val settingsViewModel = ViewModelProvider(this, factory)[SettingsViewModel::class.java]
+        val settingsViewModel =
+            ViewModelProvider(this, ViewModelFactory(pref))[SettingsViewModel::class.java]
 
 
-        settingsViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive ->
-            if (isDarkModeActive) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                binding.switchDarkMode.isChecked = true
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                binding.switchDarkMode.isChecked = false
-            }
-        }
-
-        // 2. Ubah status saat Switch diklik
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.saveThemeSetting(isChecked)
         }
+
+        settingsViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive ->
+            binding.switchDarkMode.isChecked = isDarkModeActive
+        }
+
 
         settingsViewModel.getNotificationSettings().observe(viewLifecycleOwner) { isNotifActive ->
             binding.switchNotif.isChecked = isNotifActive
