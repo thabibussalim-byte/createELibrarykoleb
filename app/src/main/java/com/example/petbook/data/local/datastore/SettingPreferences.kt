@@ -1,4 +1,4 @@
-package com.example.petbook.data.datastore
+package com.example.petbook.data.local.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -31,7 +31,7 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
 
     fun getNotificationSetting(): Flow<Boolean> {
         return dataStore.data.map { preferences ->
-            preferences[notificationKey] ?: true // Default aktif
+            preferences[notificationKey] ?: true
         }
     }
 

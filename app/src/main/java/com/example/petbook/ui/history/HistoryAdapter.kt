@@ -11,7 +11,9 @@ import com.example.petbook.R
 import com.example.petbook.data.api.model.AuthorItem
 import com.example.petbook.data.api.model.BookItem
 import com.example.petbook.data.api.model.FineDataItem
+import com.example.petbook.data.api.model.GenreItem
 import com.example.petbook.data.api.model.HistoryDataItem
+import com.example.petbook.data.api.model.PublisherItem
 import com.example.petbook.databinding.ItemHistoryBinding
 
 class HistoryAdapter(
@@ -19,6 +21,8 @@ class HistoryAdapter(
     private var listBooks: List<BookItem>,
     private var listAuthors: List<AuthorItem>,
     private var listFines: List<FineDataItem> = emptyList(),
+    private var listPublisher: List<PublisherItem> = emptyList(),
+    private var listGenre: List<GenreItem> = emptyList(),
     private val onItemClick: (HistoryDataItem) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
@@ -29,12 +33,16 @@ class HistoryAdapter(
         newHistory: List<HistoryDataItem>,
         books: List<BookItem>,
         authors: List<AuthorItem>,
-        fines: List<FineDataItem>
+        fines: List<FineDataItem>,
+        publisher: List<PublisherItem>,
+        genre: List<GenreItem>
     ) {
         listHistory = newHistory
         listBooks = books
         listAuthors = authors
         listFines = fines
+        listPublisher = publisher
+        listGenre = genre
         notifyDataSetChanged()
     }
 
@@ -49,6 +57,7 @@ class HistoryAdapter(
         val book = listBooks.find { it.id == history.bukuId }
         val authorName = listAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
         val fine = listFines.find { it.transaksiId == history.id }
+
 
         holder.binding.apply {
             tvHistoryTitle.text = book?.judulBuku ?: "Buku tidak ditemukan"
@@ -101,6 +110,7 @@ class HistoryAdapter(
             root.setOnClickListener { onItemClick(history) }
         }
     }
+
 
     override fun getItemCount(): Int = listHistory.size
 }

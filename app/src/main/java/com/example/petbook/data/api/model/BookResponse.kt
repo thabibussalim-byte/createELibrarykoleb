@@ -1,8 +1,11 @@
 package com.example.petbook.data.api.model
 
+
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+
+
 
 data class BookResponse(
     @SerializedName("status") val status: String,

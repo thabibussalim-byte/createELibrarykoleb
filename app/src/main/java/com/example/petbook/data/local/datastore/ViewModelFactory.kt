@@ -1,9 +1,8 @@
-package com.example.petbook.data.datastore
+package com.example.petbook.data.local.datastore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.petbook.ui.pengaturan.SettingsViewModel
-import kotlin.jvm.java
 
 class ViewModelFactory(private val pref: SettingPreferences) : ViewModelProvider.NewInstanceFactory() {
 

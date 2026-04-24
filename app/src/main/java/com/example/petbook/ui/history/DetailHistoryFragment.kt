@@ -19,7 +19,9 @@ import com.example.petbook.data.api.model.BookItem
 import com.example.petbook.data.api.model.BorrowRequest
 import com.example.petbook.data.api.model.BorrowResponse
 import com.example.petbook.data.api.model.FineDataItem
+import com.example.petbook.data.api.model.GenreItem
 import com.example.petbook.data.api.model.HistoryDataItem
+import com.example.petbook.data.api.model.PublisherItem
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailHistoryBinding
 import retrofit2.Call
@@ -34,6 +36,7 @@ class DetailHistoryFragment : Fragment() {
     private var currentFine: FineDataItem? = null
     private var currentHistory: HistoryDataItem? = null
     private var currentBook: BookItem? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,14 +64,22 @@ class DetailHistoryFragment : Fragment() {
                 "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Dikembalikan'."
             )
         }
+
         binding.llHistory.setOnClickListener {
             currentBook?.let { book ->
                 val bundle = Bundle().apply {
                     putParcelable("book", book)
+                    putString("book_writer", arguments?.getString("book_writer"))
+                    putString("book_publisher", arguments?.getString("book_publisher"))
+                    putString("book_genre", arguments?.getString("book_genre"))
+
+                    val dummyRating = (38 + (book.id % 12)).toFloat() / 10
+                    putFloat("book_rating", dummyRating)
                 }
                 findNavController().navigate(R.id.action_detailHistoryFragment_to_detailbookFragment, bundle)
             }
         }
+
     }
     private fun navigateToDetail(title: String, answer: String) {
         val bundle = Bundle().apply {

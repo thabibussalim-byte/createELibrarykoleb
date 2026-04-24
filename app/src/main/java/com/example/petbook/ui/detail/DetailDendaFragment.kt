@@ -30,9 +30,12 @@ class DetailDendaFragment : Fragment() {
     private lateinit var prefManager: PreferenceManager
     
     private var userTransactions: List<HistoryDataItem> = emptyList()
+    private var allHistory: List<HistoryDataItem> = emptyList()
     private var allBooks: List<BookItem> = emptyList()
     private var allAuthors: List<AuthorItem> = emptyList()
     private var unpaidFines: List<FineDataItem> = emptyList()
+    private var allPublishers: List<PublisherItem> = emptyList()
+    private var allGenres: List<GenreItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,30 +124,31 @@ class DetailDendaFragment : Fragment() {
             }
         })
     }
-    // Di dalam DetailDendaFragment.kt
 
     private fun setupRecyclerView() {
-        // Memberikan aksi klik pada adapter
-        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { history ->
-            // 1. Cari data buku yang sesuai dengan transaksi ini
+        historyAdapter = HistoryAdapter(allHistory, allBooks, allAuthors, unpaidFines, allPublishers, allGenres) { history ->
             val book = allBooks.find { it.id == history.bukuId }
+            val fine = unpaidFines.find { it.transaksiId == history.id }
 
-            // 2. Jika buku ditemukan, pindah ke DetailbookFragment
             if (book != null) {
-                val writer = allAuthors.find { it.id == book.penulisId }?.namaPenulis
+                val authorName = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
+                val publisherName = allPublishers.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
+                val genreName = allGenres.find { it.id == book.genreId }?.namaGenre ?: "Umum"
 
                 val bundle = Bundle().apply {
+                    putParcelable("history", history)
                     putParcelable("book", book)
-                    putString("book_writer", writer)
-                    // Tambahkan data lain jika diperlukan oleh DetailbookFragment
+                    putParcelable("fine", fine)
+                    putString("author", authorName)
+                    putString("book_writer", authorName)
+                    putString("book_publisher", publisherName)
+                    putString("book_genre", genreName)
                 }
 
                 findNavController().navigate(
-                    R.id.action_detailDendaFragment_to_detailbookFragment,
+                    R.id.action_detailDendaFragment_to_detailHistoryFragment,
                     bundle
                 )
-            } else {
-                Toast.makeText(requireContext(), "Data buku tidak ditemukan", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -193,7 +197,7 @@ class DetailDendaFragment : Fragment() {
         val transactionsWithFine = userTransactions.filter { it.id in fineTransactionIds }
 
         // Kirim data denda yang belum dibayar saja ke adapter
-        historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, unpaidFines)
+        historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, unpaidFines,allPublishers,allGenres )
         
         binding.tvInstruction.visibility = if (total > 0) View.VISIBLE else View.GONE
     }

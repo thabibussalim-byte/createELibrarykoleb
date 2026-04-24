@@ -1,6 +1,7 @@
 package com.example.petbook.data.api
 
 import com.example.petbook.data.api.model.*
+
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -30,6 +31,19 @@ interface ApiService {
         @Body request: BorrowRequest
     ): Call<BorrowResponse>
 
+    @POST("api/denda/tambah")
+    fun createFine(
+        @Header("Authorization") token: String,
+        @Body request: FineRequest
+    ): Call<FineResponse>
+
+    @PATCH("api/denda/create")
+    fun updateFine(
+        @Header("Authorization") token: String,
+        request1: Int,
+        @Body request: FineRequest
+    ): Call<FineResponse>
+
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
 
@@ -40,12 +54,6 @@ interface ApiService {
 
     @GET("api/denda")
     fun getFines(@Header("Authorization") token: String): Call<FineResponse>
-
-    @GET("api/denda/cari/{id}")
-    fun getFineDetailById(
-        @Header("Authorization") token: String,
-        @Path("id") fineId: Int
-    ): Call<FineDetailResponse>
 
     @GET("api/mahasantri")
     fun getMahasantri(@Header("Authorization") token: String): Call<MahasantriResponse>

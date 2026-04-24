@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-//    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.google.devtools.ksp)
     id("kotlin-parcelize")
 }
 
@@ -65,4 +65,7 @@ dependencies {
     implementation(libs.mpandroidchart)
     // SplashScreen API for Android 12+
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 }

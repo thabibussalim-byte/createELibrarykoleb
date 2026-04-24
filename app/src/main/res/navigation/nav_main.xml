@@ -159,6 +159,9 @@
         <action
             android:id="@+id/action_detailDendaFragment_to_detailbookFragment2"
             app:destination="@id/detailbookFragment" />
+        <action
+            android:id="@+id/action_detailDendaFragment_to_detailHistoryFragment"
+            app:destination="@id/detailHistoryFragment" />
     </fragment>
 
     <fragment

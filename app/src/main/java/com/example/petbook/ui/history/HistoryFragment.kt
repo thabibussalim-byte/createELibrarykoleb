@@ -1,7 +1,6 @@
 package com.example.petbook.ui.history
 
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,8 +18,6 @@ import com.example.petbook.utils.NotificationHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.*
 import androidx.core.graphics.toColorInt
 
 class HistoryFragment : Fragment() {
@@ -35,6 +32,12 @@ class HistoryFragment : Fragment() {
     private var allHistory: List<HistoryDataItem> = emptyList()
     private var allBooks: List<BookItem> = emptyList()
     private var allAuthors: List<AuthorItem> = emptyList()
+
+    private var allPublishers: List<PublisherItem> = emptyList()
+    private var allGenres: List<GenreItem> = emptyList()
+
+    private var allFines: List<FineDataItem> = emptyList()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,19 +55,6 @@ class HistoryFragment : Fragment() {
         applyChipStyles()
         setupFilters()
         loadRequiredData()
-    }
-
-    private fun loadRequiredData() {
-        binding.progressBarHistory.visibility = View.VISIBLE
-        ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
-            override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    allAuthors = response.body()?.data ?: emptyList()
-                    loadBooks()
-                }
-            }
-            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) { if (_binding != null) loadBooks() }
-        })
     }
 
     private fun loadBooks() {
@@ -94,7 +84,7 @@ class HistoryFragment : Fragment() {
                         allHistory = rawData.filter { it.userId == userId }
                         
                         checkStatusAndSyncStock(allHistory)
-                        historyAdapter.updateData(allHistory, allBooks, allAuthors, emptyList())
+                        historyAdapter.updateData(allHistory, allBooks, allAuthors, allFines, allPublishers, allGenres)
                     }
                 }
             }
@@ -202,21 +192,60 @@ class HistoryFragment : Fragment() {
             chip.chipStrokeWidth = 0f
         }
     }
+    private fun loadRequiredData() {
+        binding.progressBarHistory.visibility = View.VISIBLE
+        // Muat Penulis
+        ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
+            override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
+                if (response.isSuccessful) {
+                    allAuthors = response.body()?.data ?: emptyList()
+                    loadPublishers() // Lanjut muat Penerbit
+                }
+            }
+            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) { loadPublishers() }
+        })
+    }
+
+    private fun loadPublishers() {
+        ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
+            override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
+                if (response.isSuccessful) allPublishers = response.body()?.data ?: emptyList()
+                loadGenres() // Lanjut muat Genre
+            }
+            override fun onFailure(call: Call<PublisherResponse>, t: Throwable) { loadGenres() }
+        })
+    }
+
+    private fun loadGenres() {
+        ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
+            override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
+                if (response.isSuccessful) allGenres = response.body()?.data ?: emptyList()
+                loadBooks() // Terakhir muat Buku
+            }
+            override fun onFailure(call: Call<GenreResponse>, t: Throwable) { loadBooks() }
+        })
+    }
+
 
     private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { item ->
+        historyAdapter = HistoryAdapter(allHistory, allBooks, allAuthors, allFines, allPublishers, allGenres) { item ->
             val book = allBooks.find { it.id == item.bukuId }
             if (book != null) {
+                val author = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
+                val publisher = allPublishers.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
+                val genre = allGenres.find { it.id == book.genreId }?.namaGenre ?: "Umum"
+
                 val bundle = Bundle().apply {
                     putParcelable("history", item)
                     putParcelable("book", book)
-                    allAuthors.find { it.id == book.penulisId }?.let { putString("author", it.namaPenulis) }
+                    putString("book_writer", author)
+                    putString("book_publisher", publisher)
+                    putString("book_genre", genre)
                 }
-                if (findNavController().currentDestination?.id == R.id.historyFragment) {
-                    findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment, bundle)
-                }
+                findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment, bundle)
             }
         }
+
         binding.rvHistory.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = historyAdapter
@@ -231,7 +260,7 @@ class HistoryFragment : Fragment() {
                 R.id.chip_dikembalikan -> allHistory.filter { it.status.lowercase() == "dikembalikan" }
                 else -> allHistory
             }
-            historyAdapter.updateData(filtered, allBooks, allAuthors, emptyList())
+            historyAdapter.updateData(filtered, allBooks, allAuthors, allFines, allPublishers, allGenres)
         }
     }
 

@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.petbook.data.datastore.SettingPreferences
-import com.example.petbook.data.datastore.ViewModelFactory
-import com.example.petbook.data.datastore.dataStore
+import com.example.petbook.data.local.datastore.SettingPreferences
+import com.example.petbook.data.local.datastore.ViewModelFactory
+import com.example.petbook.data.local.datastore.dataStore
 import com.example.petbook.databinding.FragmentSettingsBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
