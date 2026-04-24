@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="#F8FAFC"
     tools:context=".ui.home.HomeFragment">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false">
@@ -18,31 +19,42 @@
             android:orientation="vertical"
             android:paddingBottom="100dp">
 
-            <!-- Welcome Section -->
+            <!-- WELCOME SECTION -->
             <LinearLayout
+                android:id="@+id/layout_welcome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="20dp"
-                android:paddingTop="24dp">
+                android:paddingHorizontal="24dp"
+                android:paddingTop="32dp">
 
                 <TextView
                     android:id="@+id/tv_welcome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Hai, mau baca buku apa hari ini?"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Hai, Mau baca apa hari ini?"
                     android:textColor="@color/text_primary"
-                    android:textSize="18sp" />
+                    android:textSize="20sp" />
 
-                <!-- Search Bar Menggunakan SearchView Asli -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:alpha="0.8"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text='"Literasi tanpa batas."'
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <!-- SEARCH BAR -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_search_home"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="@color/search_bg"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp"
+                    android:layout_marginTop="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
                     app:strokeWidth="0dp">
 
                     <androidx.appcompat.widget.SearchView
@@ -51,107 +63,158 @@
                         android:layout_height="wrap_content"
                         app:iconifiedByDefault="false"
                         app:queryBackground="@android:color/transparent"
-                        app:queryHint="Cari judul buku, penulis..."
+                        app:queryHint="Cari judul, penulis, atau genre..."
                         app:searchIcon="@drawable/ic_search" />
 
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Chip Filter -->
-            <HorizontalScrollView
+            <!-- KONTEN UTAMA -->
+            <LinearLayout
+                android:id="@+id/layout_home_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:scrollbars="none">
+                android:orientation="vertical">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chip_group_category"
-                    android:layout_width="wrap_content"
+                <!-- CATEGORY CHIPS -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="20dp"
-                    app:chipSpacingHorizontal="8dp"
-                    app:singleSelection="true">
-                </com.google.android.material.chip.ChipGroup>
-            </HorizontalScrollView>
+                    android:layout_marginTop="24dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="24dp"
+                    android:scrollbars="none">
 
-            <!-- Rekomendasi Section -->
-            <RelativeLayout
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingHorizontal="10dp"
+                        app:singleSelection="true">
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
+
+                <!-- REKOMENDASI SECTION -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:paddingHorizontal="24dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="Rekomendasi"
+                        android:textColor="#1E293B"
+                        android:textSize="17sp" />
+                    <TextView
+                        android:id="@+id/tv_rekomendasi_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/bg_genre_chip"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Lihat Semua"
+                        android:textColor="#64748B"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_rekomendasi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="18dp"
+                    tools:listitem="@layout/item_buku" />
+
+                <!-- POPULER SECTION -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:paddingHorizontal="24dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="Paling Populer"
+                        android:textColor="#1E293B"
+                        android:textSize="17sp" />
+                    <TextView
+                        android:id="@+id/tv_populer_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/bg_genre_chip"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Lihat Semua"
+                        android:textColor="#64748B"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_populer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="18dp"
+                    tools:listitem="@layout/item_buku" />
+            </LinearLayout>
+
+            <!-- EMPTY STATE (kondisi saat sebuah halaman atau komponen tidak punya data untuk ditampilkan.) -->
+            <LinearLayout
+                android:id="@+id/layout_empty_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:paddingHorizontal="20dp">
+                android:layout_marginTop="60dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="40dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:alpha="0.3"
+                    android:src="@drawable/book_notfound"
+                    app:tint="@color/text_hint" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Rekomendasi"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Buku tidak ditemukan"
                     android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
+                    android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/tv_rekomendasi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="8dp"
                     android:fontFamily="@font/roboto_regular"
-                    android:text="Lihat Semua >"
-                    android:textColor="@color/accent_blue"
-                    android:textSize="13sp" />
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_rekomendasi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="16dp"
-                tools:listitem="@layout/item_buku" />
-
-            <!-- Populer Section -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:paddingHorizontal="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Populer"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_populer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Lihat Semua >"
-                    android:textColor="@color/accent_blue"
-                    android:textSize="13sp" />
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_populer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="16dp"
-                tools:listitem="@layout/item_buku" />
+                    android:gravity="center"
+                    android:text="Tidak ada buku yang cocok dengan pencarian atau kategori ini"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminate="true"
         android:visibility="gone"
+        app:indicatorColor="@color/accent_blue"
+        app:indicatorSize="40dp"
+        app:trackThickness="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

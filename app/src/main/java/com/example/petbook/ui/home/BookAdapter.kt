@@ -1,7 +1,6 @@
 package com.example.petbook.ui.home
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +13,7 @@ import com.example.petbook.databinding.ItemBukuBinding
 class BookAdapter(
     private var listBook: List<BookItem>,
     private var listAuthor: List<AuthorItem> = emptyList(),
-    private val onItemClick: (BookItem, Float) -> Unit = { _, _ -> } // Tambahkan parameter rating
+    private val onItemClick: (BookItem) -> Unit = { } // Hapus parameter rating
 ) : RecyclerView.Adapter<BookAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemBukuBinding) : RecyclerView.ViewHolder(binding.root)
@@ -44,9 +43,8 @@ class BookAdapter(
             tvJudul.text = book.judulBuku
             tvPenulis.text = authorName 
             
-            // Gunakan rumus yang sama agar konsisten
-            val dummyRating = (38 + (book.id % 12)).toFloat() / 10
-            ratingBar.rating = dummyRating
+            // TAMPILKAN TANGGAL TERBIT ASLI
+            tvTglTerbit.text = book.tglTerbit
             
             Glide.with(holder.itemView.context)
                 .load(book.foto)
@@ -55,7 +53,7 @@ class BookAdapter(
                 .into(ivCover)
 
             root.setOnClickListener {
-                onItemClick(book, dummyRating) // Kirim rating saat diklik
+                onItemClick(book) // Kirim data buku saja
             }
         }
     }

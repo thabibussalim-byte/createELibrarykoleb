@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-//    alias(libs.plugins.google.devtools.ksp)
     id("kotlin-parcelize")
 }
 
@@ -61,8 +60,6 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.work.runtime.ktx)
-    //menampilkan grafik atau diagram secara visual.
-    implementation(libs.mpandroidchart)
-    // SplashScreen API for Android 12+
     implementation(libs.androidx.core.splashscreen)
+
 }

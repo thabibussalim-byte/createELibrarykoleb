@@ -48,7 +48,10 @@ class HistoryAdapter(
         
         val book = listBooks.find { it.id == history.bukuId }
         val authorName = listAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
-        val fine = listFines.find { it.transaksiId == history.id }
+
+        val transactionFines = listFines.filter { it.transaksiId == history.id }
+        val totalDendaBuku = transactionFines.sumOf { it.totalDenda.filter { c -> c.isDigit() }.toIntOrNull() ?: 0 }
+        val isLunas = transactionFines.all { it.status.lowercase() == "dibayar" } && transactionFines.isNotEmpty()
 
         holder.binding.apply {
             tvHistoryTitle.text = book?.judulBuku ?: "Buku tidak ditemukan"
@@ -58,44 +61,45 @@ class HistoryAdapter(
             val tglKembali = history.tglKembali.take(10)
             tvHistoryDateRange.text = "$tglPinjam s/d $tglKembali"
 
-            // Setup Status Badge & Indicator Color
             val status = history.status.lowercase()
             tvHistoryStatusBadge.text = status.uppercase()
             
             when (status) {
                 "pending" -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#F59E0B")) // Orange
+                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#9A3412"))
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#F59E0B")) 
                 }
                 "dipinjam" -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#3B82F6")) // Blue
+                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#1E40AF"))
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#3B82F6"))
                 }
                 "dikembalikan", "selesai" -> {
-                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#10B981")) // Green
+                    tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dikembalikan)
+                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#065F46"))
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#10B981"))
                 }
                 else -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444")) // Red
+                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#991B1B"))
+                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444"))
                 }
             }
 
-            // LOGIKA BARU: Denda hanya muncul jika status sudah DIKEMBALIKAN atau SELESAI
-            val isReturned = status == "dikembalikan" || status == "selesai"
-            // Di dalam HistoryAdapter.kt, bagian onBindViewHolder
-            // Di dalam onBindViewHolder HistoryAdapter.kt
-            val fine = listFines.find { it.transaksiId == history.id }
-            val dendaAmount = fine?.totalDenda?.toIntOrNull() ?: 0
-
-            if (dendaAmount > 0) {
+            // Area Denda (Menampilkan total denda per buku)
+            if (totalDendaBuku > 0) {
                 tvHistoryFine.visibility = View.VISIBLE
-                val statusBayar = if (fine?.status == "dibayar") "(Lunas)" else "(Belum Bayar)"
-                tvHistoryFine.text = "Denda: Rp $dendaAmount $statusBayar"
+                if (isLunas) {
+                    tvHistoryFine.text = "Denda: Rp $totalDendaBuku (Lunas)"
+                    tvHistoryFine.setTextColor(Color.parseColor("#10B981"))
+                } else {
+                    tvHistoryFine.text = "Denda: Rp $totalDendaBuku (Belum Bayar)"
+                    tvHistoryFine.setTextColor(Color.parseColor("#EF4444"))
+                }
             } else {
                 tvHistoryFine.visibility = View.GONE
             }
-//            }
 
             Glide.with(holder.itemView.context)
                 .load(book?.foto)

@@ -57,7 +57,6 @@ class SettingsFragment : Fragment() {
             binding.switchDarkMode.isChecked = isDarkModeActive
         }
 
-
         settingsViewModel.getNotificationSettings().observe(viewLifecycleOwner) { isNotifActive ->
             binding.switchNotif.isChecked = isNotifActive
         }
@@ -70,62 +69,75 @@ class SettingsFragment : Fragment() {
             showChangePasswordDialog()
         }
     }
-        private fun showChangePasswordDialog() {
-            val dialog = Dialog(requireContext())
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setContentView(R.layout.dialog_change_password)
-            dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-            dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-            val etOldPassword = dialog.findViewById<TextInputEditText>(R.id.et_old_password)
-            val etNewPassword = dialog.findViewById<TextInputEditText>(R.id.et_new_password)
-            val btnSave = dialog.findViewById<MaterialButton>(R.id.btn_save_password)
-            val btnCancel = dialog.findViewById<MaterialButton>(R.id.btn_cancel_password)
+    private fun showChangePasswordDialog() {
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_change_password)
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-            btnCancel.setOnClickListener { dialog.dismiss() }
+        val etOldPassword = dialog.findViewById<TextInputEditText>(R.id.et_old_password)
+        val etNewPassword = dialog.findViewById<TextInputEditText>(R.id.et_new_password)
+        val btnSave = dialog.findViewById<MaterialButton>(R.id.btn_save_password)
+        val btnCancel = dialog.findViewById<MaterialButton>(R.id.btn_cancel_password)
 
-            btnSave.setOnClickListener {
-                val oldPass = etOldPassword.text.toString()
-                val newPass = etNewPassword.text.toString()
-                val password = prefManager.getPassword() ?: ""
+        btnCancel.setOnClickListener { dialog.dismiss() }
 
+        btnSave.setOnClickListener {
+            val oldPass = etOldPassword.text.toString()
+            val newPass = etNewPassword.text.toString()
+            val currentStoredPassword = prefManager.getPassword() ?: ""
 
-                if (oldPass.isEmpty() || newPass.isEmpty()) {
-                    Toast.makeText(requireContext(), "Harap isi semua kolom", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }else if (oldPass == password){
-                    updatePassword(newPass, dialog)
-                }else{
-                    Toast.makeText(requireContext(), "Password lama salah", Toast.LENGTH_SHORT).show()
-                }
-
-
-                updatePassword(newPass, dialog)
+            if (oldPass.isEmpty() || newPass.isEmpty()) {
+                Toast.makeText(requireContext(), "Harap isi semua kolom", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
 
-            dialog.show()
+            // Validasi password lama
+            if (oldPass == currentStoredPassword) {
+                updatePassword(newPass, dialog)
+            } else {
+                Toast.makeText(requireContext(), "Password lama salah", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        private fun updatePassword(newPass: String, dialog: Dialog) {
-            val token = prefManager.getToken() ?: return
-            val userId = prefManager.getUserId()
-            val request = UpdateUserRequest(password = newPass)
+        dialog.show()
+    }
 
-            ApiConfig.getApiService().updateUser("Bearer $token", userId, request).enqueue(object : Callback<BorrowResponse> {
-                override fun onResponse(call: Call<BorrowResponse>, response: Response<BorrowResponse>) {
-                    if (response.isSuccessful) {
-                        Toast.makeText(requireContext(), "Password berhasil diubah", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
-                    } else {
-                        Toast.makeText(requireContext(), "Password lama salah", Toast.LENGTH_SHORT).show()
-                    }
-                }
+    private fun updatePassword(newPass: String, dialog: Dialog) {
+        val token = prefManager.getToken() ?: return
+        val userId = prefManager.getUserId()
+        
+        // Gunakan UpdateUserRequest karena ini mengubah data User (Password)
+        val request = UpdateUserRequest(password = newPass)
 
-                override fun onFailure(call: Call<BorrowResponse>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Gagal mengubah password", Toast.LENGTH_SHORT).show()
+        // PANGGIL updateUser BUKAN updateMahasantri
+        ApiConfig.getApiService().updateUser("Bearer $token", userId, request).enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Password berhasil diubah", Toast.LENGTH_SHORT).show()
+                    
+                    // Update password di Preference agar validasi berikutnya tetap jalan
+                    prefManager.saveUser(
+                        userId,
+                        token,
+                        prefManager.getUsername() ?: "",
+                        newPass, // Simpan password baru
+                        prefManager.getProfileUrl() ?: ""
+                    )
+                    
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Gagal mengubah password server", Toast.LENGTH_SHORT).show()
                 }
-            })
-        }
+            }
+
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                Toast.makeText(requireContext(), "Koneksi Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

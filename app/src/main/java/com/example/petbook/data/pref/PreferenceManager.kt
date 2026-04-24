@@ -9,7 +9,7 @@ import org.json.JSONObject
 class PreferenceManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    fun saveUser(id: Int, token: String, username: String,password: String, profileUrl: String) {
+    fun saveUser(id: Int, token: String, username: String, password: String, profileUrl: String) {
         val editor = prefs.edit()
         editor.putInt("user_id", id)
         editor.putString("token", token)
@@ -20,15 +20,17 @@ class PreferenceManager(context: Context) {
         editor.apply()
     }
 
-    // Fungsi untuk menyimpan URI foto yang dipilih dari galeri secara lokal
+    // Fungsi untuk menyimpan URI foto secara lokal
     fun saveLocalProfileUri(uri: String) {
         prefs.edit().putString("local_profile_uri", uri).apply()
     }
 
     fun getLocalProfileUri(): String? = prefs.getString("local_profile_uri", null)
 
-    fun saveMahasantriDetail(nama: String, jurusan: String, alamat: String, phone: String) {
+    //fungsi untuk menampilkan informasi mahasantri di halaman profile
+    fun saveMahasantriDetail(id: Int, nama: String, jurusan: String, alamat: String, phone: String) {
         val editor = prefs.edit()
+        editor.putInt("mhs_id", id) // SIMPAN ID MAHASANTRI
         editor.putString("mhs_nama", nama)
         editor.putString("mhs_jurusan", jurusan)
         editor.putString("mhs_alamat", alamat)
@@ -36,6 +38,7 @@ class PreferenceManager(context: Context) {
         editor.apply()
     }
 
+    fun getMahasantriId(): Int = prefs.getInt("mhs_id", 0)
     fun getMahasantriNama(): String = prefs.getString("mhs_nama", "") ?: ""
     fun getMahasantriJurusan(): String = prefs.getString("mhs_jurusan", "") ?: ""
     fun getMahasantriAlamat(): String = prefs.getString("mhs_alamat", "") ?: ""
@@ -72,9 +75,7 @@ class PreferenceManager(context: Context) {
 
     fun getUsername(): String? = prefs.getString("username", "")
     fun getProfileUrl(): String? = prefs.getString("profile_url", "")
-
     fun getToken(): String? = prefs.getString("token", "")
-
     fun getPassword(): String? = prefs.getString("password", "")
     
     fun clear() {

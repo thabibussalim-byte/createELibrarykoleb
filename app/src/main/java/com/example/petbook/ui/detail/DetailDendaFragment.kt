@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.data.api.ApiConfig
@@ -91,38 +90,17 @@ class DetailDendaFragment : Fragment() {
         if (token.isNullOrEmpty()) return
 
         val authHeader = "Bearer $token"
-        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful) {
-                        userTransactions = response.body()?.data ?: emptyList()
-                        loadFines(authHeader)
-                    } else {
-                        loadAllTransactionsFallback(authHeader, userId)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                loadAllTransactionsFallback(authHeader, userId)
-            }
-        })
-    }
-
-    private fun loadAllTransactionsFallback(authHeader: String, userId: Int) {
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful) {
-                        val rawData = response.body()?.data ?: emptyList()
-                        userTransactions = rawData.filter { it.userId == userId }
-                        loadFines(authHeader)
-                    } else {
-                        handleError("Gagal memuat riwayat")
-                    }
+                if (_binding != null && response.isSuccessful) {
+                    val rawData = response.body()?.data ?: emptyList()
+                    // FILTER KETAT: Hanya transaksi milik User ID saat ini
+                    userTransactions = rawData.filter { it.userId == userId }
+                    loadFines(authHeader)
                 }
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                handleError("Gagal koneksi")
+                handleError("Gagal Riwayat: ${t.message}")
             }
         })
     }
@@ -134,9 +112,9 @@ class DetailDendaFragment : Fragment() {
                     binding.progressBarDenda.visibility = View.GONE
                     if (response.isSuccessful) {
                         val allFines = response.body()?.data ?: emptyList()
-                        val transactionIds = userTransactions.map { it.id }
+                        val transactionIds = userTransactions.map { it.id }.toSet()
                         
-                        // --- FILTER: HANYA YANG BELUM DIBAYAR ---
+                        // FILTER: Ambil SEMUA denda aktif milik user tanpa distinctBy agar total 18.000
                         unpaidFines = allFines.filter { 
                             it.transaksiId in transactionIds && it.status.lowercase() != "dibayar" 
                         }
@@ -152,20 +130,25 @@ class DetailDendaFragment : Fragment() {
     }
 
     private fun updateUI() {
+        // 1. TOTAL UANG (Semua denda dijumlahkan)
         var total = 0
         unpaidFines.forEach { fine ->
-            val cleanAmount = fine.totalDenda.replace(Regex("[^0-9]"), "")
+            val cleanAmount = fine.totalDenda.filter { it.isDigit() }
             total += cleanAmount.toIntOrNull() ?: 0
         }
 
         val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         binding.tvDetailTotalDenda.text = formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp: ")
-        binding.tvJumlahBukuDenda.text = "${unpaidFines.size} Buku"
+        
+        // 2. JUMLAH BUKU (Hanya transaksi unik yang memiliki denda)
+        val uniqueTransactionCount = unpaidFines.map { it.transaksiId }.toSet().size
+        binding.tvJumlahBukuDenda.text = "$uniqueTransactionCount Buku"
 
-        val fineTransactionIds = unpaidFines.map { it.transaksiId }
+        val fineTransactionIds = unpaidFines.map { it.transaksiId }.toSet()
         val transactionsWithFine = userTransactions.filter { it.id in fineTransactionIds }
 
         // Kirim data denda yang belum dibayar saja ke adapter
+        // Adapter sudah diperbaiki untuk menjumlahkan denda per buku
         historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, unpaidFines)
         
         binding.tvInstruction.visibility = if (total > 0) View.VISIBLE else View.GONE

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.petbook.ui.home.HomeFragment"
-        android:label="Home"
+        android:label=""
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_detailbookFragment"
@@ -21,7 +21,7 @@
     <fragment
         android:id="@+id/bookFragment"
         android:name="com.example.petbook.ui.buku.BookFragment"
-        android:label="Buku"
+        android:label=""
         tools:layout="@layout/fragment_book">
         <action
             android:id="@+id/action_bookFragment_to_detailbookFragment"
@@ -31,7 +31,7 @@
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.example.petbook.ui.history.HistoryFragment"
-        android:label="History"
+        android:label=""
         tools:layout="@layout/fragment_history">
         <action
             android:id="@+id/action_historyFragment_to_detailHistoryFragment"
@@ -58,6 +58,10 @@
             android:name="book_genre"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="book_rating"
+            app:argType="float"
+            android:defaultValue="0.0" />
         <action
             android:id="@+id/action_detailbookFragment_to_detailpeminjamanFragment"
             app:destination="@id/detailpeminjamanFragment" />
@@ -77,6 +81,10 @@
         <argument
             android:name="book_publisher"
             app:argType="string" />
+        <argument
+            android:name="book_rating"
+            app:argType="float"
+            android:defaultValue="0.0" />
         <action
             android:id="@+id/action_detailpeminjamanFragment_to_detailHistoryFragment"
             app:destination="@id/detailHistoryFragment"
@@ -124,7 +132,7 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.petbook.ui.profile.ProfileFragment"
-        android:label="Profil"
+        android:label=""
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_detailDendaFragment"
@@ -132,7 +140,16 @@
         <action
             android:id="@+id/action_profileFragment_to_statistikFragment"
             app:destination="@id/statistikFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.petbook.ui.profile.EditProfileFragment"
+        android:label="Edit Profil"
+        tools:layout="@layout/fragment_edit_profile" />
 
     <fragment
         android:id="@+id/statistikFragment"

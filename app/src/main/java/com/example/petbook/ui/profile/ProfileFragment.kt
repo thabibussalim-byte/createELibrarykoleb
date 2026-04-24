@@ -2,11 +2,10 @@ package com.example.petbook.ui.profile
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -27,33 +26,32 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var prefManager: PreferenceManager
 
-    // Launcher untuk memilih foto dari galeri
-    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            // Simpan URI secara lokal di Preference
-            prefManager.saveLocalProfileUri(uri.toString())
-            // Langsung update tampilan
-            displayDataFromPrefs()
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        prefManager = PreferenceManager(requireContext())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        prefManager = PreferenceManager(requireContext())
-
-        displayDataFromPrefs()
         setupClickListeners()
-        
+    }
+
+    override fun onResume() {
+        super.onResume()
+        displayDataFromPrefs()
+        loadApiData()
+    }
+
+    private fun loadApiData() {
         val token = prefManager.getToken()
         if (!token.isNullOrEmpty()) {
+            // Tampilkan Loading Premium
+            binding.progressBarProfile.visibility = View.VISIBLE
+            
             val authHeader = "Bearer $token"
             fetchUserData(authHeader)
             fetchMahasantriData(authHeader)
@@ -65,20 +63,13 @@ class ProfileFragment : Fragment() {
         binding.apply {
             val nama = prefManager.getMahasantriNama()
             tvProfileFullName.text = nama.ifEmpty { prefManager.getUsername() ?: "-" }
-            
             tvProfileJurusan.text = prefManager.getMahasantriJurusan().ifEmpty { "-" }
             tvProfileAlamat.text = prefManager.getMahasantriAlamat().ifEmpty { "-" }
             tvProfilePhone.text = prefManager.getMahasantriPhone().ifEmpty { "-" }
 
-            // LOGIKA PHOTO: Cek lokal dulu, kalau tidak ada baru dari server
             val localUri = prefManager.getLocalProfileUri()
             val serverUrl = prefManager.getProfileUrl()
-            
-            val photoSource = if (!localUri.isNullOrEmpty()) {
-                Uri.parse(localUri)
-            } else {
-                serverUrl
-            }
+            val photoSource: Any = if (!localUri.isNullOrEmpty()) Uri.parse(localUri) else serverUrl ?: R.drawable.ic_profile
 
             Glide.with(this@ProfileFragment)
                 .load(photoSource)
@@ -86,6 +77,35 @@ class ProfileFragment : Fragment() {
                 .error(R.drawable.ic_profile)
                 .circleCrop()
                 .into(ivProfilePicture)
+        }
+    }
+
+    private fun fetchMahasantriData(authHeader: String) {
+        val currentUserId = prefManager.getUserId()
+        ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
+            override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    val list = response.body()?.data ?: emptyList()
+                    val myData = list.find { it.userId == currentUserId }
+                    if (myData != null) {
+                        prefManager.saveMahasantriDetail(myData.id, myData.namaMahasantri, myData.jurusan, myData.alamat, myData.noHp)
+                        displayDataFromPrefs()
+                    }
+                }
+            }
+            override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {}
+        })
+    }
+
+    private fun setupClickListeners() {
+        binding.btnEditProfile.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
+        }
+        binding.cardDenda.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
+        }
+        binding.cardStatistik.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_statistikFragment)
         }
     }
 
@@ -97,14 +117,7 @@ class ProfileFragment : Fragment() {
                     val userList = response.body()?.data ?: emptyList()
                     val myAccount = userList.find { it.id == currentUserId }
                     if (myAccount != null) {
-                        // FIX: Kirim 5 parameter sesuai fungsi saveUser di PreferenceManager
-                        prefManager.saveUser(
-                            myAccount.id,
-                            prefManager.getToken() ?: "",
-                            myAccount.username,
-                            prefManager.getPassword() ?: "", // Ambil password lama dari prefs
-                            myAccount.profil ?: ""
-                        )
+                        prefManager.saveUser(myAccount.id, prefManager.getToken() ?: "", myAccount.username, prefManager.getPassword() ?: "", myAccount.profil ?: "")
                         displayDataFromPrefs()
                     }
                 }
@@ -113,91 +126,58 @@ class ProfileFragment : Fragment() {
         })
     }
 
-    private fun fetchMahasantriData(authHeader: String) {
-        val currentUserId = prefManager.getUserId()
-        val currentUsername = prefManager.getUsername()?.lowercase() ?: ""
-        ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
-            override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    val list = response.body()?.data ?: emptyList()
-                    val myData = list.find { it.userId == currentUserId || it.namaMahasantri.lowercase().contains(currentUsername) }
-                    if (myData != null) {
-                        prefManager.saveMahasantriDetail(myData.namaMahasantri, myData.jurusan, myData.alamat, myData.noHp)
-                        displayDataFromPrefs()
-                    }
-                }
-            }
-            override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {}
-        })
-    }
-
     private fun fetchTotalDenda(authHeader: String) {
         val userId = prefManager.getUserId()
-        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful) {
-                        val transactions = response.body()?.data ?: emptyList()
-                        calculateDendaFromTransactions(authHeader, transactions)
-                    } else {
-                        fallbackFetchAllHistory(authHeader, userId)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                fallbackFetchAllHistory(authHeader, userId)
-            }
-        })
-    }
-
-    private fun fallbackFetchAllHistory(authHeader: String, userId: Int) {
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null && response.isSuccessful) {
-                    val allTransactions = response.body()?.data ?: emptyList()
-                    val userTransactions = allTransactions.filter { it.userId == userId }
-                    calculateDendaFromTransactions(authHeader, userTransactions)
+                    val rawData = response.body()?.data ?: emptyList()
+                    val myTransactions = rawData.filter { it.userId == userId }
+                    processFines(authHeader, myTransactions)
                 }
             }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {}
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                if (_binding != null) binding.progressBarProfile.visibility = View.GONE
+            }
         })
     }
 
-    private fun calculateDendaFromTransactions(authHeader: String, transactions: List<HistoryDataItem>) {
-        val transactionIds = transactions.map { it.id }
+    private fun processFines(authHeader: String, transactions: List<HistoryDataItem>) {
+        val myTransactionIds = transactions.map { it.id }.toSet()
         ApiConfig.getApiService().getFines(authHeader).enqueue(object : Callback<FineResponse> {
             override fun onResponse(call: Call<FineResponse>, response: Response<FineResponse>) {
-                if (_binding != null && response.isSuccessful) {
-                    val allFines = response.body()?.data ?: emptyList()
-                    val unpaidFines = allFines.filter { 
-                        it.transaksiId in transactionIds && it.status.lowercase() != "dibayar" 
-                    }
-                    var total = 0
-                    unpaidFines.forEach { fine ->
-                        val cleanAmount = fine.totalDenda.replace(Regex("[^0-9]"), "")
-                        total += cleanAmount.toIntOrNull() ?: 0
-                    }
-                    if (_binding != null) {
-                        val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-                        binding.tvTotalDenda.text = formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp ")
+                if (_binding != null) {
+                    // Sembunyikan Loading
+                    binding.progressBarProfile.visibility = View.GONE
+                    
+                    if (response.isSuccessful) {
+                        val allFines = response.body()?.data ?: emptyList()
+                        
+                        // JUMLAHKAN SEMUA: Karena data duplikat sudah dihapus di server, total akan pas Rp 16.000
+                        val myUnpaidFines = allFines.filter { 
+                            it.transaksiId in myTransactionIds && it.status.lowercase() != "dibayar" 
+                        }
+                        
+                        var totalDenda = 0
+                        myUnpaidFines.forEach { fine ->
+                            val amountStr = fine.totalDenda.filter { it.isDigit() }
+                            totalDenda += amountStr.toIntOrNull() ?: 0
+                        }
+                        
+                        try {
+                            val localeID = Locale("id", "ID")
+                            val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
+                            binding.tvTotalDenda.text = formatRupiah.format(totalDenda).replace("Rp", "Rp ").replace(",00", "")
+                        } catch (e: Exception) {
+                            binding.tvTotalDenda.text = "Rp $totalDenda"
+                        }
                     }
                 }
             }
-            override fun onFailure(call: Call<FineResponse>, t: Throwable) {}
+            override fun onFailure(call: Call<FineResponse>, t: Throwable) {
+                if (_binding != null) binding.progressBarProfile.visibility = View.GONE
+            }
         })
-    }
-
-    private fun setupClickListeners() {
-        binding.btnViewPhoto.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
-
-        binding.cardDenda.setOnClickListener {
-            findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
-        }
-        binding.cardStatistik.setOnClickListener {
-            findNavController().navigate(R.id.action_profileFragment_to_statistikFragment)
-        }
     }
 
     override fun onDestroyView() {

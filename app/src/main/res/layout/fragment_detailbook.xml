@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="@color/surface_white"
     tools:context="com.example.petbook.ui.detail.DetailbookFragment">
 
     <!-- Scrollable Content -->
@@ -83,13 +83,13 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="1.2"
                         android:gravity="center"
                         android:orientation="vertical">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rating"
+                            android:text="Tgl Terbit"
                             android:textColor="@color/text_hint"
                             android:textSize="12sp" />
                         <LinearLayout
@@ -100,17 +100,17 @@
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
-                                android:src="@drawable/ic_star"
-                                app:tint="#FFB300" />
+                                android:src="@drawable/ic_history"
+                                app:tint="@color/accent_blue" />
                             <TextView
-                                android:id="@+id/tv_detail_rating"
+                                android:id="@+id/tv_detail_tgl_terbit"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:fontFamily="@font/poppins_semibold"
                                 android:textColor="@color/text_primary"
-                                android:textSize="14sp"
-                                tools:text="4.8" />
+                                android:textSize="12sp"
+                                tools:text="2024-10-21" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -123,7 +123,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.8"
                         android:gravity="center"
                         android:orientation="vertical">
                         <TextView
@@ -154,12 +154,14 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Genre"
                             android:textColor="@color/text_hint"
                             android:textSize="12sp" />
+
                         <TextView
                             android:id="@+id/tv_detail_genre_label"
                             android:layout_width="wrap_content"
@@ -180,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/poppins_bold"
-                android:text="Tentang Buku"
+                android:text="Deskripsi"
                 android:textColor="@color/text_primary"
                 android:textSize="18sp" />
 
@@ -200,7 +202,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/poppins_bold"
-                android:text="Informasi Lain"
+                android:text="Penerbit"
                 android:textColor="@color/text_primary"
                 android:textSize="18sp" />
 
@@ -209,12 +211,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:orientation="horizontal">
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Penerbit"
-                    android:textColor="@color/text_hint"
-                    android:fontFamily="@font/roboto_regular" />
+
                 <TextView
                     android:id="@+id/tv_detail_publisher"
                     android:layout_width="match_parent"
@@ -243,7 +240,6 @@
             android:padding="20dp"
             android:background="@color/white">
 
-            <!-- Di dalam MaterialButton btn_pinjam -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_pinjam"
                 android:layout_width="match_parent"

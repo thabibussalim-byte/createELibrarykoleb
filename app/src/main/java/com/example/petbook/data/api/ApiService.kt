@@ -57,14 +57,22 @@ interface ApiService {
     @GET("api/mahasantri")
     fun getMahasantri(@Header("Authorization") token: String): Call<MahasantriResponse>
 
+    // UPDATE: Gunakan MahasantriUpdateResponse agar tidak error IllegalStateException
+    @PATCH("api/mahasantri/ubah/{id}")
+    fun updateMahasantri(
+        @Header("Authorization") token: String,
+        @Path("id") mhsId: Int,
+        @Body request: UpdateMahasantriRequest
+    ): Call<MahasantriUpdateResponse>
+
     @PATCH("api/user/update/{id}")
     fun updateUser(
         @Header("Authorization") token: String,
         @Path("id") userId: Int,
         @Body request: UpdateUserRequest
-    ): Call<BorrowResponse>
-
+    ): Call<UserResponse>
 
     @GET("api/user")
     fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
+
 }

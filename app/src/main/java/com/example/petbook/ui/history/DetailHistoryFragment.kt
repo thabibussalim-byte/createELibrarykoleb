@@ -1,5 +1,6 @@
 package com.example.petbook.ui.history
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -25,6 +26,9 @@ import com.example.petbook.databinding.FragmentDetailHistoryBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class DetailHistoryFragment : Fragment() {
     private var _binding: FragmentDetailHistoryBinding? = null
@@ -73,7 +77,32 @@ class DetailHistoryFragment : Fragment() {
             tvDetailHistoryTglPinjam.text = history.tglPinjam.take(10)
             tvDetailHistoryTglKembali.text = history.tglKembali.take(10)
 
-            updateDetailUI(history.status)
+            // Cek apakah terlambat secara otomatis sebelum update UI
+            val finalStatus = if (history.status.lowercase() == "dipinjam" && isOverdue(history.tglKembali)) {
+                "terlambat"
+            } else {
+                history.status
+            }
+
+            updateDetailUI(finalStatus)
+        }
+    }
+
+    // Fungsi sakti untuk mengecek apakah sudah melewati jatuh tempo
+    private fun isOverdue(dueDateStr: String): Boolean {
+        return try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val dueDate = sdf.parse(dueDateStr.take(10))
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.time
+            
+            dueDate != null && today.after(dueDate)
+        } catch (e: Exception) {
+            false
         }
     }
 
@@ -94,7 +123,6 @@ class DetailHistoryFragment : Fragment() {
         binding.btnKembalikanHistory.isEnabled = false
         binding.btnKembalikanHistory.text = "Mengirim konfirmasi..."
 
-        // Mencoba update status ke server di background
         val token = prefManager.getToken()
         if (!token.isNullOrEmpty()) {
             val request = BorrowRequest(
@@ -109,7 +137,6 @@ class DetailHistoryFragment : Fragment() {
             })
         }
 
-        // Alur Sukses untuk Demo Presentasi
         Handler(Looper.getMainLooper()).postDelayed({
             if (_binding != null) {
                 Toast.makeText(requireContext(), "Konfirmasi pengembalian terkirim ke petugas", Toast.LENGTH_SHORT).show()
@@ -119,28 +146,32 @@ class DetailHistoryFragment : Fragment() {
     }
 
     private fun updateDetailUI(status: String) {
-        binding.tvDetailHistoryStatusBadge.text = status.uppercase()
+        val badge = binding.tvDetailHistoryStatusBadge
+        badge.text = status.uppercase()
 
         when (status.lowercase()) {
             "dipinjam" -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
+                badge.setBackgroundResource(R.drawable.bg_status_dipinjam)
+                badge.setTextColor(Color.parseColor("#1E40AF")) 
                 binding.tvDetailStatus.text = "Status: Aktif"
                 binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
                 binding.layoutActions.visibility = View.VISIBLE
             }
             "pending" -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
-                binding.tvDetailHistoryStatusBadge.text = "MENUNGGU PERSETUJUAN"
+                badge.setBackgroundResource(R.drawable.bg_status_pending)
+                badge.setTextColor(Color.parseColor("#9A3412")) 
+                badge.text = "PENDING"
                 binding.tvDetailStatus.text = "Menunggu dikonfirmasi admin"
                 binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
                 binding.layoutActions.visibility = View.GONE
             }
             "dikembalikan", "selesai" -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_aktif)
-                binding.tvDetailHistoryStatusBadge.text = "SELESAI"
+                badge.setBackgroundResource(R.drawable.bg_status_dikembalikan)
+                badge.setTextColor(Color.parseColor("#065F46")) 
+                badge.text = "SELESAI"
                 binding.layoutActions.visibility = View.GONE
 
-                val dendaAmount = currentFine?.totalDenda?.toIntOrNull() ?: 0
+                val dendaAmount = currentFine?.totalDenda?.filter { it.isDigit() }?.toIntOrNull() ?: 0
                 if (dendaAmount > 0) {
                     val statusDenda = if (currentFine?.status == "dibayar") "LUNAS" else "BELUM DIBAYAR"
                     binding.tvDetailStatus.text = "DENDA: Rp $dendaAmount ($statusDenda)\nTerlambat Mengembalikan"
@@ -151,13 +182,16 @@ class DetailHistoryFragment : Fragment() {
                 }
             }
             "terlambat" -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
+                badge.setBackgroundResource(R.drawable.bg_status_telat)
+                badge.setTextColor(Color.parseColor("#991B1B")) // Merah Tua
+                badge.text = "TERLAMBAT"
                 binding.tvDetailStatus.text = "Status: Terlambat (Buku Belum Kembali)"
                 binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
                 binding.layoutActions.visibility = View.VISIBLE
             }
             else -> {
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
+                badge.setBackgroundResource(R.drawable.bg_status_telat)
+                badge.setTextColor(Color.parseColor("#991B1B"))
                 binding.tvDetailStatus.text = "Status: $status"
                 binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
                 binding.layoutActions.visibility = View.VISIBLE

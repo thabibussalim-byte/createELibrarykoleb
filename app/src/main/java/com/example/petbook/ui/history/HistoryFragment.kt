@@ -45,36 +45,20 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        applyChipStyles() // TERAPKAN WARNA YANG SAMA DENGAN HOME/KATALOG
+        applyChipStyles()
         setupFilters()
         loadRequiredData()
     }
 
     private fun applyChipStyles() {
-        val states = arrayOf(
-            intArrayOf(android.R.attr.state_checked),
-            intArrayOf(-android.R.attr.state_checked)
-        )
-        val backgroundColors = intArrayOf(
-            Color.parseColor("#DBEAFE"), // Biru Muda (Selected)
-            Color.parseColor("#F1F5F9")  // Abu-abu (Unselected)
-        )
-        val textColors = intArrayOf(
-            Color.parseColor("#1E40AF"), // Biru Tua (Selected)
-            Color.parseColor("#64748B")  // Abu-abu (Unselected)
-        )
+        val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
+        val backgroundColors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
+        val textColors = intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))
 
         val colorStateListBg = ColorStateList(states, backgroundColors)
         val colorStateListText = ColorStateList(states, textColors)
 
-        // List semua chip yang ada di layout history
-        val chips = listOf(
-            binding.chipAll,
-            binding.chipPending,
-            binding.chipDipinjam,
-            binding.chipDikembalikan
-        )
-
+        val chips = listOf(binding.chipAll, binding.chipPending, binding.chipDipinjam, binding.chipDikembalikan)
         for (chip in chips) {
             chip.chipBackgroundColor = colorStateListBg
             chip.setTextColor(colorStateListText)
@@ -84,11 +68,11 @@ class HistoryFragment : Fragment() {
 
     private fun setupRecyclerView() {
         historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { historyItem ->
-            if (!isAdded) return@HistoryAdapter
-
             val book = allBooks.find { it.id == historyItem.bukuId }
             val author = allAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
-            val fine = allFines.find { it.transaksiId == historyItem.id }
+            
+            // PERBAIKAN: Ambil denda TERAKHIR (terbaru) untuk transaksi ini
+            val fine = allFines.findLast { it.transaksiId == historyItem.id }
 
             if (book != null) {
                 val bundle = Bundle().apply {
@@ -97,15 +81,7 @@ class HistoryFragment : Fragment() {
                     putString("author", author)
                     putParcelable("fine", fine)
                 }
-                
-                try {
-                    val currentDest = findNavController().currentDestination?.id
-                    if (currentDest == R.id.historyFragment) {
-                        findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment, bundle)
-                    }
-                } catch (e: Exception) {
-                    Log.e("History", "Navigasi Error: ${e.message}")
-                }
+                findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment, bundle)
             }
         }
 
@@ -117,7 +93,6 @@ class HistoryFragment : Fragment() {
 
     private fun loadRequiredData() {
         binding.progressBarHistory.visibility = View.VISIBLE
-        
         ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
             override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
                 if (_binding != null && response.isSuccessful) {
@@ -125,9 +100,7 @@ class HistoryFragment : Fragment() {
                     loadBooks()
                 }
             }
-            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) {
-                if (_binding != null) loadBooks()
-            }
+            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) { if (_binding != null) loadBooks() }
         })
     }
 
@@ -139,71 +112,57 @@ class HistoryFragment : Fragment() {
                     loadFines()
                 }
             }
-            override fun onFailure(call: Call<BookResponse>, t: Throwable) {
-                if (_binding != null) loadFines()
-            }
+            override fun onFailure(call: Call<BookResponse>, t: Throwable) { if (_binding != null) loadFines() }
         })
     }
 
     private fun loadFines() {
         val token = prefManager.getToken()
-        if (token.isNullOrEmpty()) {
-            loadHistory()
-            return
-        }
+        if (token.isNullOrEmpty()) { loadHistory(); return }
 
-        val authHeader = "Bearer $token"
-        ApiConfig.getApiService().getFines(authHeader).enqueue(object : Callback<FineResponse> {
+        ApiConfig.getApiService().getFines("Bearer $token").enqueue(object : Callback<FineResponse> {
             override fun onResponse(call: Call<FineResponse>, response: Response<FineResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allFines = response.body()?.data ?: emptyList()
                 }
                 loadHistory()
             }
-            override fun onFailure(call: Call<FineResponse>, t: Throwable) {
-                if (_binding != null) loadHistory()
-            }
+            override fun onFailure(call: Call<FineResponse>, t: Throwable) { if (_binding != null) loadHistory() }
         })
     }
 
     private fun loadHistory() {
         val token = prefManager.getToken()
-        val currentUserId = prefManager.getUserId()
-        
+        val userId = prefManager.getUserId()
         if (token.isNullOrEmpty()) {
             binding.progressBarHistory.visibility = View.GONE
             return
         }
 
-        val authHeader = "Bearer $token"
-        
-        ApiConfig.getApiService().getHistoryByUser(authHeader, currentUserId).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful) {
-                        binding.progressBarHistory.visibility = View.GONE
-                        allHistory = response.body()?.data ?: emptyList()
-                        historyAdapter.updateData(allHistory, allBooks, allAuthors, allFines)
-                    } else {
-                        loadAllTransactionsFallback(authHeader, currentUserId)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                if (_binding != null) loadAllTransactionsFallback(authHeader, currentUserId)
-            }
-        })
-    }
-
-    private fun loadAllTransactionsFallback(authHeader: String, userId: Int) {
-        ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
+        ApiConfig.getApiService().getHistoryByUser("Bearer $token", userId).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
                     binding.progressBarHistory.visibility = View.GONE
                     if (response.isSuccessful) {
-                        val rawData = response.body()?.data ?: emptyList()
-                        allHistory = rawData.filter { it.userId == userId }
-                        historyAdapter.updateData(allHistory, allBooks, allAuthors, allFines)
+                        allHistory = response.body()?.data ?: emptyList()
+                        updateUI(allHistory)
+                    } else {
+                        loadAllTransactionsFallback("Bearer $token", userId)
+                    }
+                }
+            }
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) { loadAllTransactionsFallback("Bearer $token", userId) }
+        })
+    }
+
+    private fun loadAllTransactionsFallback(token: String, userId: Int) {
+        ApiConfig.getApiService().getAllTransactions(token).enqueue(object : Callback<HistoryResponse> {
+            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                if (_binding != null) {
+                    binding.progressBarHistory.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        allHistory = (response.body()?.data ?: emptyList()).filter { it.userId == userId }
+                        updateUI(allHistory)
                     }
                 }
             }
@@ -221,7 +180,21 @@ class HistoryFragment : Fragment() {
                 R.id.chip_dikembalikan -> allHistory.filter { it.status.lowercase() == "dikembalikan" }
                 else -> allHistory
             }
-            historyAdapter.updateData(filteredList, allBooks, allAuthors, allFines)
+            updateUI(filteredList)
+        }
+    }
+
+    private fun updateUI(list: List<HistoryDataItem>) {
+        if (list.isEmpty()) {
+            binding.rvHistory.visibility = View.GONE
+            binding.layoutEmptyHistory.visibility = View.VISIBLE
+        } else {
+            binding.rvHistory.visibility = View.VISIBLE
+            binding.layoutEmptyHistory.visibility = View.GONE
+            
+            // PERBAIKAN: Ambil denda terbaru per transaksi
+            val latestFines = allFines.reversed().distinctBy { it.transaksiId }
+            historyAdapter.updateData(list, allBooks, allAuthors, latestFines)
         }
     }
 
