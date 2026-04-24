@@ -61,10 +61,10 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.mpandroidchart)
     implementation(libs.androidx.work.runtime.ktx)
-    //menampilkan grafik atau diagram secara visual.
+
     implementation(libs.mpandroidchart)
-    // SplashScreen API for Android 12+
     implementation(libs.androidx.core.splashscreen)
+
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
