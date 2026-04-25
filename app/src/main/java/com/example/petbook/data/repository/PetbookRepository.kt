@@ -2,6 +2,8 @@ package com.example.petbook.data.repository
 
 import android.util.Log
 import com.example.petbook.data.api.ApiService
+import com.example.petbook.data.api.model.BorrowRequest
+import com.example.petbook.data.api.model.FineRequest
 import com.example.petbook.data.local.entity.BookEntity
 import com.example.petbook.data.local.entity.HistoryEntity
 import com.example.petbook.data.local.room.BookDao
@@ -24,6 +26,15 @@ class PetbookRepository(
 
     suspend fun insertHistory(history: List<HistoryEntity>) = bookDao.insertHistory(history)
 
+    suspend fun updateTransaction(token: String, id: Int, request: BorrowRequest) =
+        apiService.updateTransaction("Bearer $token", id, request).awaitResponse()
+
+    suspend fun createFine(token: String, request: FineRequest) =
+        apiService.createFine("Bearer $token", request).awaitResponse()
+
+    suspend fun updateBook(token: String, id: Int, request: Map<String, Any>) =
+        apiService.updateBook("Bearer $token", id, request).awaitResponse()
+
     suspend fun refreshHistory(token: String, userId: Int) {
         try {
             val response = apiService.getAllTransactions("Bearer $token").awaitResponse()
@@ -31,7 +42,6 @@ class PetbookRepository(
                 val items = response.body()?.data ?: emptyList()
                 val filteredItems = items.filter { it.userId == userId }
                 
-                // Ambil data lama untuk mempertahankan status isSuccessShown
                 for (item in filteredItems) {
                     val existing = bookDao.getHistoryById(item.id)
                     val entity = HistoryEntity(
@@ -58,7 +68,6 @@ class PetbookRepository(
             val response = apiService.getBooks().awaitResponse()
             if (response.isSuccessful) {
                 val items = response.body()?.data ?: emptyList()
-                // Map data dari API (BookItem) ke database (BookEntity)
                 val entities = items.map {
                     BookEntity(
                         id = it.id,
@@ -74,7 +83,6 @@ class PetbookRepository(
                         updatedAt = it.updatedAt
                     )
                 }
-
                 bookDao.insertBooks(entities)
             }
         } catch (e: Exception) {

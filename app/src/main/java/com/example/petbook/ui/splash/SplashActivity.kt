@@ -28,10 +28,8 @@ class SplashActivity : AppCompatActivity() {
         val token = prefManager.getToken()
 
         if (token.isNullOrEmpty()) {
-            // Kasus 1: Tidak ada token sama sekali -> Langsung Login
             navigateToLogin()
         } else {
-            // Kasus 2: Ada token -> WAJIB CEK apakah masih valid ke server
             validateToken(token, prefManager)
         }
     }

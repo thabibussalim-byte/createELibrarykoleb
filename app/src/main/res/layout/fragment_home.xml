@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="@color/background_light"
     tools:context=".ui.home.HomeFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -55,6 +55,7 @@
                     android:layout_marginTop="24dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/white"
                     app:strokeWidth="0dp">
 
                     <androidx.appcompat.widget.SearchView
@@ -105,7 +106,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_bold"
                         android:text="Rekomendasi"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="17sp" />
                     <TextView
                         android:id="@+id/tv_rekomendasi_all"
@@ -116,7 +117,7 @@
                         android:background="@drawable/bg_genre_chip"
                         android:fontFamily="@font/poppins_medium"
                         android:text="Lihat Semua"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </RelativeLayout>
 
@@ -140,7 +141,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_bold"
                         android:text="Paling Populer"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="17sp" />
                     <TextView
                         android:id="@+id/tv_populer_all"
@@ -151,7 +152,7 @@
                         android:background="@drawable/bg_genre_chip"
                         android:fontFamily="@font/poppins_medium"
                         android:text="Lihat Semua"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </RelativeLayout>
 
@@ -165,7 +166,7 @@
                     tools:listitem="@layout/item_buku" />
             </LinearLayout>
 
-            <!-- EMPTY STATE (kondisi saat sebuah halaman atau komponen tidak punya data untuk ditampilkan.) -->
+            <!-- EMPTY STATE -->
             <LinearLayout
                 android:id="@+id/layout_empty_search"
                 android:layout_width="match_parent"

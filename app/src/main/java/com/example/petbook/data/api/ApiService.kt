@@ -1,7 +1,6 @@
 package com.example.petbook.data.api
 
 import com.example.petbook.data.api.model.*
-
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -31,18 +30,12 @@ interface ApiService {
         @Body request: BorrowRequest
     ): Call<BorrowResponse>
 
-    @POST("api/denda/tambah")
-    fun createFine(
+    @PATCH("api/transaksi/update/{id}")
+    fun updateTransaction(
         @Header("Authorization") token: String,
-        @Body request: FineRequest
-    ): Call<FineResponse>
-
-    @PATCH("api/denda/create")
-    fun updateFine(
-        @Header("Authorization") token: String,
-        request1: Int,
-        @Body request: FineRequest
-    ): Call<FineResponse>
+        @Path("id") transactionId: Int,
+        @Body request: BorrowRequest
+    ): Call<BorrowResponse>
 
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
@@ -55,8 +48,34 @@ interface ApiService {
     @GET("api/denda")
     fun getFines(@Header("Authorization") token: String): Call<FineResponse>
 
+    @GET("api/denda/cari/{id}")
+    fun getFineDetailById(
+        @Header("Authorization") token: String,
+        @Path("id") fineId: Int
+    ): Call<FineDetailResponse>
+
     @GET("api/mahasantri")
     fun getMahasantri(@Header("Authorization") token: String): Call<MahasantriResponse>
+
+    @PATCH("api/mahasantri/ubah/{id}")
+    fun updateMahasantri(
+        @Header("Authorization") token: String,
+        @Path("id") mhsId: Int,
+        @Body request: UpdateMahasantriRequest
+    ): Call<MahasantriUpdateResponse>
+
+    @POST("api/denda/tambah")
+    fun createFine(
+        @Header("Authorization") token: String,
+        @Body request: FineRequest
+    ): Call<FineResponse>
+
+    @PATCH("api/denda/edit/{id}")
+    fun updateFine(
+        @Header("Authorization") token: String,
+        @Path("id") fineId: Int,
+        @Body request: FineRequest
+    ): Call<FineResponse>
 
     @PATCH("api/user/update/{id}")
     fun updateUser(
@@ -65,13 +84,13 @@ interface ApiService {
         @Body request: UpdateUserRequest
     ): Call<BorrowResponse>
 
+    @GET("api/user")
+    fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
+
     @PATCH("api/buku/update/{id}")
     fun updateBook(
         @Header("Authorization") token: String,
         @Path("id") bookId: Int,
         @Body request: Map<String, @JvmSuppressWildcards Any>
     ): Call<UpdateBookResponse>
-
-    @GET("api/user")
-    fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
 }

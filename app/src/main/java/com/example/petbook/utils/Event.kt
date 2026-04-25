@@ -1,4 +1,4 @@
-package com.example.belajarretrofit.utils
+package com.example.petbook.utils
 
 class Event <out T> (private val content: T){
     @Suppress("MemberVisibilityCanBePrivate")

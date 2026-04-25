@@ -3,6 +3,7 @@ package com.example.petbook.ui.profile
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
+import com.example.petbook.data.api.model.MahasantriResponse
 import com.example.petbook.data.api.model.MahasantriUpdateResponse
 import com.example.petbook.data.api.model.UpdateMahasantriRequest
 import com.example.petbook.data.pref.PreferenceManager
@@ -58,6 +60,10 @@ class EditProfileFragment : Fragment() {
         setupSpinner()
         loadCurrentData()
         setupActionButtons()
+
+        if (prefManager.getMahasantriId() <= 0) {
+            fetchMahasantriData()
+        }
     }
 
     private fun setupSpinner() {
@@ -88,6 +94,36 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    private fun fetchMahasantriData() {
+        val token = prefManager.getToken() ?: return
+        val authHeader = "Bearer $token"
+        val currentUserId = prefManager.getUserId()
+        val currentUsername = prefManager.getUsername()?.lowercase() ?: ""
+        
+        ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
+            override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    val list = response.body()?.data ?: emptyList()
+                    // Cari berdasarkan USER_ID atau Nama (sebagai fallback)
+                    val myData = list.find { it.userId == currentUserId } 
+                                ?: list.find { it.namaMahasantri.lowercase() == currentUsername }
+                    
+                    if (myData != null) {
+                        prefManager.saveMahasantriDetail(
+                            myData.id, 
+                            myData.namaMahasantri, 
+                            myData.jurusan, 
+                            myData.alamat, 
+                            myData.noHp
+                        )
+                        loadCurrentData()
+                    }
+                }
+            }
+            override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {}
+        })
+    }
+
     private fun setupActionButtons() {
         binding.btnChangePhoto.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -110,51 +146,94 @@ class EditProfileFragment : Fragment() {
         }
 
         val token = prefManager.getToken()
-        val mhsId = prefManager.getMahasantriId()
         val userId = prefManager.getUserId()
+        val username = prefManager.getUsername()?.lowercase() ?: ""
+        var mhsId = prefManager.getMahasantriId()
 
-        if (token.isNullOrEmpty() || mhsId <= 0) {
-            Toast.makeText(requireContext(), "Sesi berakhir atau ID tidak ditemukan", Toast.LENGTH_LONG).show()
+        if (token.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Sesi berakhir, silakan login ulang", Toast.LENGTH_LONG).show()
             return
         }
 
+        val authHeader = "Bearer $token"
+
+        if (mhsId <= 0) {
+            binding.btnSave.isEnabled = false
+            binding.btnSave.text = "Mencari ID..."
+
+            ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
+                override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
+                    if (response.isSuccessful) {
+                        val list = response.body()?.data ?: emptyList()
+                        // Pencarian lebih luas: ID User atau Nama
+                        val myData = list.find { it.userId == userId } 
+                                    ?: list.find { it.namaMahasantri.lowercase() == username }
+
+                        if (myData != null) {
+                            prefManager.saveMahasantriDetail(myData.id, myData.namaMahasantri, myData.jurusan, myData.alamat, myData.noHp)
+                            executeActualUpdate(authHeader, myData.id, name, jurusan, address, phone, userId)
+                        } else {
+                            resetSaveButton()
+                            Log.e("EditProfile", "Gagal temukan data. UserID: $userId, ListSize: ${list.size}")
+                            Toast.makeText(requireContext(), "Akun Anda belum terdaftar sebagai Mahasantri di server.", Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        resetSaveButton()
+                        Toast.makeText(requireContext(), "Gagal terhubung ke server (Error ${response.code()})", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {
+                    resetSaveButton()
+                    Toast.makeText(requireContext(), "Masalah koneksi: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        } else {
+            executeActualUpdate(authHeader, mhsId, name, jurusan, address, phone, userId)
+        }
+    }
+
+    private fun executeActualUpdate(
+        authHeader: String,
+        mhsId: Int,
+        name: String,
+        jurusan: String,
+        address: String,
+        phone: String,
+        userId: Int
+    ) {
         binding.btnSave.isEnabled = false
         binding.btnSave.text = "Menyimpan..."
 
         val request = UpdateMahasantriRequest(name, jurusan, address, phone, userId)
-        val authHeader = "Bearer $token"
 
-        // FIX: Gunakan MahasantriUpdateResponse (Objek tunggal) sesuai respon API
         ApiConfig.getApiService().updateMahasantri(authHeader, mhsId, request).enqueue(object : Callback<MahasantriUpdateResponse> {
             override fun onResponse(call: Call<MahasantriUpdateResponse>, response: Response<MahasantriUpdateResponse>) {
                 if (_binding != null) {
-                    binding.btnSave.isEnabled = true
-                    binding.btnSave.text = "Simpan Perubahan"
-
+                    resetSaveButton()
                     if (response.isSuccessful) {
                         prefManager.saveMahasantriDetail(mhsId, name, jurusan, address, phone)
                         Toast.makeText(requireContext(), "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
                     } else {
                         val errorBody = response.errorBody()?.string()
-                        val errorMessage = try {
-                            JSONObject(errorBody ?: "").getString("message")
-                        } catch (e: Exception) {
-                            "Status Code: ${response.code()}"
-                        }
-                        Toast.makeText(requireContext(), "Gagal: $errorMessage", Toast.LENGTH_LONG).show()
+                        Log.e("EditProfile", "Update Gagal: $errorBody")
+                        Toast.makeText(requireContext(), "Gagal memperbarui data di server", Toast.LENGTH_LONG).show()
                     }
                 }
             }
 
             override fun onFailure(call: Call<MahasantriUpdateResponse>, t: Throwable) {
                 if (_binding != null) {
-                    binding.btnSave.isEnabled = true
-                    binding.btnSave.text = "Simpan Perubahan"
+                    resetSaveButton()
                     Toast.makeText(requireContext(), "Koneksi Gagal: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         })
+    }
+
+    private fun resetSaveButton() {
+        binding.btnSave.isEnabled = true
+        binding.btnSave.text = "Simpan Perubahan"
     }
 
     override fun onDestroyView() {

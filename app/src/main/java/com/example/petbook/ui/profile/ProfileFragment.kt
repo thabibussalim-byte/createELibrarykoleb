@@ -101,8 +101,8 @@ class ProfileFragment : Fragment() {
                         prefManager.saveUser(
                             myAccount.id,
                             prefManager.getToken() ?: "",
+                            prefManager.getPassword() ?: "", // Simpan password lama
                             myAccount.username,
-                            prefManager.getPassword() ?: "", // Ambil password lama dari prefs
                             myAccount.profil ?: ""
                         )
                         displayDataFromPrefs()
@@ -120,9 +120,9 @@ class ProfileFragment : Fragment() {
             override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     val list = response.body()?.data ?: emptyList()
-                    val myData = list.find { it.userId == currentUserId || it.namaMahasantri.lowercase().contains(currentUsername) }
+                    val myData = list.find { it.userId == currentUserId }
                     if (myData != null) {
-                        prefManager.saveMahasantriDetail(myData.namaMahasantri, myData.jurusan, myData.alamat, myData.noHp)
+                        prefManager.saveMahasantriDetail(myData.id, myData.namaMahasantri, myData.jurusan, myData.alamat, myData.noHp)
                         displayDataFromPrefs()
                     }
                 }
@@ -188,15 +188,22 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        binding.btnViewPhoto.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        binding.btnEditProfile.setOnClickListener {
+            if (findNavController().currentDestination?.id == R.id.profileFragment) {
+                findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
+            }
         }
 
         binding.cardDenda.setOnClickListener {
-            findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
+            if (findNavController().currentDestination?.id == R.id.profileFragment) {
+                findNavController().navigate(R.id.action_profileFragment_to_detailDendaFragment)
+            }
         }
+
         binding.cardStatistik.setOnClickListener {
-            findNavController().navigate(R.id.action_profileFragment_to_statistikFragment)
+            if (findNavController().currentDestination?.id == R.id.profileFragment) {
+                findNavController().navigate(R.id.action_profileFragment_to_statistikFragment)
+            }
         }
     }
 

@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
 import com.example.petbook.data.pref.PreferenceManager
@@ -30,6 +32,8 @@ class DetailDendaFragment : Fragment() {
     private var userTransactions: List<HistoryDataItem> = emptyList()
     private var allBooks: List<BookItem> = emptyList()
     private var allAuthors: List<AuthorItem> = emptyList()
+    private var allGenres: List<GenreItem> = emptyList()
+    private var allPublishers: List<PublisherItem> = emptyList()
     private var unpaidFines: List<FineDataItem> = emptyList()
 
     override fun onCreateView(
@@ -49,7 +53,27 @@ class DetailDendaFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { }
+        historyAdapter = HistoryAdapter(emptyList(), emptyList(), emptyList(), emptyList()) { history ->
+            val book = allBooks.find { it.id == history.bukuId }
+            val author = allAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
+            val genre = allGenres.find { it.id == book?.genreId }?.namaGenre ?: "Umum"
+            val publisher = allPublishers.find { it.id == book?.penerbitId }?.publisherName ?: "Penerbit Anonim"
+            
+            // Cari denda yang KHUSUS untuk transaksi ini
+            val fine = unpaidFines.find { it.transaksiId == history.id }
+
+            val bundle = Bundle().apply {
+                putParcelable("history", history)
+                putParcelable("book", book)
+                putParcelable("fine", fine)
+                putString("book_writer", author)
+                putString("book_genre", genre)
+                putString("book_publisher", publisher)
+            }
+            
+            findNavController().navigate(R.id.action_detailDendaFragment_to_detailHistoryFragment, bundle)
+        }
+        
         binding.rvBukuDenda.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = historyAdapter
@@ -58,17 +82,51 @@ class DetailDendaFragment : Fragment() {
 
     private fun loadInitialData() {
         binding.progressBarDenda.visibility = View.VISIBLE
+        // Load Penulis, Genre, dan Penerbit secara paralel (sederhana)
+        loadSupportingData()
+    }
+
+    private fun loadSupportingData() {
+        // 1. Authors
         ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
             override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     allAuthors = response.body()?.data ?: emptyList()
-                    loadBooks()
+                    checkAndLoadMainData()
                 }
             }
-            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) {
-                handleError("Gagal Penulis: ${t.message}")
-            }
+            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) {}
         })
+
+        // 2. Genres
+        ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
+            override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    allGenres = response.body()?.data ?: emptyList()
+                    checkAndLoadMainData()
+                }
+            }
+            override fun onFailure(call: Call<GenreResponse>, t: Throwable) {}
+        })
+
+        // 3. Publishers
+        ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
+            override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    allPublishers = response.body()?.data ?: emptyList()
+                    checkAndLoadMainData()
+                }
+            }
+            override fun onFailure(call: Call<PublisherResponse>, t: Throwable) {}
+        })
+    }
+
+    private var supportingDataCount = 0
+    private fun checkAndLoadMainData() {
+        supportingDataCount++
+        if (supportingDataCount >= 3) {
+            loadBooks()
+        }
     }
 
     private fun loadBooks() {
@@ -136,7 +194,6 @@ class DetailDendaFragment : Fragment() {
                         val allFines = response.body()?.data ?: emptyList()
                         val transactionIds = userTransactions.map { it.id }
                         
-                        // --- FILTER: HANYA YANG BELUM DIBAYAR ---
                         unpaidFines = allFines.filter { 
                             it.transaksiId in transactionIds && it.status.lowercase() != "dibayar" 
                         }
@@ -157,7 +214,6 @@ class DetailDendaFragment : Fragment() {
             val cleanAmount = fine.totalDenda.replace(Regex("[^0-9]"), "")
             total += cleanAmount.toIntOrNull() ?: 0
         }
-
         val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         binding.tvDetailTotalDenda.text = formatRupiah.format(total).replace(",00", "").replace("Rp", "Rp: ")
         binding.tvJumlahBukuDenda.text = "${unpaidFines.size} Buku"
@@ -165,7 +221,6 @@ class DetailDendaFragment : Fragment() {
         val fineTransactionIds = unpaidFines.map { it.transaksiId }
         val transactionsWithFine = userTransactions.filter { it.id in fineTransactionIds }
 
-        // Kirim data denda yang belum dibayar saja ke adapter
         historyAdapter.updateData(transactionsWithFine, allBooks, allAuthors, unpaidFines)
         
         binding.tvInstruction.visibility = if (total > 0) View.VISIBLE else View.GONE

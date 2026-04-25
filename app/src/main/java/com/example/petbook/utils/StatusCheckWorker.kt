@@ -35,7 +35,7 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
             val finesResponse = ApiConfig.getApiService().getFines(formattedToken).execute()
             val fineList = finesResponse.body()?.data ?: emptyList()
 
-            // 2. Ambil History terbaru (untuk cek perpanjangan tanggal & status)
+            // 2. Ambil History terbaru
             val response = ApiConfig.getApiService().getHistoryByUser(formattedToken, userId).execute()
 
             if (response.isSuccessful) {
@@ -46,13 +46,13 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                     for (item in historyList) {
                         val currentStatus = item.status.lowercase()
 
-                        // --- SINKRONISASI ROOM (Offline-First) ---
+                        // Sinkronisasi Room
                         val existingEntity = repository.getHistoryById(item.id)
                         val entity = HistoryEntity(
                             id = item.id,
                             status = item.status,
                             tanggalPinjam = item.tglPinjam,
-                            tanggalPengembalian = item.tglKembali, // Mendukung Perpanjangan Tanggal
+                            tanggalPengembalian = item.tglKembali,
                             keterangan = item.keterangan,
                             bukuId = item.bukuId,
                             userId = item.userId,
@@ -61,13 +61,13 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                         )
                         repository.insertHistory(listOf(entity))
 
-                        // --- LOGIKA UPDATE DENDA OTOMATIS (Jika Terlambat) ---
-                        if (currentStatus == "dipinjam") {
+                        // LOGIKA DENDA OTOMATIS
+                        if (currentStatus == "dipinjam" || currentStatus == "telat") {
                             checkAndCalculateFine(formattedToken, item, fineList)
                             hasActiveProcesses = true
                         }
 
-                        // --- LOGIKA NOTIFIKASI PERUBAHAN STATUS ---
+                        // Logika Notifikasi
                         val lastStatus = sharedPrefs.getString("status_${item.id}", null)
                         if (lastStatus != null && lastStatus != currentStatus) {
                             val bookTitle = bookList.find { it.id == item.bukuId }?.judulBuku ?: "Buku"
@@ -78,8 +78,6 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                         if (currentStatus == "pending") hasActiveProcesses = true
                     }
                 }
-
-                // Pengaturan WorkManager (Auto-Stop jika sudah selesai)
                 handleWorkerLifetime(hasActiveProcesses)
             }
         } catch (e: Exception) {
@@ -92,31 +90,37 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
     private fun checkAndCalculateFine(token: String, history: com.example.petbook.data.api.model.HistoryDataItem, fineList: List<com.example.petbook.data.api.model.FineDataItem>) {
         try {
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val returnDateStr = history.tglKembali
+            val returnDateStr = history.tglKembali.take(10)
             if (returnDateStr.isEmpty()) return
 
             val returnDate = sdf.parse(returnDateStr)
             val currentDate = Date()
 
-            if (currentDate.after(returnDate)) {
+            if (returnDate != null && currentDate.after(returnDate)) {
                 val diffInMillis = currentDate.time - returnDate.time
                 val overdueDays = TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
 
                 if (overdueDays > 0) {
-                    val totalFineAmount = overdueDays * 2000
-
-                    // Cari ID Denda berdasarkan ID Transaksi
+                    val totalFineAmount = overdueDays * 2000 // Denda Rp 2000 per hari
                     val existingFine = fineList.find { it.transaksiId == history.id }
+                    val title = ApiConfig.getApiService().getBooks().execute().body()?.data?.find { it.id == history.bukuId }?.judulBuku ?: "Buku"
 
                     if (existingFine != null) {
-                        // Jika denda sudah ada di server, lakukan PATCH (Update)
-                        val request = FineRequest(totalFineAmount.toString(), "belumdibayar", history.id)
+                        // Jika sudah ada denda, perbarui jumlahnya
+                        val request = FineRequest(totalFineAmount.toString(), "belum dibayar", history.id)
                         ApiConfig.getApiService().updateFine(token, existingFine.id, request).execute()
+                        Log.d("FineUpdate", "Denda diperbarui untuk transaksi ${history.id}: Rp $totalFineAmount")
+                    } else {
+                        // JIKA BELUM ADA (Hari ke-1), BUAT DENDA BARU
+                        val request = FineRequest(totalFineAmount.toString(), "belum dibayar", history.id)
+                        ApiConfig.getApiService().createFine(token, request).execute()
+                        Log.d("FineUpdate", "Denda baru dibuat untuk transaksi ${history.id}: Rp $totalFineAmount")
                     }
+                    NotificationHelper(applicationContext).showNotification(102, "Terlambat!", "Segera kembalikan buku \"$title\".")
                 }
             }
         } catch (e: Exception) {
-            Log.e("FineUpdate", "Gagal hitung denda: ${e.message}")
+            Log.e("FineUpdate", "Gagal proses denda: ${e.message}")
         }
     }
 

@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.HistoryDataItem
 import com.example.petbook.data.api.model.HistoryResponse
@@ -40,11 +42,6 @@ class StatistikFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.toolbarStatistik.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-
         loadStatistikData()
     }
 
@@ -82,17 +79,12 @@ class StatistikFragment : Fragment() {
                     if (response.isSuccessful) {
                         val rawData = response.body()?.data ?: emptyList()
                         val filteredData = rawData.filter { it.userId == userId }
-                        
-                        if (filteredData.isEmpty()) {
-                            Toast.makeText(requireContext(), "Tidak ada data untuk statistik", Toast.LENGTH_SHORT).show()
-                        }
                         setupChartAndDetails(filteredData)
                     }
                 }
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
                 if (_binding != null) showLoading(false)
-                Log.e("Statistik", "Fallback Failure: ${t.message}")
             }
         })
     }
@@ -108,6 +100,9 @@ class StatistikFragment : Fragment() {
 
         if (list.isEmpty()) return
 
+        // Ambil warna teks adaptif dari resources
+        val textColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
+
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(0f, countDipinjam.toFloat()))
         entries.add(BarEntry(1f, countSelesai.toFloat()))
@@ -119,14 +114,10 @@ class StatistikFragment : Fragment() {
             Color.parseColor("#34D399"),
             Color.parseColor("#FBBF24")
         )
-        dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextColor = textColor
         dataSet.valueTextSize = 12f
-        
-        // Menghilangkan koma (desimal) pada angka di atas batang
         dataSet.valueFormatter = object : ValueFormatter() {
-            override fun getFormattedValue(value: Float): String {
-                return value.toInt().toString()
-            }
+            override fun getFormattedValue(value: Float): String = value.toInt().toString()
         }
 
         val barData = BarData(dataSet)
@@ -137,25 +128,26 @@ class StatistikFragment : Fragment() {
             description.isEnabled = false
             legend.isEnabled = false
             
-            xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("Dipinjam", "Selesai", "Pending"))
-            xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
-            xAxis.setDrawGridLines(false)
-            xAxis.granularity = 1f
-            xAxis.labelCount = 3
-            xAxis.setDrawAxisLine(true)
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(arrayOf("Dipinjam", "Selesai", "Pending"))
+                position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                granularity = 1f
+                labelCount = 3
+                this.textColor = textColor // Warna label sumbu X
+            }
             
-            // Menghilangkan koma (desimal) pada sumbu Y
-            axisLeft.setDrawGridLines(false)
-            axisLeft.axisMinimum = 0f
-            axisLeft.granularity = 1f
-            axisLeft.valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return value.toInt().toString()
+            axisLeft.apply {
+                setDrawGridLines(false)
+                axisMinimum = 0f
+                granularity = 1f
+                this.textColor = textColor // Warna label sumbu Y
+                valueFormatter = object : ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String = value.toInt().toString()
                 }
             }
             
             axisRight.isEnabled = false
-            
             setFitBars(true)
             animateY(1000)
             invalidate()

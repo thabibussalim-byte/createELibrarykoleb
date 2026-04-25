@@ -63,7 +63,7 @@
             app:argType="float"
             android:defaultValue="0.0" />
         <action
-            android:id="@+id/action_detailbookFragment_to_detailpeminjamanFragment"
+            android:id="@+id/action_detailBookFragment_to_detailpeminjamanFragment"
             app:destination="@id/detailpeminjamanFragment" />
     </fragment>
 
@@ -162,7 +162,7 @@
     <fragment
         android:id="@+id/statistikFragment"
         android:name="com.example.petbook.ui.statistik.StatistikFragment"
-        android:label="Statistik"
+        android:label=""
         tools:layout="@layout/fragment_statistik" />
 
     <fragment
@@ -172,9 +172,6 @@
         tools:layout="@layout/fragment_detail_denda">
         <action
             android:id="@+id/action_detailDendaFragment_to_detailbookFragment"
-            app:destination="@id/detailbookFragment" />
-        <action
-            android:id="@+id/action_detailDendaFragment_to_detailbookFragment2"
             app:destination="@id/detailbookFragment" />
         <action
             android:id="@+id/action_detailDendaFragment_to_detailHistoryFragment"

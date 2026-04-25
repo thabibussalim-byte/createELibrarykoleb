@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.R
@@ -27,46 +28,90 @@ class HomeFragment : Fragment() {
     
     private lateinit var rekomendasiAdapter: BookAdapter
     private lateinit var populerAdapter: BookAdapter
+    private lateinit var prefManager: PreferenceManager
     
     private var allBooksList: List<BookItem> = emptyList()
     private var authorList: List<AuthorItem> = emptyList()
-    private var publisherList: List<PublisherItem> = emptyList()
     private var genreList: List<GenreItem> = emptyList()
+    private var publisherList: List<PublisherItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        prefManager = PreferenceManager(requireContext())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupGreeting()
+        setupUI()
         setupRecyclerView()
         setupSearch()
         setupSeeAllButtons()
         loadGenres()
+        checkGlobalHistoryStatus()
     }
 
-    private fun setupGreeting() {
-        val prefManager = PreferenceManager(requireContext())
+    override fun onResume() {
+        super.onResume()
+        setupUI() 
+    }
+
+    private fun setupUI() {
         val username = prefManager.getUsername()
         if (!username.isNullOrEmpty()) {
-            binding.tvWelcome.text = "Hai $username, mau baca buku apa hari ini?"
+            binding.tvWelcome.text = "Hai $username, mau baca apa?"
         }
+    }
+    private fun checkGlobalHistoryStatus() {
+        val userId = prefManager.getUserId()
+        val token = prefManager.getToken() ?: ""
+        if (token.isEmpty()) return
+
+        ApiConfig.getApiService().getHistoryByUser("Bearer $token", userId).enqueue(object : Callback<HistoryResponse> {
+            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                if (response.isSuccessful) {
+                    val histories = response.body()?.data ?: emptyList()
+                    for (item in histories) {
+                        val status = item.status.lowercase()
+
+                        // Jika ada yang baru saja 'dipinjam' atau 'selesai' dan belum dilihat
+                        if ((status == "dipinjam" || status == "dikembalikan" || status == "selesai") &&
+                            !prefManager.isStatusSeen(item.id, status)) {
+
+                            // Tandai sudah dilihat
+                            prefManager.setStatusSeen(item.id, status)
+
+                            // Navigasi ke SuccessFragment
+                            val bundle = Bundle().apply {
+                                putString("book_title", "Buku Anda") // Bisa dicari judulnya jika perlu
+                                putString("status", status)
+                            }
+                            findNavController().navigate(R.id.successReturnFragment, bundle)
+                            break
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {}
+        })
     }
 
     private fun setupSeeAllButtons() {
-        // Navigasi ke BookFragment (Katalog) saat "Lihat Semua" diklik
-        binding.tvRekomendasi.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_bookFragment)
-        }
+        // PERBAIKAN: Gunakan NavOptions untuk membersihkan backstack agar navigasi lebih bersih
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.homeFragment, true) // Hapus home dari backstack sementara agar tidak tertumpuk
+            .setLaunchSingleTop(true)
+            .build()
 
-        binding.tvPopuler.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_bookFragment)
+        binding.tvRekomendasiAll.setOnClickListener {
+            findNavController().navigate(R.id.bookFragment, null, navOptions)
+        }
+        binding.tvPopulerAll.setOnClickListener {
+            findNavController().navigate(R.id.bookFragment, null, navOptions)
         }
     }
 
@@ -76,19 +121,14 @@ class HomeFragment : Fragment() {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     genreList = response.body()?.data ?: emptyList()
-                    
                     binding.chipGroupCategory.removeAllViews()
-                    addChipToGroup(-1, "Semua", true)
                     for (genre in genreList.take(6)) {
                         addChipToGroup(genre.id, genre.namaGenre, false)
                     }
-                    
                     loadAuthors()
                 }
             }
-            override fun onFailure(call: Call<GenreResponse>, t: Throwable) {
-                if (_binding != null) loadAuthors()
-            }
+            override fun onFailure(call: Call<GenreResponse>, t: Throwable) { if (_binding != null) loadAuthors() }
         })
     }
 
@@ -102,9 +142,7 @@ class HomeFragment : Fragment() {
                     loadPublishers()
                 }
             }
-            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) {
-                if (_binding != null) loadPublishers()
-            }
+            override fun onFailure(call: Call<AuthorResponse>, t: Throwable) { if (_binding != null) loadPublishers() }
         })
     }
 
@@ -116,9 +154,7 @@ class HomeFragment : Fragment() {
                     getBooksFromApi()
                 }
             }
-            override fun onFailure(call: Call<PublisherResponse>, t: Throwable) {
-                if (_binding != null) getBooksFromApi()
-            }
+            override fun onFailure(call: Call<PublisherResponse>, t: Throwable) { if (_binding != null) getBooksFromApi() }
         })
     }
 
@@ -127,26 +163,19 @@ class HomeFragment : Fragment() {
             override fun onResponse(call: Call<BookResponse>, response: Response<BookResponse>) {
                 if (_binding != null) {
                     binding.progressBar.visibility = View.GONE
-                    if (response.isSuccessful && response.body() != null) {
+                    if (response.isSuccessful) {
                         allBooksList = response.body()?.data ?: emptyList()
                         updateDisplay(allBooksList)
                     }
                 }
             }
-            override fun onFailure(call: Call<BookResponse>, t: Throwable) {
-                if (_binding != null) {
-                    binding.progressBar.visibility = View.GONE
-                }
-            }
+            override fun onFailure(call: Call<BookResponse>, t: Throwable) { if (_binding != null) binding.progressBar.visibility = View.GONE }
         })
     }
 
     private fun setupSearch() {
         binding.searchViewHome.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
+            override fun onQueryTextSubmit(query: String?): Boolean = false
             override fun onQueryTextChange(newText: String?): Boolean {
                 filterBooks(newText ?: "")
                 return true
@@ -155,47 +184,48 @@ class HomeFragment : Fragment() {
     }
 
     private fun filterBooks(query: String) {
-        val filteredList = if (query.isEmpty()) {
-            allBooksList
-        } else {
+        val filteredList = if (query.isEmpty()) allBooksList
+        else {
             allBooksList.filter { book ->
                 val authorName = authorList.find { it.id == book.penulisId }?.namaPenulis?.lowercase() ?: ""
                 book.judulBuku.lowercase().contains(query.lowercase()) || authorName.contains(query.lowercase())
             }
         }
-        updateDisplay(filteredList)
+        
+        if (filteredList.isEmpty() && query.isNotEmpty()) {
+            binding.layoutHomeContent.visibility = View.GONE
+            binding.layoutEmptySearch.visibility = View.VISIBLE
+        } else {
+            binding.layoutHomeContent.visibility = View.VISIBLE
+            binding.layoutEmptySearch.visibility = View.GONE
+            updateDisplay(filteredList)
+        }
     }
 
     private fun setupRecyclerView() {
-        rekomendasiAdapter = BookAdapter(emptyList(), emptyList()) { book, rating ->
-            navigateToDetail(book, rating)
-        }
-        populerAdapter = BookAdapter(emptyList(), emptyList()) { book, rating ->
-            navigateToDetail(book, rating)
-        }
+        rekomendasiAdapter = BookAdapter(emptyList(), authorList) { book -> navigateToDetail(book) }
+        populerAdapter = BookAdapter(emptyList(), authorList) { book -> navigateToDetail(book) }
 
         binding.rvRekomendasi.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = rekomendasiAdapter
         }
-
         binding.rvPopuler.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = populerAdapter
         }
     }
 
-    private fun navigateToDetail(book: BookItem, rating: Float) {
+    private fun navigateToDetail(book: BookItem) {
         val authorName = authorList.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
-        val publisherName = publisherList.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
         val genreName = genreList.find { it.id == book.genreId }?.namaGenre ?: "Umum"
+        val publisherName = publisherList.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
         
         val bundle = Bundle().apply {
             putParcelable("book", book)
             putString("book_writer", authorName)
-            putString("book_publisher", publisherName)
             putString("book_genre", genreName)
-            putFloat("book_rating", rating)
+            putString("book_publisher", publisherName)
         }
         findNavController().navigate(R.id.action_homeFragment_to_detailbookFragment, bundle)
     }
@@ -213,21 +243,27 @@ class HomeFragment : Fragment() {
         chip.isChecked = isDefault
         
         val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
-        val backgroundColors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
-        chip.chipBackgroundColor = ColorStateList(states, backgroundColors)
-
-        val textColors = intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))
-        chip.setTextColor(ColorStateList(states, textColors))
+        val colors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
+        chip.chipBackgroundColor = ColorStateList(states, colors)
+        chip.setTextColor(ColorStateList(states, intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))))
         chip.chipStrokeWidth = 0f
 
         chip.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                if (genreId == -1) {
-                    updateDisplay(allBooksList)
+                val filtered = allBooksList.filter { it.genreId == genreId }
+                if (filtered.isEmpty()) {
+                    binding.layoutHomeContent.visibility = View.GONE
+                    binding.layoutEmptySearch.visibility = View.VISIBLE
                 } else {
-                    updateDisplay(allBooksList.filter { it.genreId == genreId })
+                    binding.layoutHomeContent.visibility = View.VISIBLE
+                    binding.layoutEmptySearch.visibility = View.GONE
+                    updateDisplay(filtered)
                 }
                 binding.searchViewHome.setQuery("", false)
+            } else if (binding.chipGroupCategory.checkedChipId == View.NO_ID) {
+                binding.layoutHomeContent.visibility = View.VISIBLE
+                binding.layoutEmptySearch.visibility = View.GONE
+                updateDisplay(allBooksList)
             }
         }
         binding.chipGroupCategory.addView(chip)

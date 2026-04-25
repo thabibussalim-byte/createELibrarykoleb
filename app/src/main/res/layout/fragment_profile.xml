@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/surface_white">
+    android:background="@color/background_light">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -24,12 +24,14 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/white"
                 app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:background="@color/profile_header_bg"
                     android:orientation="vertical"
                     android:padding="24dp">
 
@@ -56,7 +58,7 @@
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins_bold"
                         android:text="User"
-                        android:textColor="@color/text_primary"
+                        android:textColor="@color/black"
                         android:textSize="18sp" />
 
                     <TextView
@@ -94,10 +96,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:cardBackgroundColor="#FEF2F2"
+                app:cardBackgroundColor="@color/card_denda_bg"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#FEE2E2"
+                app:strokeColor="@color/card_denda_stroke"
                 app:strokeWidth="1dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -112,20 +114,19 @@
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kewajiban Denda" android:textColor="#991B1B" android:textSize="12sp" />
-                        
-                        <!-- PROGRESS INDICATOR KECIL UNTUK DENDA -->
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kewajiban Denda" android:textColor="@color/text_secondary" android:textSize="12sp" />
+
                         <FrameLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp">
-                            <TextView 
-                                android:id="@+id/tv_total_denda" 
-                                android:layout_width="wrap_content" 
-                                android:layout_height="wrap_content" 
-                                android:fontFamily="@font/poppins_bold" 
-                                android:text="Rp 0" 
-                                android:textColor="#EF4444" 
+                            <TextView
+                                android:id="@+id/tv_total_denda"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins_bold"
+                                android:text="Rp 0"
+                                android:textColor="#EF4444"
                                 android:textSize="18sp" />
                         </FrameLayout>
                     </LinearLayout>
@@ -141,7 +142,7 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Koleksi &amp; Aktivitas"
                 android:textAllCaps="true"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
 
             <com.google.android.material.card.MaterialCardView
@@ -152,7 +153,7 @@
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#F1F5F9"
+                app:strokeColor="@color/item_stroke"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -170,14 +171,14 @@
                         android:paddingHorizontal="16dp">
                         <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_star" app:tint="@color/accent_blue" />
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:text="Statistik Membaca" android:textColor="@color/text_primary" android:textSize="14sp" />
-                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:rotation="180" android:src="@drawable/ic_back" app:tint="#CBD5E1" />
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:rotation="180" android:src="@drawable/ic_back" app:tint="@color/text_hint" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginHorizontal="16dp"
-                        android:background="#F8FAFC" />
+                        android:background="@color/item_stroke" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -193,7 +194,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginHorizontal="16dp"
-                        android:background="#F8FAFC" />
+                        android:background="@color/item_stroke" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -226,7 +227,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- KEREN: CIRCULAR PROGRESS INDICATOR DI PROFILE -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar_profile"
         android:layout_width="wrap_content"

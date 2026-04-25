@@ -88,7 +88,7 @@ class HelpFragment : Fragment() {
         binding.btnFaq8.setOnClickListener {
             navigateToDetail(
                 "Bagaimana jika Lupa password?",
-                "Jika password lupa, Anda bisa melaporkan ke admin perpustakaan, Setalah melaporkan admin akan mengubah password Anda secara manual"
+                "Jika password lupa, Anda bisa melaporkan ke admin perpustakaan. Setelah melaporkan admin akan mengubah password Anda secara manual"
             )
         }
     }

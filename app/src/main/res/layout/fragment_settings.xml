@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
+    android:background="@color/background_light"
     android:fillViewport="true"
     tools:context=".ui.pengaturan.SettingsFragment">
 
@@ -21,7 +21,7 @@
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/poppins_bold"
             android:text="Tampilan"
-            android:textColor="@color/primary_blue"
+            android:textColor="@color/accent_blue"
             android:textSize="14sp" />
 
         <!-- 1. Mode Gelap -->
@@ -30,7 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:strokeColor="@color/item_stroke"
             app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +44,7 @@
                     android:id="@+id/iv_dark_mode"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_settings" 
+                    android:src="@drawable/ic_settings"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:tint="@color/text_primary" />
@@ -76,7 +78,9 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:thumbTint="@color/accent_blue"
+                    app:trackTint="@color/primary_blue_light" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -88,7 +92,7 @@
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/poppins_bold"
             android:text="Akun &amp; Aplikasi"
-            android:textColor="@color/primary_blue"
+            android:textColor="@color/accent_blue"
             android:textSize="14sp" />
 
         <!-- 2. Notifikasi -->
@@ -97,7 +101,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:strokeColor="@color/item_stroke"
             app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -133,6 +139,7 @@
                     android:fontFamily="@font/roboto_regular"
                     android:text="Atur pengingat dan promosi \naplikasi."
                     android:textColor="@color/text_secondary"
+
                     android:textSize="12sp"
                     app:layout_constraintStart_toEndOf="@id/iv_notif"
                     app:layout_constraintTop_toBottomOf="@id/tv_notif_title" />
@@ -141,6 +148,8 @@
                     android:id="@+id/switch_notif"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:thumbTint="@color/accent_blue"
+                    app:trackTint="@color/primary_blue_light"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -155,7 +164,9 @@
             android:clickable="true"
             android:focusable="true"
             app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:strokeColor="@color/item_stroke"
             app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout

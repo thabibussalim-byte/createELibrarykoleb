@@ -6,10 +6,10 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="3dp"
+    app:cardElevation="2dp"
     app:strokeWidth="1dp"
-    app:strokeColor="?attr/colorOnSecondaryFixed"
-    android:backgroundTint="?attr/colorOnSecondaryContainer">
+    app:strokeColor="@color/item_stroke"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:maxLines="1"
                 tools:text="Judul Buku"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp" />
 
             <TextView
@@ -48,10 +48,9 @@
                 android:layout_marginTop="2dp"
                 android:fontFamily="@font/roboto_regular"
                 tools:text="Penulis"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
 
-            <!-- GANTI RATING BAR JADI TANGGAL TERBIT -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
