@@ -23,11 +23,9 @@ class FaqDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ambil data yang dikirim dari HelpFragment
         val title = arguments?.getString("faq_title")
         val content = arguments?.getString("faq_answer")
 
-        // Tampilkan ke UI
         binding.tvFaqTitle.text = title
         binding.tvFaqContent.text = content
     }

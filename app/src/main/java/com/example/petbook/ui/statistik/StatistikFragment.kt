@@ -24,6 +24,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.graphics.toColorInt
 
 class StatistikFragment : Fragment() {
 
@@ -53,7 +54,6 @@ class StatistikFragment : Fragment() {
         val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
         showLoading(true)
 
-        // Menggunakan getAllTransactions + filter manual karena getHistoryByUser tidak tersedia
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
@@ -103,9 +103,9 @@ class StatistikFragment : Fragment() {
 
         val dataSet = BarDataSet(entries, "")
         dataSet.colors = listOf(
-            Color.parseColor("#60A5FA"),
-            Color.parseColor("#34D399"),
-            Color.parseColor("#FBBF24")
+            "#60A5FA".toColorInt(),
+            "#34D399".toColorInt(),
+            "#FBBF24".toColorInt()
         )
         dataSet.valueTextColor = textColor
         dataSet.valueTextSize = 12f

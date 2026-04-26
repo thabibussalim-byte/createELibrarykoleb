@@ -14,5 +14,7 @@ data class HistoryEntity(
     val bukuId: Int,
     val userId: Int,
     val denda: Int?,
-    val isSuccessShown: Boolean = false
+    val isSuccessShown: Boolean = false,
+    val createdAt: String = "",
+    val updatedAt: String = ""
 )

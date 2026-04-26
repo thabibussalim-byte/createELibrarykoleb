@@ -1,7 +1,7 @@
 package com.example.petbook.ui.home
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +20,9 @@ import com.google.android.material.chip.Chip
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Locale
+import androidx.core.graphics.toColorInt
 
 class HomeFragment : Fragment() {
 
@@ -60,6 +63,7 @@ class HomeFragment : Fragment() {
         setupUI() 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupUI() {
         val username = prefManager.getUsername()
         if (!username.isNullOrEmpty()) {
@@ -79,20 +83,18 @@ class HomeFragment : Fragment() {
                 if (_binding != null && response.isSuccessful) {
                     val rawData = response.body()?.data ?: emptyList()
                     val histories = rawData.filter { it.userId == userId }
-                    
+
                     for (item in histories) {
                         val status = item.status.lowercase()
 
-                        // Jika ada yang baru saja 'dipinjam' atau 'selesai' dan belum dilihat
                         if ((status == "dipinjam" || status == "dikembalikan" || status == "selesai") &&
-                            !prefManager.isStatusSeen(item.id, status)) {
+                            !prefManager.isStatusSeen(item.id, status) &&
+                            isWithinTwentyMinutes(item.updatedAt)) {
 
-                            // Tandai sudah dilihat
                             prefManager.setStatusSeen(item.id, status)
 
-                            // Navigasi ke SuccessFragment
                             val bundle = Bundle().apply {
-                                putString("book_title", "Buku Anda") 
+                                putString("book_title", "Buku Anda")
                                 putString("status", status)
                             }
                             findNavController().navigate(R.id.successReturnFragment, bundle)
@@ -103,6 +105,23 @@ class HomeFragment : Fragment() {
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {}
         })
+    }
+
+    private fun isWithinTwentyMinutes(updatedAt: String): Boolean {
+        return try {
+
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                Locale.getDefault())
+            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+
+            val updateDate = sdf.parse(updatedAt)
+            val currentTime = System.currentTimeMillis()
+            val diffInMillis = currentTime - (updateDate?.time ?: 0)
+
+            diffInMillis <= 20 * 60 * 1000 && diffInMillis >= 0
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun setupSeeAllButtons() {
@@ -247,9 +266,9 @@ class HomeFragment : Fragment() {
         chip.isChecked = isDefault
         
         val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
-        val colors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
+        val colors = intArrayOf("#DBEAFE".toColorInt(), "#F1F5F9".toColorInt())
         chip.chipBackgroundColor = ColorStateList(states, colors)
-        chip.setTextColor(ColorStateList(states, intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))))
+        chip.setTextColor(ColorStateList(states, intArrayOf("#1E40AF".toColorInt(), "#64748B".toColorInt())))
         chip.chipStrokeWidth = 0f
 
         chip.setOnCheckedChangeListener { _, isChecked ->

@@ -1,29 +1,32 @@
 package com.example.petbook.data.pref
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
 import org.json.JSONObject
+import androidx.core.content.edit
 
 class PreferenceManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
     fun saveUser(id: Int, token: String, username: String, password: String, profileUrl: String) {
-        val editor = prefs.edit()
-        editor.putInt("user_id", id)
-        editor.putString("token", token)
-        editor.putString("username", username)
-        editor.putString("password", password)
-        editor.putString("profile_url", profileUrl)
-        editor.putBoolean("is_logged_in", true)
-        editor.apply()
+        prefs.edit {
+            putInt("user_id", id)
+            putString("token", token)
+            putString("username", username)
+            putString("password", password)
+            putString("profile_url", profileUrl)
+            putBoolean("is_logged_in", true)
+        }
     }
 
     fun isLoggedIn(): Boolean {
         return prefs.getBoolean("is_logged_in", false)
     }
 
+    @SuppressLint("UseKtx")
     fun saveLocalProfileUri(uri: String) {
         prefs.edit().putString("local_profile_uri", uri).apply()
     }
@@ -31,13 +34,13 @@ class PreferenceManager(context: Context) {
     fun getLocalProfileUri(): String? = prefs.getString("local_profile_uri", null)
 
     fun saveMahasantriDetail(id: Int, nama: String, jurusan: String, alamat: String, phone: String) {
-        val editor = prefs.edit()
-        editor.putInt("mhs_id", id)
-        editor.putString("mhs_nama", nama)
-        editor.putString("mhs_jurusan", jurusan)
-        editor.putString("mhs_alamat", alamat)
-        editor.putString("mhs_phone", phone)
-        editor.apply()
+        prefs.edit {
+            putInt("mhs_id", id)
+            putString("mhs_nama", nama)
+            putString("mhs_jurusan", jurusan)
+            putString("mhs_alamat", alamat)
+            putString("mhs_phone", phone)
+        }
     }
 
     fun getMahasantriId(): Int = prefs.getInt("mhs_id", 0)
@@ -51,7 +54,7 @@ class PreferenceManager(context: Context) {
         if (id <= 0) {
             id = getIdFromToken()
             if (id > 0) {
-                prefs.edit().putInt("user_id", id).apply()
+                prefs.edit { putInt("user_id", id) }
             }
         }
         return id
@@ -79,26 +82,23 @@ class PreferenceManager(context: Context) {
     fun getProfileUrl(): String? = prefs.getString("profile_url", "")
     fun getToken(): String? = prefs.getString("token", "")
     fun getPassword(): String? = prefs.getString("password", "")
-
-    // Status Tracking for Success Screens
     fun setStatusSeen(transactionId: Int, status: String) {
-        prefs.edit().putBoolean("seen_${transactionId}_$status", true).apply()
+        prefs.edit { putBoolean("seen_${transactionId}_$status", true) }
     }
 
     fun isStatusSeen(transactionId: Int, status: String): Boolean {
         return prefs.getBoolean("seen_${transactionId}_$status", false)
     }
 
-    fun clear() {    // Jangan gunakan prefs.edit().clear(), tapi hapus satu-satu
-        val editor = prefs.edit()
-        val allEntries = prefs.all
-        for (entry in allEntries) {
-            val key = entry.key
-            // Hapus semua kecuali yang mencatat status "seen"
-            if (!key.startsWith("seen_")) {
-                editor.remove(key)
+    fun clear() {
+        prefs.edit {
+            val allEntries = prefs.all
+            for (entry in allEntries) {
+                val key = entry.key
+                if (!key.startsWith("seen_")) {
+                    remove(key)
+                }
             }
         }
-        editor.apply()
     }
 }

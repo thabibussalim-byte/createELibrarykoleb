@@ -29,14 +29,6 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body request: BorrowRequest
     ): Call<BorrowResponse>
-
-    @PATCH("api/transaksi/update/{id}")
-    fun updateTransaction(
-        @Header("Authorization") token: String,
-        @Path("id") transactionId: Int,
-        @Body request: BorrowRequest
-    ): Call<BorrowResponse>
-
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
 

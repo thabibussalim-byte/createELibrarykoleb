@@ -17,7 +17,6 @@ class PetbookRepository(
 
     private var adminToken: String? = null
 
-    // Kredensial admin untuk login otomatis
     private val adminCredentials = LoginRequest("admin", "admin123")
 
     private suspend fun getLatestAdminToken(): String? {
@@ -36,7 +35,6 @@ class PetbookRepository(
         return adminToken
     }
 
-    // Fungsi baru untuk update/create denda menggunakan token admin
     suspend fun createOrUpdateFine(transaksiId: Int, amount: Int, existingFineId: Int? = null) {
         val token = getLatestAdminToken() ?: return
         try {
@@ -56,15 +54,12 @@ class PetbookRepository(
             Log.e("Repository", "Error denda: ${e.message}")
         }
     }
-
     fun getAllBooks(): Flow<List<BookEntity>> = bookDao.getAllBooks()
 
     fun getHistoryByUserId(userId: Int): Flow<List<HistoryEntity>> = 
         bookDao.getHistoryByUserId(userId.toString())
 
     suspend fun getHistoryById(id: Int): HistoryEntity? = bookDao.getHistoryById(id)
-
-    suspend fun updateSuccessStatus(id: Int, isShown: Boolean) = bookDao.updateSuccessStatus(id, isShown)
 
     suspend fun insertHistory(history: List<HistoryEntity>) = bookDao.insertHistory(history)
 
@@ -80,7 +75,6 @@ class PetbookRepository(
                     val existing = bookDao.getHistoryById(item.id)
                     
                     if (existing != null && existing.status.lowercase() != item.status.lowercase()) {
-                        Log.d("Repository", "Status change detected for ${item.id}: ${existing.status} -> ${item.status}")
                         handleStockUpdate(item.bukuId, existing.status, item.status)
                     }
 
@@ -137,8 +131,6 @@ class PetbookRepository(
 
                     val response = apiService.updateBook(token, bookId, requestBody).awaitResponse()
                     if (response.isSuccessful) {
-                        Log.d("Repository", "SUCCESS: Stok buku updated to $newStock")
-                        
                         val entity = BookEntity(
                             id = currentBook.id,
                             judulBuku = currentBook.judulBuku,

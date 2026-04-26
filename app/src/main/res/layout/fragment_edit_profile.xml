@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/surface_white">
 
-    <!-- 1. DEKORASI: Gradient Background di bagian atas -->
     <View
         android:id="@+id/view_header_bg"
         android:layout_width="match_parent"
@@ -26,7 +24,6 @@
             android:paddingHorizontal="24dp"
             android:paddingTop="40dp">
 
-            <!-- 2. PHOTO CARD (Elevated & Rounded) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Ubah Foto Profil"
+                        android:text="@string/ubah_foto_profil"
                         android:textAllCaps="false"
                         android:textColor="@color/accent_blue"
                         android:textSize="12sp"
@@ -78,7 +75,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 3. INPUT SECTION -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,17 +85,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
-                    android:text="Informasi Pribadi"
+                    android:text="@string/informasi_pribadi"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
-                <!-- Nama Lengkap -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="Nama Lengkap"
+                    android:hint="@string/nama_lengkap"
                     app:startIconTint="@color/accent_blue">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -109,13 +104,12 @@
                         android:fontFamily="@font/roboto_regular" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Jurusan -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/roboto_regular"
-                    android:text="Pilih Jurusan"
+                    android:text="@string/pilih_jurusan"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
@@ -135,13 +129,12 @@
                         android:paddingHorizontal="12dp" />
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Alamat -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:hint="Alamat Lengkap">
+                    android:hint="@string/alamat_lengkap">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_edit_address"
@@ -152,13 +145,12 @@
                         android:maxLines="3" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- No WhatsApp -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:hint="No. WhatsApp"
+                    android:hint="@string/no_whatsapp"
                     app:prefixText="+62 "
                     app:prefixTextColor="@color/text_secondary">
 
@@ -170,7 +162,6 @@
                         android:inputType="phone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Button Simpan -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_save"
                     android:layout_width="match_parent"
@@ -179,7 +170,7 @@
                     android:layout_marginBottom="40dp"
                     android:backgroundTint="@color/accent_blue"
                     android:fontFamily="@font/poppins_bold"
-                    android:text="Simpan Perubahan"
+                    android:text="@string/simpan_perubahan"
                     android:textAllCaps="false"
                     android:textSize="15sp"
                     app:cornerRadius="16dp"
@@ -188,5 +179,4 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

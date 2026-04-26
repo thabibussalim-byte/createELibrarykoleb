@@ -12,6 +12,7 @@ import com.example.petbook.data.pref.PreferenceManager
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.content.edit
 
 class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
@@ -39,7 +40,6 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val todayDate = sdf.format(Date())
 
-            // 1. CEK BUKU BARU
             val booksResponse = apiService.getBooks().execute()
             val bookList = booksResponse.body()?.data ?: emptyList()
             val newestBook = bookList.maxByOrNull { it.id }
@@ -53,10 +53,9 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                     target = NotificationHelper.TARGET_CATALOG,
                     imageUrl = newestBook.foto
                 )
-                notifPrefs.edit().putInt("last_book_id", newestBook.id).apply()
+                notifPrefs.edit { putInt("last_book_id", newestBook.id) }
             }
 
-            // 2. CEK RIWAYAT & STATUS (MENGGUNAKAN getAllTransactions + FILTER USER ID)
             val allHistoryResponse = apiService.getAllTransactions(formattedToken).execute()
             val allItems = allHistoryResponse.body()?.data ?: emptyList()
             val historyList = allItems.filter { it.userId == userId }
@@ -108,7 +107,7 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                                     "Buku \"$bookTitle\" telat $daysLate hari. Segera kembalikan!",
                                     target = NotificationHelper.TARGET_HISTORY
                                 )
-                                notifPrefs.edit().putString("late_notif_${item.id}", todayDate).apply()
+                                notifPrefs.edit { putString("late_notif_${item.id}", todayDate) }
                             }
                         }
                     }
@@ -124,7 +123,12 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                             target = NotificationHelper.TARGET_HISTORY
                         )
                     }
-                    if (fine != null) notifPrefs.edit().putString("fine_status_${item.id}", fine.status).apply()
+                    if (fine != null) notifPrefs.edit {
+                        putString(
+                            "fine_status_${item.id}",
+                            fine.status
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {

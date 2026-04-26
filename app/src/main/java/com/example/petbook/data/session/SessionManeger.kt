@@ -2,6 +2,7 @@ package com.example.petbook.data.session
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 class SessionManager(context: Context) {
     private var prefs: SharedPreferences =
@@ -16,11 +17,11 @@ class SessionManager(context: Context) {
 
     // Simpan status login
     fun saveLoginSession(token: String) {
-        val editor = prefs.edit()
-        editor.putBoolean(IS_LOGIN, true)
-        editor.putString(USER_TOKEN, token)
-        editor.putLong(LOGIN_TIMESTAMP, System.currentTimeMillis())
-        editor.apply()
+        prefs.edit {
+            putBoolean(IS_LOGIN, true)
+            putString(USER_TOKEN, token)
+            putLong(LOGIN_TIMESTAMP, System.currentTimeMillis())
+        }
     }
 
     // Cek apakah sudah login dan sesi masih valid (kurang dari 30 menit)
@@ -42,8 +43,8 @@ class SessionManager(context: Context) {
 
 
     fun logout() {
-        val editor = prefs.edit()
-        editor.clear()
-        editor.apply()
+        prefs.edit {
+            clear()
+        }
     }
 }

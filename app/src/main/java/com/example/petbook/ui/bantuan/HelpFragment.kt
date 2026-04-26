@@ -29,62 +29,48 @@ class HelpFragment : Fragment() {
     }
 
     private fun setupFaqClickListeners() {
-        // 1. Cara Meminjam
         binding.btnFaq1.setOnClickListener {
             navigateToDetail(
                 "Bagaimana cara meminjam buku?",
                 "Buka katalog buku, pilih buku yang Anda inginkan, lalu klik tombol 'Pinjam Buku'. Tunggu konfirmasi dari petugas melalui notifikasi aplikasi."
             )
         }
-
-        // 2. Waktu Peminjaman
         binding.btnFaq2.setOnClickListener {
             navigateToDetail(
                 "Berapa lama waktu peminjaman?",
                 "Waktu peminjaman buku standarnya adalah 7 hari kalender sampai maksimal waktu peminjaman 14 hari kalender. Anda dapat melihat tanggal jatuh tempo pengembalian di menu Riwayat Peminjaman."
             )
         }
-
-        // 3. Status Buku
         binding.btnFaq3.setOnClickListener {
             navigateToDetail(
                 "Apa arti status dipinjam/ dikembalikan/ pending?",
                 "Dipinjam: Buku sedang dalam genggaman Anda.\n Dikembalikan: buku yang telah selesai dibaca, lalu dikembalikan ke petugas. \nDipinjam: Buku yang sedang dipinjam oleh Anda."
             )
         }
-
-        // 4. Cara Mengembalikan
         binding.btnFaq4.setOnClickListener {
             navigateToDetail(
                 "Bagaimana cara mengembalikan buku?",
                 "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Dikembalikan'."
             )
         }
-
-        // 5. Denda
         binding.btnFaq5.setOnClickListener {
             navigateToDetail(
                 "Apakah ada denda keterlambatan?",
                 "Ya, denda keterlambatan berlaku sebesar Rp 2.000 per hari untuk setiap buku yang terlambat dikembalikan. Pastikan mengembalikan tepat waktu untuk menghindari denda."
             )
         }
-
-        // 6. Buku Hilang
         binding.btnFaq6.setOnClickListener {
             navigateToDetail(
                 "Apa yang terjadi jika buku hilang?",
                 "Jika buku hilang, Anda wajib melaporkannya segera ke petugas. Anda akan diminta untuk mengganti buku yang sama atau membayar denda sesuai dengan harga pasar buku tersebut."
             )
         }
-
-        // 7. Perpanjang Masa Pinjam
         binding.btnFaq7.setOnClickListener {
             navigateToDetail(
                 "Apakah bisa memperpanjang masa pinjam?",
                 "Ya, anda dapat memperpanjang masa pinjam dengan meminta admin perpustakaan untuk ditambahkan waktu peminjaman buku yang telah dipinjam"
             )
         }
-
         binding.btnFaq8.setOnClickListener {
             navigateToDetail(
                 "Bagaimana jika Lupa password?",

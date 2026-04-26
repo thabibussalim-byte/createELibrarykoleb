@@ -1,7 +1,7 @@
 package com.example.petbook.ui.profile
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,10 +21,10 @@ import com.example.petbook.data.api.model.MahasantriUpdateResponse
 import com.example.petbook.data.api.model.UpdateMahasantriRequest
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentEditProfileBinding
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.net.toUri
 
 class EditProfileFragment : Fragment() {
 
@@ -85,7 +85,7 @@ class EditProfileFragment : Fragment() {
 
             val localUri = prefManager.getLocalProfileUri()
             val serverUrl = prefManager.getProfileUrl()
-            val photoSource: Any = if (!localUri.isNullOrEmpty()) Uri.parse(localUri) else serverUrl ?: R.drawable.ic_profile
+            val photoSource: Any = if (!localUri.isNullOrEmpty()) localUri.toUri() else serverUrl ?: R.drawable.ic_profile
             
             Glide.with(this@EditProfileFragment)
                 .load(photoSource)
@@ -104,7 +104,6 @@ class EditProfileFragment : Fragment() {
             override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
                 if (_binding != null && response.isSuccessful) {
                     val list = response.body()?.data ?: emptyList()
-                    // Cari berdasarkan USER_ID atau Nama (sebagai fallback)
                     val myData = list.find { it.userId == currentUserId } 
                                 ?: list.find { it.namaMahasantri.lowercase() == currentUsername }
                     
@@ -134,6 +133,7 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateDataToServer() {
         val name = binding.etEditName.text.toString().trim()
         val jurusan = binding.spinnerJurusan.selectedItem.toString()
@@ -165,7 +165,6 @@ class EditProfileFragment : Fragment() {
                 override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
                     if (response.isSuccessful) {
                         val list = response.body()?.data ?: emptyList()
-                        // Pencarian lebih luas: ID User atau Nama
                         val myData = list.find { it.userId == userId } 
                                     ?: list.find { it.namaMahasantri.lowercase() == username }
 
@@ -192,6 +191,7 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun executeActualUpdate(
         authHeader: String,
         mhsId: Int,
@@ -231,6 +231,7 @@ class EditProfileFragment : Fragment() {
         })
     }
 
+    @SuppressLint("SetTextI18n")
     private fun resetSaveButton() {
         binding.btnSave.isEnabled = true
         binding.btnSave.text = "Simpan Perubahan"

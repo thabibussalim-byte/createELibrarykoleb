@@ -18,7 +18,6 @@
             android:paddingHorizontal="24dp"
             android:paddingTop="40dp">
 
-            <!-- PHOTO CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +47,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/ic_profile" />
+                            android:src="@drawable/ic_profile"
+                            tools:ignore="ContentDescription" />
                     </com.google.android.material.card.MaterialCardView>
 
                     <TextView
@@ -57,7 +57,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins_bold"
-                        android:text="User"
+                        android:text="@string/user"
                         android:textColor="@color/black"
                         android:textSize="18sp" />
 
@@ -67,7 +67,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:fontFamily="@font/roboto_regular"
-                        android:text="Mahasantri"
+                        android:text="@string/mahasantri"
                         android:textColor="@color/accent_blue"
                         android:textSize="14sp" />
 
@@ -78,7 +78,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Edit Profil"
+                        android:text="@string/edit_profil"
                         android:textAllCaps="false"
                         android:textColor="@color/accent_blue"
                         android:textSize="12sp"
@@ -90,7 +90,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- FINANCIAL SUMMARY -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_denda"
                 android:layout_width="match_parent"
@@ -125,7 +124,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppins_bold"
-                                android:text="Rp 0"
+                                android:text="@string/rp_0"
                                 android:textColor="#EF4444"
                                 android:textSize="18sp" />
                         </FrameLayout>
@@ -140,10 +139,11 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/poppins_semibold"
-                android:text="Koleksi &amp; Aktivitas"
+                android:text="@string/koleksi_amp_aktivitas"
                 android:textAllCaps="true"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:ignore="AllCaps" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -169,9 +169,11 @@
                         android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="16dp">
-                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_star" app:tint="@color/accent_blue" />
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_star" app:tint="@color/accent_blue"
+                            tools:ignore="ContentDescription" />
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:text="Statistik Membaca" android:textColor="@color/text_primary" android:textSize="14sp" />
-                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:rotation="180" android:src="@drawable/ic_back" app:tint="@color/text_hint" />
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:rotation="180" android:src="@drawable/ic_back" app:tint="@color/text_hint"
+                            tools:ignore="ContentDescription" />
                     </LinearLayout>
 
                     <View
@@ -207,7 +209,7 @@
                             android:id="@+id/tv_nomer_telpon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Nomor WhatsApp"
+                            android:text="@string/nomor_whatsapp"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                         <TextView
@@ -218,7 +220,8 @@
                             android:fontFamily="@font/poppins_medium"
                             android:text="-"
                             android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
+                            android:textSize="13sp"
+                            tools:ignore="HardcodedText" />
 
                     </LinearLayout>
                 </LinearLayout>

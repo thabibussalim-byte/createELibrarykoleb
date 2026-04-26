@@ -1,5 +1,6 @@
 package com.example.petbook.ui.buku
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.google.android.material.chip.Chip
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.graphics.toColorInt
 
 class BookFragment : Fragment() {
 
@@ -49,6 +51,7 @@ class BookFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -64,20 +67,14 @@ class BookFragment : Fragment() {
                 binding.tvStatusLabel.text = "Menampilkan semua koleksi"
                 binding.layoutEmptyState.visibility = View.GONE
             } else {
-                // Hanya muncul jika data di HP benar-benar kosong
                 binding.progressBarBook.visibility = View.VISIBLE
             }
         }
-
-        // 2. Refresh data dari API di background
         viewModel.refreshBooks()
-
-        // 3. Load data pendukung (Genre, Author, Publisher)
         loadGenres()
     }
 
     private fun loadGenres() {
-        // Jangan paksa ProgressBar muncul jika sudah ada buku yang tampil
         if (allBooks.isEmpty()) binding.progressBarBook.visibility = View.VISIBLE
 
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
@@ -117,7 +114,6 @@ class BookFragment : Fragment() {
         ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
             override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
                 if (_binding != null) {
-                    // Sembunyikan progress bar setelah semua data pendukung selesai
                     binding.progressBarBook.visibility = View.GONE
                     if (response.isSuccessful) {
                         allPublishers = response.body()?.data ?: emptyList()
@@ -129,8 +125,6 @@ class BookFragment : Fragment() {
             }
         })
     }
-
-    // Fungsi getBooksFromApi() dihapus karena sudah digantikan oleh viewModel.refreshBooks()
 
     private fun setupRecyclerView() {
         bookKatalogAdapter = BookKatalogAdapter(emptyList(), emptyList()) { book, rating ->
@@ -164,6 +158,7 @@ class BookFragment : Fragment() {
         })
     }
 
+    @SuppressLint("SetTextI18n")
     private fun filterBooks(query: String) {
         if (query.isEmpty()) {
             bookKatalogAdapter.updateData(allBooks)
@@ -183,6 +178,7 @@ class BookFragment : Fragment() {
         binding.layoutEmptyState.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
     }
 
+    @SuppressLint("UseKtx", "SetTextI18n")
     private fun addChipToGroup(genreId: Int, name: String, isDefault: Boolean) {
         if (_binding == null) return
         val chip = Chip(requireContext())
@@ -191,7 +187,7 @@ class BookFragment : Fragment() {
         chip.isChecked = isDefault
 
         val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked))
-        val backgroundColors = intArrayOf(Color.parseColor("#DBEAFE"), Color.parseColor("#F1F5F9"))
+        val backgroundColors = intArrayOf("#DBEAFE".toColorInt(), Color.parseColor("#F1F5F9"))
         chip.chipBackgroundColor = ColorStateList(states, backgroundColors)
 
         val textColors = intArrayOf(Color.parseColor("#1E40AF"), Color.parseColor("#64748B"))

@@ -16,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- HIASAN: Garis Penanda Status di sisi kiri -->
         <View
             android:id="@+id/view_status_indicator"
             android:layout_width="5dp"
@@ -36,7 +35,6 @@
             app:layout_constraintStart_toEndOf="@id/view_status_indicator"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Cover Buku -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_cover"
                 android:layout_width="80dp"
@@ -54,10 +52,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/narasi" />
+                    android:src="@drawable/narasi"
+                    tools:ignore="ContentDescription" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Status Badge -->
             <TextView
                 android:id="@+id/tv_history_status_badge"
                 android:layout_width="wrap_content"
@@ -70,9 +68,9 @@
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="PENDING" />
+                tools:text="PENDING"
+                tools:ignore="SmallSp" />
 
-            <!-- Info Section -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -109,7 +107,6 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_history_title"
                     tools:text="Morgan Housel" />
 
-                <!-- Tanggal -->
                 <LinearLayout
                     android:id="@+id/ll_date"
                     android:layout_width="0dp"
@@ -119,13 +116,15 @@
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_history_author">
+                    app:layout_constraintTop_toBottomOf="@id/tv_history_author"
+                    tools:ignore="UseCompoundDrawables">
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/ic_calender"
-                        app:tint="@color/text_hint" />
+                        app:tint="@color/text_hint"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:id="@+id/tv_history_date_range"
@@ -138,7 +137,6 @@
                         tools:text="12 Sep - 19 Sep 2026" />
                 </LinearLayout>
 
-                <!-- Denda -->
                 <TextView
                     android:id="@+id/tv_history_fine"
                     android:layout_width="0dp"

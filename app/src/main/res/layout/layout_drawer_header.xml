@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -21,26 +22,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_launcher_background"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription" />
         
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 2. Nama User -->
     <TextView
         android:id="@+id/tv_username_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Nama User"
+        android:text="@string/nama_user"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:fontFamily="@font/poppins_semibold" />
 
-    <!-- 3. Keterangan Role (Opsional) -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mahasantri PeTIK"
+        android:text="@string/mahasantri_petik"
         android:textColor="#E0E7FF"
         android:textSize="12sp"
         android:fontFamily="@font/roboto_regular" />

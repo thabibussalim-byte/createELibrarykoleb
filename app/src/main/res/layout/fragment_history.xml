@@ -7,7 +7,6 @@
     android:background="@color/surface_white"
     tools:context=".ui.history.HistoryFragment">
 
-    <!-- 2. JUDUL HALAMAN -->
     <TextView
         android:id="@+id/tv_riwayat_peminjaman"
         android:layout_width="wrap_content"
@@ -15,7 +14,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/poppins_bold"
-        android:text="Riwayat Aktivitas"
+        android:text="@string/riwayat_aktivitas"
         android:textColor="@color/text_primary"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,13 +26,12 @@
         android:layout_height="wrap_content"
         android:alpha="0.8"
         android:fontFamily="@font/roboto_regular"
-        android:text="Pantau semua peminjaman buku kamu"
+        android:text="@string/pantau_semua_peminjaman_buku_kamu"
         android:textColor="@color/text_secondary"
         android:textSize="13sp"
         app:layout_constraintStart_toStartOf="@id/tv_riwayat_peminjaman"
         app:layout_constraintTop_toBottomOf="@id/tv_riwayat_peminjaman" />
 
-    <!-- 4. DAFTAR RIWAYAT -->
     <HorizontalScrollView
         android:id="@+id/schroll_chip"
         android:layout_width="match_parent"
@@ -60,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:checkable="true"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Semua"
+                android:text="@string/semua"
                 app:chipBackgroundColor="@color/white" />
 
             <com.google.android.material.chip.Chip
@@ -70,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:checkable="true"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Pending" />
+                android:text="@string/pending" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_dipinjam"
@@ -79,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:checkable="true"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Dipinjam" />
+                android:text="@string/dipinjam" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_dikembalikan"
@@ -88,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:checkable="true"
                 android:fontFamily="@font/poppins_medium"
-                android:text="Dikembalikan" />
+                android:text="@string/dikembalikan" />
 
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
@@ -104,7 +102,6 @@
         app:layout_constraintTop_toBottomOf="@id/schroll_chip"
         tools:listitem="@layout/item_history" />
 
-    <!-- GANTI PROGRESS BAR KE CIRCULAR PROGRESS INDICATOR -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar_history"
         android:layout_width="wrap_content"
@@ -119,7 +116,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/schroll_chip" />
 
-     <!--EMPTY STATE (kondisi saat sebuah halaman atau komponen tidak punya data untuk ditampilkan.)-->
     <LinearLayout
         android:id="@+id/layout_empty_history"
         android:layout_width="wrap_content"
@@ -130,20 +126,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/schroll_chip">
+        app:layout_constraintTop_toBottomOf="@id/schroll_chip"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:alpha="0.4"
-            android:src="@drawable/not_history" />
+            android:src="@drawable/not_history"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_semibold"
-            android:text="Belum Ada Riwayat"
+            android:text="@string/belum_ada_riwayat"
             android:textColor="#94A3B8"
             android:textSize="16sp" />
     </LinearLayout>
