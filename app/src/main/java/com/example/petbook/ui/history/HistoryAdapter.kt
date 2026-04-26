@@ -51,9 +51,19 @@ class HistoryAdapter(
         val book = listBooks.find { it.id == history.bukuId }
         val authorName = listAuthors.find { it.id == book?.penulisId }?.namaPenulis ?: "Penulis Anonim"
 
+
         holder.binding.apply {
             tvHistoryTitle.text = book?.judulBuku ?: "Buku tidak ditemukan"
             tvHistoryAuthor.text = authorName
+            val ivHistoryBook = holder.binding.ivBookCover
+
+            if (book?.foto != null) {
+                Glide.with(holder.itemView.context)
+                    .load(book.foto)
+                    .placeholder(R.drawable.bintang)
+                    .error(R.drawable.bintang)
+                    .into(ivHistoryBook)
+            }
             
             val status = history.status.lowercase()
 

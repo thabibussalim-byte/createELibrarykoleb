@@ -27,12 +27,9 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var prefManager: PreferenceManager
 
-    // Launcher untuk memilih foto dari galeri
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
-            // Simpan URI secara lokal di Preference
             prefManager.saveLocalProfileUri(uri.toString())
-            // Langsung update tampilan
             displayDataFromPrefs()
         }
     }
@@ -54,7 +51,7 @@ class ProfileFragment : Fragment() {
         
         val token = prefManager.getToken()
         if (!token.isNullOrEmpty()) {
-            val authHeader = "Bearer $token"
+            val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
             fetchUserData(authHeader)
             fetchMahasantriData(authHeader)
             fetchTotalDenda(authHeader)
@@ -70,7 +67,6 @@ class ProfileFragment : Fragment() {
             tvProfileAlamat.text = prefManager.getMahasantriAlamat().ifEmpty { "-" }
             tvProfilePhone.text = prefManager.getMahasantriPhone().ifEmpty { "-" }
 
-            // LOGIKA PHOTO: Cek lokal dulu, kalau tidak ada baru dari server
             val localUri = prefManager.getLocalProfileUri()
             val serverUrl = prefManager.getProfileUrl()
             
@@ -97,11 +93,10 @@ class ProfileFragment : Fragment() {
                     val userList = response.body()?.data ?: emptyList()
                     val myAccount = userList.find { it.id == currentUserId }
                     if (myAccount != null) {
-                        // FIX: Kirim 5 parameter sesuai fungsi saveUser di PreferenceManager
                         prefManager.saveUser(
                             myAccount.id,
                             prefManager.getToken() ?: "",
-                            prefManager.getPassword() ?: "", // Simpan password lama
+                            prefManager.getPassword() ?: "",
                             myAccount.username,
                             myAccount.profil ?: ""
                         )
@@ -115,7 +110,6 @@ class ProfileFragment : Fragment() {
 
     private fun fetchMahasantriData(authHeader: String) {
         val currentUserId = prefManager.getUserId()
-        val currentUsername = prefManager.getUsername()?.lowercase() ?: ""
         ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
             override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
                 if (_binding != null && response.isSuccessful) {
@@ -133,24 +127,6 @@ class ProfileFragment : Fragment() {
 
     private fun fetchTotalDenda(authHeader: String) {
         val userId = prefManager.getUserId()
-        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful) {
-                        val transactions = response.body()?.data ?: emptyList()
-                        calculateDendaFromTransactions(authHeader, transactions)
-                    } else {
-                        fallbackFetchAllHistory(authHeader, userId)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                fallbackFetchAllHistory(authHeader, userId)
-            }
-        })
-    }
-
-    private fun fallbackFetchAllHistory(authHeader: String, userId: Int) {
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null && response.isSuccessful) {

@@ -66,13 +66,12 @@ class HistoryFragment : Fragment() {
         val userId = prefManager.getUserId()
         val token = prefManager.getToken() ?: ""
 
-        // 1. Ambil data Buku (Update Stok)
+
         viewModel.getAllBooks().asLiveData().observe(viewLifecycleOwner) { bookEntities ->
             allBooks = bookEntities.map { it.toBookItem() }
             refreshHistoryAdapter()
         }
 
-        // 2. Ambil data History
         viewModel.getHistoryByUserId(userId).asLiveData().observe(viewLifecycleOwner) { histories ->
             if (histories.isNotEmpty()) {
                 binding.progressBarHistory.visibility = View.GONE
@@ -83,11 +82,9 @@ class HistoryFragment : Fragment() {
             }
         }
 
-        // 3. Load data pendukung & Refresh dari API saat masuk
         loadSupportingData()
-        
-        // REFRESH DATA DARI API (Kebutuhan: Mengambil data terbaru saat masuk)
-        viewModel.refreshHistory(token, userId)
+
+        viewModel.refreshHistory(userId)
         viewModel.refreshBooks() 
     }
 
@@ -158,6 +155,7 @@ class HistoryFragment : Fragment() {
                     putString("book_publisher", publisher)
                     putString("book_genre", genre)
                     putParcelable("fine", fine)
+                    putBoolean("is_history", true)
                 }
                 findNavController().navigate(R.id.action_historyFragment_to_detailHistoryFragment, bundle)
             }

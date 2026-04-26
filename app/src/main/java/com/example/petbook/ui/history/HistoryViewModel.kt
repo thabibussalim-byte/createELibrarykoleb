@@ -22,18 +22,10 @@ class HistoryViewModel(private val repository: PetbookRepository) : ViewModel() 
     fun getHistoryByUserId(userId: Int): Flow<List<HistoryEntity>> =
         repository.getHistoryByUserId(userId)
 
-    suspend fun getLocalHistoryById(id: Int): HistoryEntity? =
-        repository.getHistoryById(id)
 
-    fun updateHistoryShown(id: Int, isShown: Boolean) {
+    fun refreshHistory(userId: Int) {
         viewModelScope.launch {
-            repository.updateSuccessStatus(id, isShown)
-        }
-    }
-
-    fun refreshHistory(token: String, userId: Int) {
-        viewModelScope.launch {
-            repository.refreshHistory(token, userId)
+            repository.refreshHistory(userId)
         }
     }
 }

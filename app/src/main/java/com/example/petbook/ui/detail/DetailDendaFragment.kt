@@ -59,7 +59,6 @@ class DetailDendaFragment : Fragment() {
             val genre = allGenres.find { it.id == book?.genreId }?.namaGenre ?: "Umum"
             val publisher = allPublishers.find { it.id == book?.penerbitId }?.publisherName ?: "Penerbit Anonim"
             
-            // Cari denda yang KHUSUS untuk transaksi ini
             val fine = unpaidFines.find { it.transaksiId == history.id }
 
             val bundle = Bundle().apply {
@@ -82,12 +81,10 @@ class DetailDendaFragment : Fragment() {
 
     private fun loadInitialData() {
         binding.progressBarDenda.visibility = View.VISIBLE
-        // Load Penulis, Genre, dan Penerbit secara paralel (sederhana)
         loadSupportingData()
     }
 
     private fun loadSupportingData() {
-        // 1. Authors
         ApiConfig.getApiService().getAuthors().enqueue(object : Callback<AuthorResponse> {
             override fun onResponse(call: Call<AuthorResponse>, response: Response<AuthorResponse>) {
                 if (_binding != null && response.isSuccessful) {
@@ -98,7 +95,6 @@ class DetailDendaFragment : Fragment() {
             override fun onFailure(call: Call<AuthorResponse>, t: Throwable) {}
         })
 
-        // 2. Genres
         ApiConfig.getApiService().getGenres().enqueue(object : Callback<GenreResponse> {
             override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (_binding != null && response.isSuccessful) {
@@ -109,7 +105,6 @@ class DetailDendaFragment : Fragment() {
             override fun onFailure(call: Call<GenreResponse>, t: Throwable) {}
         })
 
-        // 3. Publishers
         ApiConfig.getApiService().getPublishers().enqueue(object : Callback<PublisherResponse> {
             override fun onResponse(call: Call<PublisherResponse>, response: Response<PublisherResponse>) {
                 if (_binding != null && response.isSuccessful) {
@@ -148,25 +143,8 @@ class DetailDendaFragment : Fragment() {
         val token = prefManager.getToken()
         if (token.isNullOrEmpty()) return
 
-        val authHeader = "Bearer $token"
-        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful) {
-                        userTransactions = response.body()?.data ?: emptyList()
-                        loadFines(authHeader)
-                    } else {
-                        loadAllTransactionsFallback(authHeader, userId)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                loadAllTransactionsFallback(authHeader, userId)
-            }
-        })
-    }
-
-    private fun loadAllTransactionsFallback(authHeader: String, userId: Int) {
+        val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
+        
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
@@ -175,12 +153,12 @@ class DetailDendaFragment : Fragment() {
                         userTransactions = rawData.filter { it.userId == userId }
                         loadFines(authHeader)
                     } else {
-                        handleError("Gagal memuat riwayat")
+                        handleError("Gagal memuat riwayat: ${response.message()}")
                     }
                 }
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                handleError("Gagal koneksi")
+                handleError("Gagal koneksi: ${t.message}")
             }
         })
     }
@@ -230,6 +208,7 @@ class DetailDendaFragment : Fragment() {
         if (_binding != null) {
             binding.progressBarDenda.visibility = View.GONE
             Log.e("DetailDenda", msg)
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -50,28 +50,10 @@ class StatistikFragment : Fragment() {
         val userId = prefManager.getUserId()
         if (token.isNullOrEmpty()) return
 
-        val authHeader = "Bearer $token"
+        val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
         showLoading(true)
 
-        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful && !response.body()?.data.isNullOrEmpty()) {
-                        showLoading(false)
-                        val data = response.body()?.data ?: emptyList()
-                        setupChartAndDetails(data)
-                    } else {
-                        loadAllTransactionsFallback(authHeader, userId)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                if (_binding != null) loadAllTransactionsFallback(authHeader, userId)
-            }
-        })
-    }
-
-    private fun loadAllTransactionsFallback(authHeader: String, userId: Int) {
+        // Menggunakan getAllTransactions + filter manual karena getHistoryByUser tidak tersedia
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
@@ -80,13 +62,22 @@ class StatistikFragment : Fragment() {
                         val rawData = response.body()?.data ?: emptyList()
                         val filteredData = rawData.filter { it.userId == userId }
                         setupChartAndDetails(filteredData)
+                    } else {
+                        handleError("Gagal memuat data statistik: ${response.message()}")
                     }
                 }
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                if (_binding != null) showLoading(false)
+                if (_binding != null) {
+                    showLoading(false)
+                    handleError("Koneksi gagal: ${t.message}")
+                }
             }
         })
+    }
+
+    private fun handleError(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun setupChartAndDetails(list: List<HistoryDataItem>) {
@@ -98,9 +89,11 @@ class StatistikFragment : Fragment() {
         binding.tvCountSelesai.text = countSelesai.toString()
         binding.tvCountPending.text = countPending.toString()
 
-        if (list.isEmpty()) return
+        if (list.isEmpty()) {
+            binding.barChartStatistik.clear()
+            return
+        }
 
-        // Ambil warna teks adaptif dari resources
         val textColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
 
         val entries = ArrayList<BarEntry>()
@@ -134,14 +127,14 @@ class StatistikFragment : Fragment() {
                 setDrawGridLines(false)
                 granularity = 1f
                 labelCount = 3
-                this.textColor = textColor // Warna label sumbu X
+                this.textColor = textColor
             }
             
             axisLeft.apply {
                 setDrawGridLines(false)
                 axisMinimum = 0f
                 granularity = 1f
-                this.textColor = textColor // Warna label sumbu Y
+                this.textColor = textColor
                 valueFormatter = object : ValueFormatter() {
                     override fun getFormattedValue(value: Float): String = value.toInt().toString()
                 }

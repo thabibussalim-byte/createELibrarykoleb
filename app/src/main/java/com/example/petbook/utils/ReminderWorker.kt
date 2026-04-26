@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import androidx.work.WorkManager
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.FineRequest
 import com.example.petbook.data.di.Injection
 import com.example.petbook.data.local.entity.HistoryEntity
 import com.example.petbook.data.pref.PreferenceManager
@@ -18,6 +18,15 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
     private val notifPrefs = applicationContext.getSharedPreferences("notif_tracking", Context.MODE_PRIVATE)
 
     override fun doWork(): Result {
+        val workerPrefs = applicationContext.getSharedPreferences("worker_prefs", Context.MODE_PRIVATE)
+        val startTime = workerPrefs.getLong("start_time", 0L)
+        val twoDaysInMillis = 2 * 24 * 60 * 60 * 1000L
+
+        if (startTime != 0L && (System.currentTimeMillis() - startTime) > twoDaysInMillis) {
+            WorkManager.getInstance(applicationContext).cancelUniqueWork("PetbookReminderWork")
+            return Result.success()
+        }
+
         val prefManager = PreferenceManager(applicationContext)
         val token = prefManager.getToken() ?: return Result.failure()
         val userId = prefManager.getUserId()
@@ -30,7 +39,7 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val todayDate = sdf.format(Date())
 
-            // 1. CEK BUKU BARU -> Target: Katalog (bookFragment)
+            // 1. CEK BUKU BARU
             val booksResponse = apiService.getBooks().execute()
             val bookList = booksResponse.body()?.data ?: emptyList()
             val newestBook = bookList.maxByOrNull { it.id }
@@ -41,13 +50,17 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                     999, 
                     "Buku Baru!", 
                     "Baru saja tersedia: ${newestBook.judulBuku}",
-                    target = NotificationHelper.TARGET_CATALOG
+                    target = NotificationHelper.TARGET_CATALOG,
+                    imageUrl = newestBook.foto
                 )
                 notifPrefs.edit().putInt("last_book_id", newestBook.id).apply()
             }
 
-            // 2. CEK RIWAYAT & STATUS
-            val historyList = apiService.getHistoryByUser(formattedToken, userId).execute().body()?.data ?: emptyList()
+            // 2. CEK RIWAYAT & STATUS (MENGGUNAKAN getAllTransactions + FILTER USER ID)
+            val allHistoryResponse = apiService.getAllTransactions(formattedToken).execute()
+            val allItems = allHistoryResponse.body()?.data ?: emptyList()
+            val historyList = allItems.filter { it.userId == userId }
+
             val finesResponse = apiService.getFines(formattedToken).execute()
             val existingFines = finesResponse.body()?.data ?: emptyList()
 
@@ -55,9 +68,10 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                 for (item in historyList) {
                     val existingEntity = repository.getHistoryById(item.id)
                     val bookTitle = bookList.find { it.id == item.bukuId }?.judulBuku ?: "Buku"
-
-                    // --- NOTIF STATUS -> Target: Riwayat (historyFragment) ---
+                    
                     if (existingEntity != null && existingEntity.status != item.status) {
+                        repository.handleStockUpdate(item.bukuId, existingEntity.status, item.status)
+
                         val msg = when (item.status.lowercase()) {
                             "dipinjam" -> "Pinjaman buku \"$bookTitle\" disetujui!"
                             "dikembalikan", "selesai" -> "Buku \"$bookTitle\" berhasil dikembalikan."
@@ -74,7 +88,6 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                         }
                     }
 
-                    // Sinkronisasi Room
                     repository.insertHistory(listOf(HistoryEntity(
                         id = item.id, status = item.status, tanggalPinjam = item.tglPinjam,
                         tanggalPengembalian = item.tglKembali, keterangan = item.keterangan,
@@ -82,9 +95,8 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                         isSuccessShown = existingEntity?.isSuccessShown ?: false
                     )))
 
-                    // --- CEK TELAT -> Target: Riwayat ---
                     if (item.status.lowercase() == "dipinjam") {
-                        val dueDate = sdf.parse(item.tglKembali.take(10))
+                        val dueDate = try { sdf.parse(item.tglKembali.take(10)) } catch (e: Exception) { null }
                         if (dueDate != null && Date().after(dueDate)) {
                             val daysLate = ((Date().time - dueDate.time) / (1000 * 60 * 60 * 24)).toInt()
                             val lastNotifDate = notifPrefs.getString("late_notif_${item.id}", "")
@@ -101,7 +113,6 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                         }
                     }
 
-                    // --- CEK PEMBAYARAN DENDA -> Target: Riwayat ---
                     val fine = existingFines.find { it.transaksiId == item.id }
                     val savedFineStatus = notifPrefs.getString("fine_status_${item.id}", "")
                     

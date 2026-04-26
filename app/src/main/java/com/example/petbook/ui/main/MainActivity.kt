@@ -61,6 +61,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
+import androidx.core.net.toUri
 
 class MainActivity : AppCompatActivity() {
 
@@ -122,10 +123,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupPeriodicWork() {
-        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-        val periodicWorkRequest = PeriodicWorkRequestBuilder<ReminderWorker>(3, TimeUnit.HOURS)
-            .setConstraints(constraints).addTag("ReminderWorkTag").build()
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork("PetbookReminderWork", ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest)
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<ReminderWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .addTag("ReminderWorkTag")
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "PetbookReminderWork",
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
+
+        val pref = getSharedPreferences("worker_prefs", MODE_PRIVATE)
+        if (pref.getLong("start_time", 0L) == 0L) {
+            pref.edit().putLong("start_time", System.currentTimeMillis()).apply()
+        }
     }
 
     private fun applyThemeSettings() {
@@ -195,7 +211,7 @@ class MainActivity : AppCompatActivity() {
         val name = prefManager.getMahasantriNama()
         tvUsernameHeader.text = name.ifEmpty { prefManager.getUsername() ?: "User" }
         val localUri = prefManager.getLocalProfileUri()
-        val photoSource: Any = if (!localUri.isNullOrEmpty()) Uri.parse(localUri) else prefManager.getProfileUrl() ?: R.drawable.ic_profile
+        val photoSource: Any = if (!localUri.isNullOrEmpty()) localUri.toUri() else prefManager.getProfileUrl() ?: R.drawable.ic_profile
         
         Glide.with(this)
             .load(photoSource)

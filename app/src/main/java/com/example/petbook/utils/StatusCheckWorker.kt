@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.work.*
 import com.example.petbook.data.api.ApiConfig
-import com.example.petbook.data.api.model.FineRequest
 import com.example.petbook.data.di.Injection
 import com.example.petbook.data.local.entity.HistoryEntity
 import com.example.petbook.data.pref.PreferenceManager
+import com.example.petbook.data.repository.PetbookRepository
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,11 +35,12 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
             val finesResponse = ApiConfig.getApiService().getFines(formattedToken).execute()
             val fineList = finesResponse.body()?.data ?: emptyList()
 
-            // 2. Ambil History terbaru
-            val response = ApiConfig.getApiService().getHistoryByUser(formattedToken, userId).execute()
+            // 2. Ambil History terbaru (Gunakan getAllTransactions + filter)
+            val response = ApiConfig.getApiService().getAllTransactions(formattedToken).execute()
 
             if (response.isSuccessful) {
-                val historyList = response.body()?.data ?: emptyList()
+                val allItems = response.body()?.data ?: emptyList()
+                val historyList = allItems.filter { it.userId == userId }
                 var hasActiveProcesses = false
 
                 runBlocking {
@@ -48,6 +49,12 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
 
                         // Sinkronisasi Room
                         val existingEntity = repository.getHistoryById(item.id)
+                        
+                        // Update stok jika status berubah (Sudah pakai Token Admin di Repository)
+                        if (existingEntity != null && existingEntity.status != item.status) {
+                            repository.handleStockUpdate(item.bukuId, existingEntity.status, item.status)
+                        }
+
                         val entity = HistoryEntity(
                             id = item.id,
                             status = item.status,
@@ -61,9 +68,9 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                         )
                         repository.insertHistory(listOf(entity))
 
-                        // LOGIKA DENDA OTOMATIS
+                        // LOGIKA DENDA OTOMATIS (Sekarang pakai Token Admin via Repository)
                         if (currentStatus == "dipinjam" || currentStatus == "telat") {
-                            checkAndCalculateFine(formattedToken, item, fineList)
+                            checkAndCalculateFine(repository, item, fineList)
                             hasActiveProcesses = true
                         }
 
@@ -87,7 +94,7 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
         return Result.success()
     }
 
-    private fun checkAndCalculateFine(token: String, history: com.example.petbook.data.api.model.HistoryDataItem, fineList: List<com.example.petbook.data.api.model.FineDataItem>) {
+    private suspend fun checkAndCalculateFine(repository: PetbookRepository, history: com.example.petbook.data.api.model.HistoryDataItem, fineList: List<com.example.petbook.data.api.model.FineDataItem>) {
         try {
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val returnDateStr = history.tglKembali.take(10)
@@ -103,19 +110,11 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                 if (overdueDays > 0) {
                     val totalFineAmount = overdueDays * 2000 // Denda Rp 2000 per hari
                     val existingFine = fineList.find { it.transaksiId == history.id }
+                    
+                    // Panggil repository untuk create/update denda pakai Token Admin
+                    repository.createOrUpdateFine(history.id, totalFineAmount, existingFine?.id)
+                    
                     val title = ApiConfig.getApiService().getBooks().execute().body()?.data?.find { it.id == history.bukuId }?.judulBuku ?: "Buku"
-
-                    if (existingFine != null) {
-                        // Jika sudah ada denda, perbarui jumlahnya
-                        val request = FineRequest(totalFineAmount.toString(), "belum dibayar", history.id)
-                        ApiConfig.getApiService().updateFine(token, existingFine.id, request).execute()
-                        Log.d("FineUpdate", "Denda diperbarui untuk transaksi ${history.id}: Rp $totalFineAmount")
-                    } else {
-                        // JIKA BELUM ADA (Hari ke-1), BUAT DENDA BARU
-                        val request = FineRequest(totalFineAmount.toString(), "belum dibayar", history.id)
-                        ApiConfig.getApiService().createFine(token, request).execute()
-                        Log.d("FineUpdate", "Denda baru dibuat untuk transaksi ${history.id}: Rp $totalFineAmount")
-                    }
                     NotificationHelper(applicationContext).showNotification(102, "Terlambat!", "Segera kembalikan buku \"$title\".")
                 }
             }
@@ -133,7 +132,7 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
 
     private fun handleWorkerLifetime(active: Boolean) {
         val startTime = inputData.getLong("start_time", System.currentTimeMillis())
-        val isTimedOut = System.currentTimeMillis() - startTime > TimeUnit.DAYS.toMillis(1)
+        val isTimedOut = System.currentTimeMillis() - startTime > TimeUnit.DAYS.toMillis(2) 
         if (!active || isTimedOut) {
             WorkManager.getInstance(applicationContext).cancelUniqueWork("BorrowStatusCheck")
         }

@@ -77,53 +77,19 @@ class DetailpeminjamanFragment : Fragment() {
         binding.progressBarBorrow.visibility = View.VISIBLE
         binding.btnPinjamFinal.isEnabled = false
 
-        // Step 1: Login Admin untuk mendapatkan token terbaru (sesuai instruksi)
-        val adminLoginRequest = LoginRequest("admin", "admin123")
-        ApiConfig.getApiService().login(adminLoginRequest).enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if (response.isSuccessful) {
-                    val adminToken = response.body()?.data?.token
-                    if (adminToken != null) {
-                        // Step 2: Gunakan token admin untuk cek riwayat user ini
-                        fetchHistoryWithAdminToken("Bearer $adminToken", currentUserId, book)
-                    } else {
-                        handleError("Gagal mendapatkan token admin")
-                    }
-                } else {
-                    handleError("Gagal validasi admin: ${response.code()}")
-                }
-            }
+        val userToken = prefManager.getToken() ?: ""
+        val authHeader = if (userToken.startsWith("Bearer ")) userToken else "Bearer $userToken"
 
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                handleError("Koneksi admin bermasalah")
-            }
-        })
-    }
-
-    private fun fetchHistoryWithAdminToken(adminHeader: String, userId: Int, book: BookItem) {
-        ApiConfig.getApiService().getHistoryByUser(adminHeader, userId).enqueue(object : Callback<HistoryResponse> {
+        // Langsung gunakan token user untuk cek riwayat karena getAllTransactions bisa diakses user
+        ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (response.isSuccessful) {
-                    validateHistoryAndProceed(response.body()?.data ?: emptyList(), book)
+                    val rawData = response.body()?.data ?: emptyList()
+                    // Filter manual milik user yang sedang login agar data akurat
+                    val userHistory = rawData.filter { it.userId == currentUserId }
+                    validateHistoryAndProceed(userHistory, book)
                 } else {
-                    fallbackGetAllTransactions(adminHeader, userId, book)
-                }
-            }
-
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                fallbackGetAllTransactions(adminHeader, userId, book)
-            }
-        })
-    }
-
-    private fun fallbackGetAllTransactions(adminHeader: String, userId: Int, book: BookItem) {
-        ApiConfig.getApiService().getAllTransactions(adminHeader).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (response.isSuccessful) {
-                    val history = (response.body()?.data ?: emptyList()).filter { it.userId == userId }
-                    validateHistoryAndProceed(history, book)
-                } else {
-                    handleError("Gagal memvalidasi riwayat (Admin Fallback)")
+                    handleError("Gagal memvalidasi riwayat: ${response.message()}")
                 }
             }
 
@@ -134,8 +100,11 @@ class DetailpeminjamanFragment : Fragment() {
     }
 
     private fun validateHistoryAndProceed(history: List<HistoryDataItem>, book: BookItem) {
+        val currentUserId = prefManager.getUserId()
+        // Cek apakah ada peminjaman yang masih berstatus 'dipinjam', 'pending', atau 'telat'
+        val activeStatuses = listOf("dipinjam", "pending", "telat")
         val hasActiveLoan = history.any { 
-            it.status.lowercase() == "dipinjam" || it.status.lowercase() == "pending"
+            it.status.lowercase() in activeStatuses && it.userId == currentUserId
         }
 
         if (hasActiveLoan) {
@@ -143,15 +112,16 @@ class DetailpeminjamanFragment : Fragment() {
             binding.btnPinjamFinal.isEnabled = true
             Toast.makeText(requireContext(), "Gagal! Anda masih memiliki peminjaman aktif atau pending.", Toast.LENGTH_LONG).show()
         } else {
-            // Validasi sukses, lakukan peminjaman dengan token USER asli
             performBorrowAction(book.id)
         }
     }
 
     private fun handleError(message: String) {
-        binding.progressBarBorrow.visibility = View.GONE
-        binding.btnPinjamFinal.isEnabled = true
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        if (_binding != null) {
+            binding.progressBarBorrow.visibility = View.GONE
+            binding.btnPinjamFinal.isEnabled = true
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun performBorrowAction(bookId: Int) {
@@ -173,7 +143,7 @@ class DetailpeminjamanFragment : Fragment() {
         }
 
         val userToken = prefManager.getToken() ?: ""
-        val authHeader = "Bearer $userToken"
+        val authHeader = if (userToken.startsWith("Bearer ")) userToken else "Bearer $userToken"
 
         val sdfApi = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val tglPinjam = sdfApi.format(calendar.time)
@@ -186,24 +156,28 @@ class DetailpeminjamanFragment : Fragment() {
 
         ApiConfig.getApiService().createBorrow(authHeader, request).enqueue(object : Callback<BorrowResponse> {
             override fun onResponse(call: Call<BorrowResponse>, response: Response<BorrowResponse>) {
-                binding.progressBarBorrow.visibility = View.GONE
-                binding.btnPinjamFinal.isEnabled = true
-                
-                if (response.isSuccessful && response.body()?.status == "success") {
-                    Toast.makeText(requireContext(), "Permintaan peminjaman berhasil!", Toast.LENGTH_SHORT).show()
-                    startStatusCheckWorker()
-                    findNavController().navigate(R.id.historyFragment)
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("Borrow", "Gagal: $errorBody")
-                    Toast.makeText(requireContext(), "Gagal memproses peminjaman", Toast.LENGTH_SHORT).show()
+                if (_binding != null) {
+                    binding.progressBarBorrow.visibility = View.GONE
+                    binding.btnPinjamFinal.isEnabled = true
+                    
+                    if (response.isSuccessful && response.body()?.status == "success") {
+                        Toast.makeText(requireContext(), "Permintaan peminjaman berhasil!", Toast.LENGTH_SHORT).show()
+                        startStatusCheckWorker()
+                        findNavController().navigate(R.id.historyFragment)
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        Log.e("Borrow", "Gagal: $errorBody")
+                        Toast.makeText(requireContext(), "Gagal memproses peminjaman", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
             override fun onFailure(call: Call<BorrowResponse>, t: Throwable) {
-                binding.progressBarBorrow.visibility = View.GONE
-                binding.btnPinjamFinal.isEnabled = true
-                Toast.makeText(requireContext(), "Koneksi Bermasalah", Toast.LENGTH_SHORT).show()
+                if (_binding != null) {
+                    binding.progressBarBorrow.visibility = View.GONE
+                    binding.btnPinjamFinal.isEnabled = true
+                    Toast.makeText(requireContext(), "Koneksi Bermasalah", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
@@ -240,15 +214,13 @@ class DetailpeminjamanFragment : Fragment() {
             binding.tvBorrowTitle.text = book.judulBuku
             binding.tvBorrowAuthor.text = writerName ?: "Penulis Anonim"
 
-
-            if (book.foto.isNotEmpty()) {
+            if (!book.foto.isNullOrEmpty()) {
                 Glide.with(this)
                     .load(book.foto)
                     .placeholder(R.drawable.bintang)
                     .error(R.drawable.bintang)
                     .into(binding.ivBorrowPreview)
             } else {
-                // Jika foto kosong/null, tampilkan placeholder saja
                 binding.ivBorrowPreview.setImageResource(R.drawable.bintang)
             }
         }

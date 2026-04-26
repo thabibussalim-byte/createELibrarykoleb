@@ -40,19 +40,8 @@ interface ApiService {
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
 
-    @GET("api/transaksi/user/{id}")
-    fun getHistoryByUser(
-        @Header("Authorization") token: String,
-        @Path("id") userId: Int): Call<HistoryResponse>
-
     @GET("api/denda")
     fun getFines(@Header("Authorization") token: String): Call<FineResponse>
-
-    @GET("api/denda/cari/{id}")
-    fun getFineDetailById(
-        @Header("Authorization") token: String,
-        @Path("id") fineId: Int
-    ): Call<FineDetailResponse>
 
     @GET("api/mahasantri")
     fun getMahasantri(@Header("Authorization") token: String): Call<MahasantriResponse>

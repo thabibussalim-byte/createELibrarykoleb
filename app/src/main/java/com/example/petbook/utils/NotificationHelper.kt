@@ -25,8 +25,7 @@ class NotificationHelper(private val context: Context) {
     companion object {
         const val CHANNEL_ID = "petbook_notifications"
         const val CHANNEL_NAME = "Petbook Notifications"
-        
-        // Target Halaman
+
         const val TARGET_HISTORY = "target_history"
         const val TARGET_CATALOG = "target_catalog"
         const val TARGET_DETAIL_HISTORY = "target_detail_history"

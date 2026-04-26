@@ -13,7 +13,7 @@ import com.example.petbook.databinding.ItemBukuBinding
 class BookAdapter(
     private var listBook: List<BookItem>,
     private var listAuthor: List<AuthorItem> = emptyList(),
-    private val onItemClick: (BookItem) -> Unit = { } // Hapus parameter rating
+    private val onItemClick: (BookItem) -> Unit = { }
 ) : RecyclerView.Adapter<BookAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemBukuBinding) : RecyclerView.ViewHolder(binding.root)
@@ -42,8 +42,7 @@ class BookAdapter(
         holder.binding.apply {
             tvJudul.text = book.judulBuku
             tvPenulis.text = authorName 
-            
-            // TAMPILKAN TANGGAL TERBIT ASLI
+
             tvTglTerbit.text = book.tglTerbit
             
             Glide.with(holder.itemView.context)
@@ -53,7 +52,7 @@ class BookAdapter(
                 .into(ivCover)
 
             root.setOnClickListener {
-                onItemClick(book) // Kirim data buku saja
+                onItemClick(book)
             }
         }
     }

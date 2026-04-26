@@ -66,15 +66,20 @@ class HomeFragment : Fragment() {
             binding.tvWelcome.text = "Hai $username, mau baca apa?"
         }
     }
+
     private fun checkGlobalHistoryStatus() {
         val userId = prefManager.getUserId()
         val token = prefManager.getToken() ?: ""
         if (token.isEmpty()) return
 
-        ApiConfig.getApiService().getHistoryByUser("Bearer $token", userId).enqueue(object : Callback<HistoryResponse> {
+        val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
+
+        ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (response.isSuccessful) {
-                    val histories = response.body()?.data ?: emptyList()
+                if (_binding != null && response.isSuccessful) {
+                    val rawData = response.body()?.data ?: emptyList()
+                    val histories = rawData.filter { it.userId == userId }
+                    
                     for (item in histories) {
                         val status = item.status.lowercase()
 
@@ -87,7 +92,7 @@ class HomeFragment : Fragment() {
 
                             // Navigasi ke SuccessFragment
                             val bundle = Bundle().apply {
-                                putString("book_title", "Buku Anda") // Bisa dicari judulnya jika perlu
+                                putString("book_title", "Buku Anda") 
                                 putString("status", status)
                             }
                             findNavController().navigate(R.id.successReturnFragment, bundle)
@@ -101,9 +106,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupSeeAllButtons() {
-        // PERBAIKAN: Gunakan NavOptions untuk membersihkan backstack agar navigasi lebih bersih
         val navOptions = NavOptions.Builder()
-            .setPopUpTo(R.id.homeFragment, true) // Hapus home dari backstack sementara agar tidak tertumpuk
+            .setPopUpTo(R.id.homeFragment, true) 
             .setLaunchSingleTop(true)
             .build()
 

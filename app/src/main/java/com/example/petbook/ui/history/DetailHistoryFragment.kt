@@ -16,8 +16,6 @@ import com.example.petbook.data.api.model.FineDataItem
 import com.example.petbook.data.api.model.HistoryDataItem
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailHistoryBinding
-import java.text.SimpleDateFormat
-import java.util.Locale
 import androidx.core.graphics.toColorInt
 
 class DetailHistoryFragment : Fragment() {
@@ -48,6 +46,7 @@ class DetailHistoryFragment : Fragment() {
         val writer = arguments?.getString("book_writer") ?: arguments?.getString("author") ?: "Penulis Anonim"
         val publisher = arguments?.getString("book_publisher") ?: "Penerbit Anonim"
         val genre = arguments?.getString("book_genre") ?: "Umum"
+        val rating = arguments?.getFloat("book_rating") ?: 0.0f
 
         if (currentHistory != null && currentBook != null) {
             setupUI(currentHistory!!, currentBook!!, writer, publisher, genre)
@@ -61,8 +60,9 @@ class DetailHistoryFragment : Fragment() {
                     putString("book_writer", writer)
                     putString("book_publisher", publisher)
                     putString("book_genre", genre)
-                    putFloat("book_rating", 4.5f)
+                    putFloat("book_rating", rating)
                 }
+                // Navigasi ke Detail Buku
                 findNavController().navigate(R.id.action_detailHistoryFragment_to_detailbookFragment, bundle)
             }
         }
@@ -104,20 +104,17 @@ class DetailHistoryFragment : Fragment() {
 
             updateDetailUI(history)
         }
+        
         binding.tvHelp.setOnClickListener {
-            navigateToDetail(
-                "Bagaimana cara mengembalikan buku?",
-                "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Dikembalikan'."
-            )
+            val bundle = Bundle().apply {
+                putString("faq_title", "Bagaimana cara mengembalikan buku?")
+                putString("faq_answer", "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Dikembalikan'.")
+            }
+            // Pastikan menggunakan ID aksi yang benar sesuai nav_main.xml
+            findNavController().navigate(R.id.action_detailHistoryFragment_to_faqDetailFragment, bundle)
         }
     }
-    private fun navigateToDetail(title: String, answer: String) {
-        val bundle = Bundle().apply {
-            putString("faq_title", title)
-            putString("faq_answer", answer)
-        }
-        findNavController().navigate(R.id.action_nav_bantuan_to_faqDetailFragment, bundle)
-    }
+
     private fun updateDetailUI(history: HistoryDataItem) {
         if (_binding == null) return
         val status = history.status.lowercase()
@@ -126,17 +123,11 @@ class DetailHistoryFragment : Fragment() {
             "dipinjam" -> {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
                 binding.tvDetailHistoryStatusBadge.setTextColor("#1D4ED8".toColorInt())
+                binding.tvDetailHistoryStatusBadge.text = "SEDANG DIPINJAM"
                 binding.tvDetailHistoryStatusBadge2.visibility = View.GONE
-                binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                binding.tvDetailHistoryStatusBadge.setTextColor("#1D4ED8".toColorInt())
                 binding.tvHelp.visibility = View.VISIBLE
                 binding.tvDetailStatus.text = "Status: Aktif"
-                binding.tvDetailStatus.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.accent_blue
-                    )
-                )
+                binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
             }
 
             "pending" -> {
@@ -146,12 +137,7 @@ class DetailHistoryFragment : Fragment() {
                 binding.tvHelp.visibility = View.GONE
                 binding.tvDetailHistoryStatusBadge.text = "MENUNGGU PERSETUJUAN"
                 binding.tvDetailStatus.text = "Menunggu dikonfirmasi admin"
-                binding.tvDetailStatus.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.text_secondary
-                    )
-                )
+                binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
             }
 
             "dikembalikan", "selesai" -> {
@@ -161,48 +147,28 @@ class DetailHistoryFragment : Fragment() {
                 binding.tvHelp.visibility = View.GONE
                 binding.tvDetailHistoryStatusBadge.text = "SELESAI"
 
-                val dendaAmount =
-                    currentFine?.totalDenda?.filter { it.isDigit() }?.toIntOrNull() ?: 0
+                val dendaAmount = currentFine?.totalDenda?.filter { it.isDigit() }?.toIntOrNull() ?: 0
                 if (dendaAmount > 0) {
-                    val statusDenda =
-                        if (currentFine?.status == "dibayar") "LUNAS" else "BELUM DIBAYAR"
-                    binding.tvDetailStatus.text =
-                        "DENDA: Rp $dendaAmount ($statusDenda)\nTerlambat Mengembalikan"
-                    binding.tvDetailStatus.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.error_red
-                        )
-                    )
+                    val statusDenda = if (currentFine?.status == "dibayar") "LUNAS" else "BELUM DIBAYAR"
+                    binding.tvDetailStatus.text = "DENDA: Rp $dendaAmount ($statusDenda)\nTerlambat Mengembalikan"
+                    binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
                 } else {
                     binding.tvDetailStatus.text = "Buku telah dikembalikan tepat waktu"
-                    binding.tvDetailHistoryStatusBadge2.visibility = View.GONE
-                    binding.tvHelp.visibility = View.GONE
-                    binding.tvDetailStatus.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.text_secondary
-                        )
-                    )
+                    binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
                 }
             }
 
             else -> {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
                 binding.tvDetailHistoryStatusBadge.setTextColor(Color.parseColor("#B91C1C"))
+                binding.tvDetailHistoryStatusBadge.text = "TERLAMBAT"
                 binding.tvDetailStatus.text = "Status: Terlambat (Buku Belum Kembali)"
                 binding.tvDetailHistoryStatusBadge2.visibility = View.GONE
                 binding.tvHelp.visibility = View.VISIBLE
-                binding.tvDetailStatus.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.error_red
-                    )
-                )
+                binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
