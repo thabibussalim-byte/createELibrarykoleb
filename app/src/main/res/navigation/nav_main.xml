@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_detailbookFragment"
-            app:destination="@id/detailbookFragment" />
+            app:destination="@id/detailbookFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_homeFragment_to_bookFragment"
             app:destination="@id/bookFragment" />
@@ -25,7 +27,9 @@
         tools:layout="@layout/fragment_book">
         <action
             android:id="@+id/action_bookFragment_to_detailbookFragment"
-            app:destination="@id/detailbookFragment" />
+            app:destination="@id/detailbookFragment"
+            app:popUpTo="@id/bookFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -35,7 +39,9 @@
         tools:layout="@layout/fragment_history">
         <action
             android:id="@+id/action_historyFragment_to_detailHistoryFragment"
-            app:destination="@id/detailHistoryFragment" />
+            app:destination="@id/detailHistoryFragment"
+            app:popUpTo="@id/historyFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -63,8 +69,10 @@
             app:argType="float"
             android:defaultValue="0.0" />
         <action
-            android:id="@+id/action_detailbookFragment_to_detailpeminjamanFragment"
-            app:destination="@id/detailpeminjamanFragment" />
+            android:id="@+id/action_detailBookFragment_to_detailpeminjamanFragment"
+            app:destination="@id/detailpeminjamanFragment"
+            app:popUpTo="@id/detailbookFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -88,7 +96,8 @@
         <action
             android:id="@+id/action_detailpeminjamanFragment_to_detailHistoryFragment"
             app:destination="@id/detailHistoryFragment"
-            app:popUpTo="@id/bookFragment" />
+            app:popUpTo="@id/historyFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -122,7 +131,9 @@
             app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_detailHistoryFragment_to_detailbookFragment"
-            app:destination="@id/detailbookFragment" />
+            app:destination="@id/detailbookFragment"
+            app:popUpTo="@id/historyFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -144,7 +155,9 @@
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_detailDendaFragment"
-            app:destination="@id/detailDendaFragment" />
+            app:destination="@id/detailDendaFragment"
+            app:popUpTo="@id/detailHistoryFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_profileFragment_to_statistikFragment"
             app:destination="@id/statistikFragment" />
@@ -162,7 +175,7 @@
     <fragment
         android:id="@+id/statistikFragment"
         android:name="com.example.petbook.ui.statistik.StatistikFragment"
-        android:label="Statistik"
+        android:label=""
         tools:layout="@layout/fragment_statistik" />
 
     <fragment
@@ -172,9 +185,6 @@
         tools:layout="@layout/fragment_detail_denda">
         <action
             android:id="@+id/action_detailDendaFragment_to_detailbookFragment"
-            app:destination="@id/detailbookFragment" />
-        <action
-            android:id="@+id/action_detailDendaFragment_to_detailbookFragment2"
             app:destination="@id/detailbookFragment" />
         <action
             android:id="@+id/action_detailDendaFragment_to_detailHistoryFragment"

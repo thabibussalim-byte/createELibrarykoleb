@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.HistoryDataItem
 import com.example.petbook.data.api.model.HistoryResponse
@@ -40,11 +42,6 @@ class StatistikFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.toolbarStatistik.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-
         loadStatistikData()
     }
 
@@ -53,28 +50,10 @@ class StatistikFragment : Fragment() {
         val userId = prefManager.getUserId()
         if (token.isNullOrEmpty()) return
 
-        val authHeader = "Bearer $token"
+        val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
         showLoading(true)
 
-        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
-            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding != null) {
-                    if (response.isSuccessful && !response.body()?.data.isNullOrEmpty()) {
-                        showLoading(false)
-                        val data = response.body()?.data ?: emptyList()
-                        setupChartAndDetails(data)
-                    } else {
-                        loadAllTransactionsFallback(authHeader, userId)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                if (_binding != null) loadAllTransactionsFallback(authHeader, userId)
-            }
-        })
-    }
-
-    private fun loadAllTransactionsFallback(authHeader: String, userId: Int) {
+        // Menggunakan getAllTransactions + filter manual karena getHistoryByUser tidak tersedia
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (_binding != null) {
@@ -82,19 +61,23 @@ class StatistikFragment : Fragment() {
                     if (response.isSuccessful) {
                         val rawData = response.body()?.data ?: emptyList()
                         val filteredData = rawData.filter { it.userId == userId }
-                        
-                        if (filteredData.isEmpty()) {
-                            Toast.makeText(requireContext(), "Tidak ada data untuk statistik", Toast.LENGTH_SHORT).show()
-                        }
                         setupChartAndDetails(filteredData)
+                    } else {
+                        handleError("Gagal memuat data statistik: ${response.message()}")
                     }
                 }
             }
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                if (_binding != null) showLoading(false)
-                Log.e("Statistik", "Fallback Failure: ${t.message}")
+                if (_binding != null) {
+                    showLoading(false)
+                    handleError("Koneksi gagal: ${t.message}")
+                }
             }
         })
+    }
+
+    private fun handleError(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun setupChartAndDetails(list: List<HistoryDataItem>) {
@@ -106,7 +89,12 @@ class StatistikFragment : Fragment() {
         binding.tvCountSelesai.text = countSelesai.toString()
         binding.tvCountPending.text = countPending.toString()
 
-        if (list.isEmpty()) return
+        if (list.isEmpty()) {
+            binding.barChartStatistik.clear()
+            return
+        }
+
+        val textColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
 
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(0f, countDipinjam.toFloat()))
@@ -119,14 +107,10 @@ class StatistikFragment : Fragment() {
             Color.parseColor("#34D399"),
             Color.parseColor("#FBBF24")
         )
-        dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextColor = textColor
         dataSet.valueTextSize = 12f
-        
-        // Menghilangkan koma (desimal) pada angka di atas batang
         dataSet.valueFormatter = object : ValueFormatter() {
-            override fun getFormattedValue(value: Float): String {
-                return value.toInt().toString()
-            }
+            override fun getFormattedValue(value: Float): String = value.toInt().toString()
         }
 
         val barData = BarData(dataSet)
@@ -137,25 +121,26 @@ class StatistikFragment : Fragment() {
             description.isEnabled = false
             legend.isEnabled = false
             
-            xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("Dipinjam", "Selesai", "Pending"))
-            xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
-            xAxis.setDrawGridLines(false)
-            xAxis.granularity = 1f
-            xAxis.labelCount = 3
-            xAxis.setDrawAxisLine(true)
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(arrayOf("Dipinjam", "Selesai", "Pending"))
+                position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                granularity = 1f
+                labelCount = 3
+                this.textColor = textColor
+            }
             
-            // Menghilangkan koma (desimal) pada sumbu Y
-            axisLeft.setDrawGridLines(false)
-            axisLeft.axisMinimum = 0f
-            axisLeft.granularity = 1f
-            axisLeft.valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return value.toInt().toString()
+            axisLeft.apply {
+                setDrawGridLines(false)
+                axisMinimum = 0f
+                granularity = 1f
+                this.textColor = textColor
+                valueFormatter = object : ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String = value.toInt().toString()
                 }
             }
             
             axisRight.isEnabled = false
-            
             setFitBars(true)
             animateY(1000)
             invalidate()

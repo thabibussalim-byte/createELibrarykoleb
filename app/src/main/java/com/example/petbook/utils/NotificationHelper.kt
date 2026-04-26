@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -24,9 +25,10 @@ class NotificationHelper(private val context: Context) {
     companion object {
         const val CHANNEL_ID = "petbook_notifications"
         const val CHANNEL_NAME = "Petbook Notifications"
-        const val NOTIFICATION_ID_REMINDER = 101
-        const val NOTIFICATION_ID_CONFIRMATION = 102
-        const val NOTIFICATION_ID_NEW_BOOK = 103
+
+        const val TARGET_HISTORY = "target_history"
+        const val TARGET_CATALOG = "target_catalog"
+        const val TARGET_DETAIL_HISTORY = "target_detail_history"
     }
 
     private val notificationManager: NotificationManager =
@@ -49,8 +51,14 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    fun showNotification(id: Int, title: String, message: String, imageUrl: String? = null) {
-        // CEK SETTING NOTIFIKASI DULU
+    fun showNotification(
+        id: Int, 
+        title: String, 
+        message: String, 
+        target: String? = null,
+        extraId: Int = -1,
+        imageUrl: String? = null
+    ) {
         val pref = SettingPreferences.getInstance(context.dataStore)
         val isNotifEnabled = runBlocking { pref.getNotificationSetting().first() }
         
@@ -58,6 +66,10 @@ class NotificationHelper(private val context: Context) {
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            if (target != null) {
+                putExtra("target_page", target)
+                putExtra("extra_id", extraId)
+            }
         }
         
         val pendingIntent = PendingIntent.getActivity(
@@ -67,8 +79,12 @@ class NotificationHelper(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        // Gunakan logo aplikasi sebagai default Large Icon
+        val appLogo = BitmapFactory.decodeResource(context.resources, R.mipmap.ic_logo_app_petbook1)
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_logo_app_petbook_foreground) // Ikon kecil di status bar
+            .setLargeIcon(appLogo) // Ikon besar di samping teks notifikasi
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -76,18 +92,22 @@ class NotificationHelper(private val context: Context) {
             .setAutoCancel(true)
 
         if (!imageUrl.isNullOrEmpty()) {
+            // Jika ada imageUrl (misal untuk buku baru), tampilkan gambar bukunya
             Glide.with(context)
                 .asBitmap()
                 .load(imageUrl)
                 .into(object : CustomTarget<Bitmap>() {
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        builder.setLargeIcon(resource)
-                        builder.setStyle(NotificationCompat.BigPictureStyle().bigPicture(resource).bigLargeIcon(null as Bitmap?))
+                        builder.setLargeIcon(resource) // Ganti icon besar jadi cover buku
+                        builder.setStyle(NotificationCompat.BigPictureStyle()
+                            .bigPicture(resource)
+                            .bigLargeIcon(null as Bitmap?))
                         notificationManager.notify(id, builder.build())
                     }
                     override fun onLoadCleared(placeholder: Drawable?) {}
                 })
         } else {
+            // Jika tidak ada imageUrl, gunakan logo aplikasi yang sudah diset di atas
             notificationManager.notify(id, builder.build())
         }
     }

@@ -40,24 +40,12 @@ interface ApiService {
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
 
-    @GET("api/transaksi/user/{id}")
-    fun getHistoryByUser(
-        @Header("Authorization") token: String,
-        @Path("id") userId: Int): Call<HistoryResponse>
-
     @GET("api/denda")
     fun getFines(@Header("Authorization") token: String): Call<FineResponse>
-
-    @GET("api/denda/cari/{id}")
-    fun getFineDetailById(
-        @Header("Authorization") token: String,
-        @Path("id") fineId: Int
-    ): Call<FineDetailResponse>
 
     @GET("api/mahasantri")
     fun getMahasantri(@Header("Authorization") token: String): Call<MahasantriResponse>
 
-    // UPDATE: Gunakan MahasantriUpdateResponse agar tidak error IllegalStateException
     @PATCH("api/mahasantri/ubah/{id}")
     fun updateMahasantri(
         @Header("Authorization") token: String,
@@ -65,14 +53,33 @@ interface ApiService {
         @Body request: UpdateMahasantriRequest
     ): Call<MahasantriUpdateResponse>
 
+    @POST("api/denda/tambah")
+    fun createFine(
+        @Header("Authorization") token: String,
+        @Body request: FineRequest
+    ): Call<FineResponse>
+
+    @PATCH("api/denda/edit/{id}")
+    fun updateFine(
+        @Header("Authorization") token: String,
+        @Path("id") fineId: Int,
+        @Body request: FineRequest
+    ): Call<FineResponse>
+
     @PATCH("api/user/update/{id}")
     fun updateUser(
         @Header("Authorization") token: String,
         @Path("id") userId: Int,
         @Body request: UpdateUserRequest
-    ): Call<UserResponse>
+    ): Call<BorrowResponse>
 
     @GET("api/user")
     fun getUsers(@Header("Authorization") token: String): Call<UserResponse>
 
+    @PATCH("api/buku/update/{id}")
+    fun updateBook(
+        @Header("Authorization") token: String,
+        @Path("id") bookId: Int,
+        @Body request: Map<String, @JvmSuppressWildcards Any>
+    ): Call<UpdateBookResponse>
 }

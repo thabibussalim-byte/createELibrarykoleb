@@ -1,8 +1,6 @@
 package com.example.petbook.ui.history
 
 import android.os.Bundle
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,35 +26,35 @@ class SuccessReturnFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val bookTitle = arguments?.getString("book_title") ?: "Buku"
-        
+        val status = arguments?.getString("status") ?: "dipinjam"
 
-        val fullText = "Buku $bookTitle berhasil dikembalikan. Teruslah membaca untuk memperluas wawasan!"
-        val spannable = SpannableStringBuilder(fullText)
-        
-        val startIndex = fullText.indexOf(bookTitle)
-        val endIndex = startIndex + bookTitle.length
-        
-        if (startIndex != -1) {
-            spannable.setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.accent_blue)),
-                startIndex,
-                endIndex,
-                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-        
-        binding.tvSuccessMessage.text = spannable
-
+        setupUIByStatus(status, bookTitle)
 
         binding.btnToCatalog.setOnClickListener {
             findNavController().navigate(R.id.bookFragment)
         }
 
-
         binding.btnBackToHome.setOnClickListener {
             findNavController().navigate(R.id.homeFragment)
+        }
+    }
+
+    private fun setupUIByStatus(status: String, bookTitle: String) {
+        when (status.lowercase()) {
+            "dipinjam" -> {
+                binding.ivSuccessIcon.setImageResource(R.drawable.centang) // Pastikan icon tersedia
+                binding.ivSuccessIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.accent_blue)
+                binding.tvSuccessTitle.text = "Peminjaman Berhasil!"
+                binding.tvSuccessMessage.text = "Buku $bookTitle sekarang aktif dipinjam. Selamat membaca!"
+                binding.root.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+            }
+            "dikembalikan", "selesai" -> {
+                binding.ivSuccessIcon.setImageResource(R.drawable.centang)
+                binding.ivSuccessIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.success_green)
+                binding.tvSuccessTitle.text = "Pengembalian Sukses!"
+                binding.tvSuccessMessage.text = "Terima kasih telah mengembalikan buku $bookTitle tepat waktu."
+            }
         }
     }
 

@@ -6,75 +6,52 @@
         <item name="colorPrimaryVariant">@color/primary_blue_light</item>
         <item name="colorOnPrimary">@color/white</item>
         
-        <!-- Secondary brand color. -->
+        <!-- Secondary brand color -->
         <item name="colorSecondary">@color/accent_blue</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="colorOnSecondaryFixed">@color/white</item>
-        <item name="colorOnSecondaryFixedVariant">@color/blue</item>
-        <item name="colorPrimaryFixed">@color/accent_blue</item>
+        <item name="colorAccent">@color/accent_blue</item>
         
+        <!-- Warna Indikator Aktif -->
+        <item name="colorSecondaryContainer">#DBEAFE</item>
+        <item name="colorOnSecondaryContainer">@color/primary_blue</item>
+        
+        <!-- Warna untuk komponen kontrol -->
+        <item name="android:colorControlActivated">@color/accent_blue</item>
+        <item name="android:colorControlHighlight">#201E3C72</item>
+
         <!-- Background and Surface -->
         <item name="android:windowBackground">@color/background_light</item>
         <item name="colorSurface">@color/surface_white</item>
-
-        <!-- Text Colors -->
-        <item name="android:textColorPrimary">@color/text_primary</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
-        <item name="android:textColorHint">@color/text_hint</item>
-        <item name="android:textColorLink">@color/accent_blue</item>
-
-        <item name="colorOnSecondaryContainer">@color/search_bg</item>
-        <item name="colorOnBackground">@color/primary_blue</item>
-
-
-        <item name="colorControlNormal">@color/black</item>
 
         <!-- Status Bar -->
         <item name="android:statusBarColor">@color/primary_blue</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
 
-        <!-- Custom font for the whole app if needed -->
+        <!-- Navigation Bar -->
         <item name="fontFamily">@font/poppins_regular</item>
-
         <item name="drawerArrowStyle">@style/DrawerIconStyle</item>
-
         <item name="chipStyle">@style/CustomChipStyle</item>
     </style>
 
+    <!-- Splash Screen Theme -->
     <style name="Theme.ElibraryPetik" parent="Base.Theme.ElibraryPetik" />
 
-    <!-- TEMA KHUSUS SPLASH SCREEN (MENGHILANGKAN LINGKARAN PUTIH) -->
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_petbook</item>
-        <item name="postSplashScreenTheme">@style/Theme.ElibraryPetik</item>
-    </style>
-
-    <!-- Style for Toolbar Titles -->
-    <style name="ToolbarTitleStyle" parent="TextAppearance.MaterialComponents.Headline6">
-        <item name="android:fontFamily">@font/poppins_semibold</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">?attr/colorOnSecondary</item>
+    <!-- Drawer Icon Style -->
+    <style name="DrawerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/white</item>
     </style>
 
     <!-- Custom Chip Style -->
     <style name="CustomChipStyle" parent="Widget.Material3.Chip.Filter">
-        <item name="chipBackgroundColor">@color/chip_background_selector</item>
-        <item name="android:textColor">@color/chip_text_selector</item>
         <item name="checkedIconVisible">false</item>
-        <item name="chipStrokeColor">?attr/colorPrimaryFixed</item>
-        <item name="chipStrokeWidth">1dp</item>
-        <item name="chipStartPadding">12dp</item>
-        <item name="chipEndPadding">12dp</item>
         <item name="android:fontFamily">@font/poppins_medium</item>
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="DrawerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">?attr/colorOnPrimary</item>
-    </style>
-
-    <style name="CircleImage">
-        <item name="cornerSize">50%</item>
+    <!-- Splash Screen Theme -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/accent_blue</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.ElibraryPetik</item>
     </style>
 </resources>

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petbook.R
@@ -51,6 +52,7 @@ class HomeFragment : Fragment() {
         setupSearch()
         setupSeeAllButtons()
         loadGenres()
+        checkGlobalHistoryStatus()
     }
 
     override fun onResume() {
@@ -65,12 +67,55 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun checkGlobalHistoryStatus() {
+        val userId = prefManager.getUserId()
+        val token = prefManager.getToken() ?: ""
+        if (token.isEmpty()) return
+
+        val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
+
+        ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
+            override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                if (_binding != null && response.isSuccessful) {
+                    val rawData = response.body()?.data ?: emptyList()
+                    val histories = rawData.filter { it.userId == userId }
+                    
+                    for (item in histories) {
+                        val status = item.status.lowercase()
+
+                        // Jika ada yang baru saja 'dipinjam' atau 'selesai' dan belum dilihat
+                        if ((status == "dipinjam" || status == "dikembalikan" || status == "selesai") &&
+                            !prefManager.isStatusSeen(item.id, status)) {
+
+                            // Tandai sudah dilihat
+                            prefManager.setStatusSeen(item.id, status)
+
+                            // Navigasi ke SuccessFragment
+                            val bundle = Bundle().apply {
+                                putString("book_title", "Buku Anda") 
+                                putString("status", status)
+                            }
+                            findNavController().navigate(R.id.successReturnFragment, bundle)
+                            break
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {}
+        })
+    }
+
     private fun setupSeeAllButtons() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.homeFragment, true) 
+            .setLaunchSingleTop(true)
+            .build()
+
         binding.tvRekomendasiAll.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_bookFragment)
+            findNavController().navigate(R.id.bookFragment, null, navOptions)
         }
         binding.tvPopulerAll.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_bookFragment)
+            findNavController().navigate(R.id.bookFragment, null, navOptions)
         }
     }
 
@@ -151,7 +196,6 @@ class HomeFragment : Fragment() {
             }
         }
         
-        // tampilan jika hasil search kosong
         if (filteredList.isEmpty() && query.isNotEmpty()) {
             binding.layoutHomeContent.visibility = View.GONE
             binding.layoutEmptySearch.visibility = View.VISIBLE

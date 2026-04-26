@@ -19,7 +19,6 @@
             android:id="@+id/toolbar_statistik"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_back"
             app:title="Statistik Penggunaan"
             app:titleCentered="true"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />

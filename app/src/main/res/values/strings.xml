@@ -52,6 +52,7 @@
     <string name="genre">Genre</string>
     <string name="desc">Descripsi</string>
     <string name="pinjam">Pinjam</string>
+    <string name="close">Close</string>
 
     <string-array name="period_options">
         <item>Harian</item>

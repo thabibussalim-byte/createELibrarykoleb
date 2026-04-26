@@ -7,12 +7,12 @@
     android:padding="24dp"
     android:background="@drawable/bg_gradient_header">
 
-    <!-- 1. Foto Profil -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="70dp"
         android:layout_height="70dp"
         app:cardCornerRadius="35dp"
         app:cardElevation="0dp"
+        android:layout_marginTop="40dp"
         app:strokeColor="@color/white"
         app:strokeWidth="2dp">
 
