@@ -30,7 +30,6 @@ class BookKatalogAdapter(
         notifyDataSetChanged()
     }
 
-    // Fungsi untuk mendapatkan nama penulis berdasarkan ID
     fun getAuthorName(authorId: Int): String {
         return listAuthor.find { it.id == authorId }?.namaPenulis ?: "Penulis Anonim"
     }
@@ -48,7 +47,6 @@ class BookKatalogAdapter(
             tvBookTitle.text = book.judulBuku
             tvBookAuthor.text = authorName 
             
-            // Rumus rating yang sama agar konsisten
             val dummyRating = (38 + (book.id % 12)).toFloat() / 10
 
             

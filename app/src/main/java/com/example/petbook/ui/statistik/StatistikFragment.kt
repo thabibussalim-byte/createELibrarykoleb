@@ -1,5 +1,6 @@
 package com.example.petbook.ui.statistik
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,14 +18,12 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.core.graphics.toColorInt
 
 class StatistikFragment : Fragment() {
 
@@ -46,33 +45,67 @@ class StatistikFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbarStatistik.setNavigationOnClickListener { findNavController().popBackStack() }
+        _binding?.toolbarStatistik?.setNavigationOnClickListener { 
+            if (isAdded) findNavController().popBackStack() 
+        }
+        
+        setupChartDefaults()
         loadStatistikData()
+    }
+
+    private fun setupChartDefaults() {
+        _binding?.barChartStatistik?.apply {
+            description.isEnabled = false
+            legend.isEnabled = true
+            setNoDataText("Memuat data statistik...")
+            
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                granularity = 1f
+                isGranularityEnabled = true
+                setCenterAxisLabels(true)
+            }
+            
+            axisLeft.apply {
+                axisMinimum = 0f
+                granularity = 1f
+                valueFormatter = object : ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String = value.toInt().toString()
+                }
+            }
+            axisRight.isEnabled = false
+        }
     }
 
     private fun loadStatistikData() {
         val token = prefManager.getToken()
         val userId = prefManager.getUserId()
-        if (token.isNullOrEmpty()) return
+        
+        if (token.isNullOrEmpty()) {
+            handleError("Sesi berakhir, silakan login kembali")
+            return
+        }
 
         showLoading(true)
+        val authHeader = if (token.startsWith("Bearer ")) token else "Bearer $token"
 
-        ApiConfig.getApiService().getHistoryByUser("Bearer $token", userId).enqueue(object : Callback<HistoryResponse> {
+        ApiConfig.getApiService().getHistoryByUser(authHeader, userId).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding == null) return
+                val currentBinding = _binding ?: return
                 
-                if (response.isSuccessful && response.body()?.data?.isNotEmpty() == true) {
-                    val data = response.body()?.data!!
+                if (response.isSuccessful && response.body()?.data != null) {
+                    val data = response.body()?.data ?: emptyList()
                     showLoading(false)
-                    updateUI(data)
+                    updateUI(currentBinding, data)
                 } else {
-                    loadAllTransactionsFallback("Bearer $token", userId)
+                    loadAllTransactionsFallback(authHeader, userId)
                 }
             }
 
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
                 if (_binding == null) return
-                loadAllTransactionsFallback("Bearer $token", userId)
+                loadAllTransactionsFallback(authHeader, userId)
             }
         })
     }
@@ -80,34 +113,34 @@ class StatistikFragment : Fragment() {
     private fun loadAllTransactionsFallback(token: String, userId: Int) {
         ApiConfig.getApiService().getAllTransactions(token).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
-                if (_binding == null) return
+                val currentBinding = _binding ?: return
                 showLoading(false)
                 
                 if (response.isSuccessful) {
                     val allData = response.body()?.data ?: emptyList()
                     val userHistory = allData.filter { it.userId == userId }
-                    updateUI(userHistory)
+                    updateUI(currentBinding, userHistory)
                 } else {
-                    Toast.makeText(requireContext(), "Gagal memuat data", Toast.LENGTH_SHORT).show()
-                    updateUI(emptyList()) 
+                    handleError("Gagal memuat data")
+                    updateUI(currentBinding, emptyList()) 
                 }
             }
 
             override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                if (_binding == null) return
+                val currentBinding = _binding ?: return
                 showLoading(false)
-                Toast.makeText(requireContext(), "Koneksi bermasalah", Toast.LENGTH_SHORT).show()
-                updateUI(emptyList())
+                handleError("Koneksi bermasalah")
+                updateUI(currentBinding, emptyList())
             }
         })
     }
 
-    private fun updateUI(list: List<HistoryDataItem>) {
-        updateSummary(list)
-        setupMonthlyChart(list)
+    private fun updateUI(binding: FragmentStatistikBinding, list: List<HistoryDataItem>) {
+        updateSummary(binding, list)
+        setupMonthlyChart(binding, list)
     }
 
-    private fun updateSummary(list: List<HistoryDataItem>) {
+    private fun updateSummary(binding: FragmentStatistikBinding, list: List<HistoryDataItem>) {
         val dipinjam = list.count { it.status.contains("pinjam", true) || it.status.contains("lambat", true) }
         val dikembalikan = list.count { it.status.contains("kembali", true) || it.status.contains("selesai", true) }
         val pending = list.count { it.status.contains("pending", true) || it.status.contains("tunggu", true) }
@@ -117,7 +150,7 @@ class StatistikFragment : Fragment() {
         binding.tvCountPending.text = pending.toString()
     }
 
-    private fun setupMonthlyChart(list: List<HistoryDataItem>) {
+    private fun setupMonthlyChart(binding: FragmentStatistikBinding, list: List<HistoryDataItem>) {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val monthlyData = mutableMapOf<Int, Triple<Int, Int, Int>>()
 
@@ -125,25 +158,28 @@ class StatistikFragment : Fragment() {
 
         for (item in list) {
             try {
-                val cleanDateStr = item.tglPinjam.take(10)
-                val date = sdf.parse(cleanDateStr)
-                if (date != null) {
-                    val cal = Calendar.getInstance().apply { time = date }
-                    val month = cal.get(Calendar.MONTH)
-                    
-                    val current = monthlyData[month] ?: Triple(0, 0, 0)
-                    val status = item.status.lowercase()
-                    
-                    val updated = when {
-                        status.contains("pinjam") || status.contains("lambat") -> current.copy(first = current.first + 1)
-                        status.contains("kembali") || status.contains("selesai") -> current.copy(second = current.second + 1)
-                        status.contains("pending") || status.contains("tunggu") -> current.copy(third = current.third + 1)
-                        else -> current
+                val dateStr = item.tglPinjam
+                if (dateStr.length >= 10) {
+                    val cleanDateStr = dateStr.take(10)
+                    val date = sdf.parse(cleanDateStr)
+                    if (date != null) {
+                        val cal = Calendar.getInstance().apply { time = date }
+                        val month = cal.get(Calendar.MONTH)
+                        
+                        val current = monthlyData[month] ?: Triple(0, 0, 0)
+                        val status = item.status.lowercase()
+                        
+                        val updated = when {
+                            status.contains("pinjam") || status.contains("lambat") -> current.copy(first = current.first + 1)
+                            status.contains("kembali") || status.contains("selesai") -> current.copy(second = current.second + 1)
+                            status.contains("pending") || status.contains("tunggu") -> current.copy(third = current.third + 1)
+                            else -> current
+                        }
+                        monthlyData[month] = updated
                     }
-                    monthlyData[month] = updated
                 }
             } catch (e: Exception) {
-                Log.e("Statistik", "Gagal parse tanggal: ${item.tglPinjam}")
+                Log.e("Statistik", "Error parsing date: ${e.message}")
             }
         }
 
@@ -158,69 +194,48 @@ class StatistikFragment : Fragment() {
             entriesPending.add(BarEntry(i.toFloat(), d.third.toFloat()))
         }
 
-        val set1 = BarDataSet(entriesDipinjam, "Dipinjam").apply { 
-            color = "#60A5FA".toColorInt()
-            setDrawValues(false) 
-        }
-        val set2 = BarDataSet(entriesSelesai, "Selesai").apply {
-        color = "#34D399".toColorInt()
-            setDrawValues(false) 
-        }
-        val set3 = BarDataSet(entriesPending, "Pending").apply { 
-            color = "#FBBF24".toColorInt()
-            setDrawValues(false) 
-        }
+        val set1 = BarDataSet(entriesDipinjam, "Dipinjam").apply { color = Color.parseColor("#60A5FA"); setDrawValues(false) }
+        val set2 = BarDataSet(entriesSelesai, "Selesai").apply { color = Color.parseColor("#34D399"); setDrawValues(false) }
+        val set3 = BarDataSet(entriesPending, "Pending").apply { color = Color.parseColor("#FBBF24"); setDrawValues(false) }
 
         val barData = BarData(set1, set2, set3)
-        
-        val groupSpace = 0.34f
-        val barSpace = 0.02f
-        val barWidth = 0.2f 
-        barData.barWidth = barWidth
+        barData.barWidth = 0.2f
 
         binding.barChartStatistik.apply {
-            clear()
-            
             data = barData
-            description.isEnabled = false
-            legend.isEnabled = true
-
+            
             xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(monthLabels)
-                position = XAxis.XAxisPosition.BOTTOM
-                granularity = 1f
-                isGranularityEnabled = true
-                setCenterAxisLabels(true)
                 axisMinimum = 0f
                 axisMaximum = 12f
-                setDrawGridLines(false)
-            }
-
-            axisLeft.apply {
-                axisMinimum = 0f
-                granularity = 1f
                 valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String = value.toInt().toString()
+                    override fun getFormattedValue(value: Float): String {
+                        val index = value.toInt()
+                        return if (index in monthLabels.indices) monthLabels[index] else ""
+                    }
                 }
             }
             
-            axisRight.isEnabled = false
-
-            setFitBars(true)
+            groupBars(0f, 0.34f, 0.02f)
             
-            groupBars(0f, groupSpace, barSpace)
-            
-            val currentMonth = Calendar.getInstance().get(Calendar.MONTH).toFloat()
-            setVisibleXRangeMaximum(4f) 
-            moveViewToX(currentMonth)
-            
-            animateY(800)
+            notifyDataSetChanged()
             invalidate()
+            
+            if (list.isNotEmpty()) {
+                val currentMonth = Calendar.getInstance().get(Calendar.MONTH).toFloat()
+                setVisibleXRangeMaximum(4f) 
+                moveViewToX(currentMonth)
+            }
+        }
+    }
+
+    private fun handleError(message: String) {
+        if (isAdded) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        _binding?.progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        #
+
         applyThemeSettings()
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -142,7 +142,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    #
     private fun applyThemeSettings() {
         val pref = SettingPreferences.getInstance(dataStore)
         val factory = ViewModelFactory(Injection.provideRepository(this), pref)

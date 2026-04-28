@@ -51,7 +51,6 @@ class DetailbookFragment : Fragment() {
                     putString("book_publisher", currentPublisher)
                 }
 
-                // Gunakan navigasi yang aman
                 findNavController().navigate(
                     R.id.action_detailBookFragment_to_detailpeminjamanFragment,
                     bundle

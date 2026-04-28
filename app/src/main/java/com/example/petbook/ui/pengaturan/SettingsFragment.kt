@@ -26,8 +26,6 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private val prefManager by lazy { PreferenceManager(requireContext()) }
-
-//    #
     private val settingsViewModel: SettingsViewModel by viewModels {
         ViewModelFactory.getInstance(requireContext(), SettingPreferences.getInstance(requireContext().dataStore))
     }
@@ -40,7 +38,6 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        #
         settingsViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkMode ->
             binding.switchDarkMode.isChecked = isDarkMode
             AppCompatDelegate.setDefaultNightMode(if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
