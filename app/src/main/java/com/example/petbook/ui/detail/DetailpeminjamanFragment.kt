@@ -20,7 +20,6 @@ import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailpeminjamanBinding
 import com.example.petbook.utils.StatusCheckWorker
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,12 +79,10 @@ class DetailpeminjamanFragment : Fragment() {
         val userToken = prefManager.getToken() ?: ""
         val authHeader = if (userToken.startsWith("Bearer ")) userToken else "Bearer $userToken"
 
-        // Langsung gunakan token user untuk cek riwayat karena getAllTransactions bisa diakses user
         ApiConfig.getApiService().getAllTransactions(authHeader).enqueue(object : Callback<HistoryResponse> {
             override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
                 if (response.isSuccessful) {
                     val rawData = response.body()?.data ?: emptyList()
-                    // Filter manual milik user yang sedang login agar data akurat
                     val userHistory = rawData.filter { it.userId == currentUserId }
                     validateHistoryAndProceed(userHistory, book)
                 } else {
@@ -101,7 +98,6 @@ class DetailpeminjamanFragment : Fragment() {
 
     private fun validateHistoryAndProceed(history: List<HistoryDataItem>, book: BookItem) {
         val currentUserId = prefManager.getUserId()
-        // Cek apakah ada peminjaman yang masih berstatus 'dipinjam', 'pending', atau 'telat'
         val activeStatuses = listOf("dipinjam", "pending", "telat")
         val hasActiveLoan = history.any { 
             it.status.lowercase() in activeStatuses && it.userId == currentUserId
@@ -214,7 +210,7 @@ class DetailpeminjamanFragment : Fragment() {
             binding.tvBorrowTitle.text = book.judulBuku
             binding.tvBorrowAuthor.text = writerName ?: "Penulis Anonim"
 
-            if (!book.foto.isNullOrEmpty()) {
+            if (book.foto.isNotEmpty()) {
                 Glide.with(this)
                     .load(book.foto)
                     .placeholder(R.drawable.bintang)

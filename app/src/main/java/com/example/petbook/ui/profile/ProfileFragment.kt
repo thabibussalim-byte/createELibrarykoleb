@@ -1,12 +1,9 @@
 package com.example.petbook.ui.profile
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -20,19 +17,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.core.net.toUri
 
+@Suppress("DEPRECATION")
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var prefManager: PreferenceManager
-
-    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            prefManager.saveLocalProfileUri(uri.toString())
-            displayDataFromPrefs()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,7 +63,7 @@ class ProfileFragment : Fragment() {
             val serverUrl = prefManager.getProfileUrl()
             
             val photoSource = if (!localUri.isNullOrEmpty()) {
-                Uri.parse(localUri)
+                localUri.toUri()
             } else {
                 serverUrl
             }
@@ -96,8 +88,8 @@ class ProfileFragment : Fragment() {
                         prefManager.saveUser(
                             myAccount.id,
                             prefManager.getToken() ?: "",
-                            prefManager.getPassword() ?: "",
                             myAccount.username,
+                            prefManager.getPassword() ?: "",
                             myAccount.profil ?: ""
                         )
                         displayDataFromPrefs()

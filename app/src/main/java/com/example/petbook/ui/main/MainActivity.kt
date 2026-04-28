@@ -2,18 +2,15 @@ package com.example.petbook.ui.main
 
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -23,7 +20,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -62,7 +58,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 import androidx.core.net.toUri
+import androidx.core.content.edit
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -71,7 +69,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         applyThemeSettings()
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -98,8 +98,6 @@ class MainActivity : AppCompatActivity() {
         setupDestinationListener()
         updateDrawerHeader()
         setupPeriodicWork()
-
-        // LOGIKA NAVIGASI DARI NOTIFIKASI
         handleNotificationIntent(intent)
     }
 
@@ -140,7 +138,7 @@ class MainActivity : AppCompatActivity() {
 
         val pref = getSharedPreferences("worker_prefs", MODE_PRIVATE)
         if (pref.getLong("start_time", 0L) == 0L) {
-            pref.edit().putLong("start_time", System.currentTimeMillis()).apply()
+            pref.edit { putLong("start_time", System.currentTimeMillis()) }
         }
     }
 
@@ -212,7 +210,7 @@ class MainActivity : AppCompatActivity() {
         tvUsernameHeader.text = name.ifEmpty { prefManager.getUsername() ?: "User" }
         val localUri = prefManager.getLocalProfileUri()
         val photoSource: Any = if (!localUri.isNullOrEmpty()) localUri.toUri() else prefManager.getProfileUrl() ?: R.drawable.ic_profile
-        
+
         Glide.with(this)
             .load(photoSource)
             .circleCrop()

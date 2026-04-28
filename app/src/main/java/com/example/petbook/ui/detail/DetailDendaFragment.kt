@@ -1,5 +1,6 @@
 package com.example.petbook.ui.detail
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ import retrofit2.Response
 import java.text.NumberFormat
 import java.util.Locale
 
+@Suppress("DEPRECATION")
 class DetailDendaFragment : Fragment() {
 
     private var _binding: FragmentDetailDendaBinding? = null
@@ -186,6 +188,7 @@ class DetailDendaFragment : Fragment() {
         })
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateUI() {
         var total = 0
         unpaidFines.forEach { fine ->

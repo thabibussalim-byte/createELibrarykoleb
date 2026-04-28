@@ -14,17 +14,15 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- KATEGORI TAMPILAN -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="Tampilan"
+            android:text="@string/tampilan"
             android:textColor="@color/accent_blue"
             android:textSize="14sp" />
 
-        <!-- 1. Mode Gelap -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,7 +45,8 @@
                     android:src="@drawable/ic_settings"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_primary" />
+                    app:tint="@color/text_primary"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/tv_dark_mode_title"
@@ -55,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Mode Gelap"
+                    android:text="@string/mode_gelap"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintStart_toEndOf="@id/iv_dark_mode"
@@ -66,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/roboto_regular"
-                    android:text="Ganti tema aplikasi menjadi \ngelap atau terang"
+                    android:text="@string/ganti_tema_aplikasi_menjadi_ngelap_atau_terang"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
                     app:layout_constraintStart_toEndOf="@id/iv_dark_mode"
@@ -84,18 +83,17 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- KATEGORI AKUN -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="Akun &amp; Aplikasi"
+            android:text="@string/akun_amp_aplikasi"
             android:textColor="@color/accent_blue"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:ignore="HardcodedText" />
 
-        <!-- 2. Notifikasi -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,7 +116,8 @@
                     android:src="@drawable/ic_help" 
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_primary" />
+                    app:tint="@color/text_primary"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/tv_notif_title"
@@ -126,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Notifikasi"
+                    android:text="@string/notifikasi"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintStart_toEndOf="@id/iv_notif"
@@ -137,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/roboto_regular"
-                    android:text="Atur pengingat dan promosi \naplikasi."
+                    android:text="@string/atur_pengingat_dan_promosi_naplikasi"
                     android:textColor="@color/text_secondary"
 
                     android:textSize="12sp"
@@ -156,7 +155,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 3. Ubah Password -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_ubah_password"
             android:layout_width="match_parent"
@@ -182,14 +180,15 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_primary" />
+                    app:tint="@color/text_primary"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Ubah Password"
+                    android:text="@string/ubah_password"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -204,10 +203,10 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_hint" />
+                    app:tint="@color/text_hint"
+                    tools:ignore="ContentDescription" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
-
     </LinearLayout>
-
 </androidx.core.widget.NestedScrollView>

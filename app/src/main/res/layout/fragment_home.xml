@@ -19,7 +19,6 @@
             android:orientation="vertical"
             android:paddingBottom="100dp">
 
-            <!-- WELCOME SECTION -->
             <LinearLayout
                 android:id="@+id/layout_welcome"
                 android:layout_width="match_parent"
@@ -33,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_bold"
-                    android:text="Hai, Mau baca apa hari ini?"
+                    android:text="@string/hai_mau_baca_apa_hari_ini"
                     android:textColor="@color/text_primary"
                     android:textSize="20sp" />
 
@@ -43,11 +42,10 @@
                     android:layout_marginTop="2dp"
                     android:alpha="0.8"
                     android:fontFamily="@font/roboto_regular"
-                    android:text='"Literasi tanpa batas."'
+                    android:text='@string/literasi_tanpa_batas'
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
-                <!-- SEARCH BAR -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_search_home"
                     android:layout_width="match_parent"
@@ -70,14 +68,12 @@
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- KONTEN UTAMA -->
             <LinearLayout
                 android:id="@+id/layout_home_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- CATEGORY CHIPS -->
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -95,7 +91,6 @@
                     </com.google.android.material.chip.ChipGroup>
                 </HorizontalScrollView>
 
-                <!-- REKOMENDASI SECTION -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -105,7 +100,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_bold"
-                        android:text="Rekomendasi"
+                        android:text="@string/rekomendasi"
                         android:textColor="@color/text_primary"
                         android:textSize="17sp" />
                     <TextView
@@ -116,7 +111,7 @@
                         android:layout_centerVertical="true"
                         android:background="@drawable/bg_genre_chip"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Lihat Semua"
+                        android:text="@string/lihat_semua"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </RelativeLayout>
@@ -130,7 +125,6 @@
                     android:paddingHorizontal="18dp"
                     tools:listitem="@layout/item_buku" />
 
-                <!-- POPULER SECTION -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -140,7 +134,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_bold"
-                        android:text="Paling Populer"
+                        android:text="@string/paling_populer"
                         android:textColor="@color/text_primary"
                         android:textSize="17sp" />
                     <TextView
@@ -151,7 +145,7 @@
                         android:layout_centerVertical="true"
                         android:background="@drawable/bg_genre_chip"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Lihat Semua"
+                        android:text="@string/lihat_semua"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </RelativeLayout>
@@ -166,7 +160,6 @@
                     tools:listitem="@layout/item_buku" />
             </LinearLayout>
 
-            <!-- EMPTY STATE -->
             <LinearLayout
                 android:id="@+id/layout_empty_search"
                 android:layout_width="match_parent"
@@ -189,7 +182,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/poppins_bold"
-                    android:text="Buku tidak ditemukan"
+                    android:text="@string/buku_tidak_ditemukan"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp" />
 
@@ -199,7 +192,7 @@
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/roboto_regular"
                     android:gravity="center"
-                    android:text="Tidak ada buku yang cocok dengan pencarian atau kategori ini"
+                    android:text="@string/tidak_ada_buku_yang_cocok_dengan_pencarian_atau_kategori_ini"
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>

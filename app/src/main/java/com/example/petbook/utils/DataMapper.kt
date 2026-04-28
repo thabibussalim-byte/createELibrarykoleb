@@ -31,7 +31,9 @@ object DataMapper {
             keterangan = keterangan,
             bukuId = bukuId,
             userId = userId,
-            denda = denda
+            denda = denda,
+            createdAt = createdAt,
+            updatedAt = updatedAt
         )
     }
 }

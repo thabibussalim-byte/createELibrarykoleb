@@ -56,13 +56,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:src="@drawable/ic_history"
-                    app:tint="@color/text_secondary" />
+                    app:tint="@color/text_secondary"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/tv_tgl_terbit"
@@ -72,9 +74,10 @@
                     android:fontFamily="@font/roboto_regular"
                     android:textColor="@color/text_secondary"
                     android:textSize="10sp"
-                    tools:text="2024-10-21" />
-            </LinearLayout>
+                    tools:text="2024-10-21"
+                    tools:ignore="SmallSp" />
 
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

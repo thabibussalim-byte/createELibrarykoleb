@@ -21,12 +21,11 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Header Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
-                android:text="Konfirmasi Pinjaman"
+                android:text="@string/konfirmasi_pinjaman"
                 android:textColor="#1E293B"
                 android:textSize="22sp" />
 
@@ -35,11 +34,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="sans-serif"
-                android:text="Pastikan detail peminjaman sudah sesuai"
+                android:text="@string/pastikan_detail_peminjaman_sudah_sesuai"
                 android:textColor="#64748B"
                 android:textSize="14sp" />
 
-            <!-- Book Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,7 +74,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
-                            android:text="Judul Buku"
+                            android:text="@string/judul_buku"
                             android:textColor="#1E293B"
                             android:textSize="16sp" />
 
@@ -86,7 +84,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:fontFamily="sans-serif"
-                            android:text="Nama Penulis"
+                            android:text="@string/nama_penulis"
                             android:textColor="#64748B"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -99,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:fontFamily="sans-serif-medium"
-                android:text="Atur Jadwal"
+                android:text="@string/atur_jadwal"
                 android:textColor="#1E293B"
                 android:textSize="16sp" />
 
@@ -109,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Mulai Pinjam"
+                android:hint="@string/mulai_pinjam"
                 app:startIconTint="#3B82F6">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -127,7 +125,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Durasi Peminjaman"
+                android:hint="@string/durasi_peminjaman"
                 app:helperText="Maksimal 14 hari"
                 app:startIconTint="#64748B"
                 app:suffixText="Hari"
@@ -142,7 +140,6 @@
                     android:textColor="#1E293B" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Summary Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -162,20 +159,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        tools:ignore="UseCompoundDrawables">
 
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_history"
-                            app:tint="#3B82F6" />
+                            app:tint="#3B82F6"
+                            tools:ignore="ContentDescription" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:fontFamily="sans-serif-medium"
-                            android:text="Ringkasan Pengembalian"
+                            android:text="@string/ringkasan_pengembalian"
                             android:textColor="#3B82F6"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -194,7 +193,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
-                            android:text="Dikembalikan pada"
+                            android:text="@string/dikembalikan_pada"
                             android:textColor="#0369A1"
                             android:textSize="13sp" />
 
@@ -204,7 +203,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:fontFamily="sans-serif-medium"
-                            android:text="-"
+                            android:text="@string/l"
                             android:textColor="#3B82F6"
                             android:textSize="15sp" />
                     </RelativeLayout>
@@ -214,7 +213,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Button -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomCard"
         android:layout_width="match_parent"
@@ -235,7 +233,7 @@
                 android:layout_height="56dp"
                 android:backgroundTint="#3B82F6"
                 android:fontFamily="sans-serif-medium"
-                android:text="Konfirmasi Peminjaman"
+                android:text="@string/konfirmasi_peminjaman"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 app:cornerRadius="16dp" />

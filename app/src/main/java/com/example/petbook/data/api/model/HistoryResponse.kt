@@ -19,5 +19,7 @@ data class HistoryDataItem(
     @SerializedName("keterangan") val keterangan: String?,
     @SerializedName("buku_id") val bukuId: Int,
     @SerializedName("user_id") val userId: Int,
-    @SerializedName("denda") val denda: Int? = 0
+    @SerializedName("denda") val denda: Int? = 0,
+    @SerializedName("createdAt") val createdAt: String,
+    @SerializedName("updatedAt") val updatedAt: String
 ) : Parcelable

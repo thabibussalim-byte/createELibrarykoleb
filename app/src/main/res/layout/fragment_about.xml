@@ -17,7 +17,6 @@
             android:layout_height="wrap_content"
             android:padding="24dp">
 
-            <!-- LOGO & BRANDING SECTION -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_branding"
                 android:layout_width="wrap_content"
@@ -45,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/poppins_bold"
-                android:text="PeTbook"
+                android:text="@string/petbook"
                 android:textColor="#1E293B"
                 android:textSize="26sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -60,14 +59,13 @@
                 android:fontFamily="@font/roboto_regular"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
-                android:text="Versi 1.0.0"
+                android:text="@string/versi_1_0_0"
                 android:textColor="#64748B"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_app_name" />
 
-            <!-- DESCRIPTION CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_description"
                 android:layout_width="match_parent"
@@ -90,7 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_semibold"
-                        android:text="Tentang Aplikasi"
+                        android:text="@string/tentang_aplikasi"
                         android:textColor="#1E293B"
                         android:textSize="14sp" />
 
@@ -106,13 +104,12 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_regular"
                         android:lineSpacingExtra="5dp"
-                        android:text="PeTbook adalah platform perpustakaan digital modern yang memudahkan santri dalam mencari, meminjam, dan mengelola koleksi buku secara digital di lingkungan Pesantren PeTIK."
+                        android:text="@string/petbook_adalah_platform_perpustakaan_digital_modern_yang_memudahkan_santri_dalam_mencari_meminjam_dan_mengelola_koleksi_buku_secara_digital_di_lingkungan_pesantren_petik"
                         android:textColor="#475569"
                         android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- FOOTER INFO -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -130,7 +127,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Dikembangkan oleh"
+                    android:text="@string/dikembangkan_oleh"
                     android:textColor="#94A3B8"
                     android:textSize="11sp"
                     android:textAllCaps="true"
@@ -141,12 +138,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="@font/poppins_semibold"
-                    android:text="Pesantren PeTIK"
+                    android:text="@string/pesantren_petik"
                     android:textColor="@color/accent_blue"
                     android:textSize="14sp" />
-            </LinearLayout>
 
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

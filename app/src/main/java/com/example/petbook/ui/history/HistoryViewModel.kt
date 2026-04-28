@@ -22,7 +22,6 @@ class HistoryViewModel(private val repository: PetbookRepository) : ViewModel() 
     fun getHistoryByUserId(userId: Int): Flow<List<HistoryEntity>> =
         repository.getHistoryByUserId(userId)
 
-
     fun refreshHistory(userId: Int) {
         viewModelScope.launch {
             repository.refreshHistory(userId)

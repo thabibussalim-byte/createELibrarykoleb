@@ -20,11 +20,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="FAQ"
+            android:text="@string/faq"
             android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
-        <!-- 1. Cara Meminjam -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_1"
             android:layout_width="match_parent"
@@ -57,7 +56,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Bagaimana cara meminjam buku?"
+                    android:text="@string/bagaimana_cara_meminjam_buku"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -78,7 +77,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 2. Waktu Peminjaman -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_2"
             android:layout_width="match_parent"
@@ -111,7 +109,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Berapa lama waktu peminjaman?"
+                    android:text="@string/berapa_lama_waktu_peminjaman"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -132,7 +130,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 3. Status Buku -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_3"
             android:layout_width="match_parent"
@@ -157,7 +154,8 @@
                     android:src="@drawable/ic_info"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -165,7 +163,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Info status peminjaman"
+                    android:text="@string/info_status_peminjaman"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -182,11 +180,11 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_hint" />
+                    app:tint="@color/text_hint"
+                    tools:ignore="ContentDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 4. Cara Mengembalikan -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_4"
             android:layout_width="match_parent"
@@ -212,7 +210,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.473" />
+                    app:layout_constraintVertical_bias="0.473"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -220,7 +219,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Bagaimana cara mengembalikan buku?"
+                    android:text="@string/bagaimana_cara_mengembalikan_buku"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -237,11 +236,11 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_hint" />
+                    app:tint="@color/text_hint"
+                    tools:ignore="ContentDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 5. Denda -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_5"
             android:layout_width="match_parent"
@@ -266,7 +265,8 @@
                     android:src="@drawable/ic_help"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -274,7 +274,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Apakah ada denda keterlambatan?"
+                    android:text="@string/apakah_ada_denda_keterlambatan"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -291,11 +291,11 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_hint" />
+                    app:tint="@color/text_hint"
+                    tools:ignore="ContentDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 6. Buku Hilang -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_6"
             android:layout_width="match_parent"
@@ -320,7 +320,8 @@
                     android:src="@drawable/ic_book_hilang"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -328,7 +329,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Apa yang terjadi jika buku hilang?"
+                    android:text="@string/apa_yang_terjadi_jika_buku_hilang"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -345,11 +346,11 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_hint" />
+                    app:tint="@color/text_hint"
+                    tools:ignore="ContentDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 7. Perpanjang Masa Pinjam -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_7"
             android:layout_width="match_parent"
@@ -374,7 +375,8 @@
                     android:src="@drawable/ic_settings"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -382,7 +384,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Apakah bisa memperpanjang masa pinjam?"
+                    android:text="@string/apakah_bisa_memperpanjang_masa_pinjam"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -399,12 +401,12 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_hint" />
+                    app:tint="@color/text_hint"
+                    tools:ignore="ContentDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
 
-        <!-- 7 lupa sandi -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_faq_8"
             android:layout_width="match_parent"
@@ -437,7 +439,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="Apa yang terjadi password lupa?"
+                    android:text="@string/apa_yang_terjadi_password_lupa"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -454,9 +456,10 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/text_hint" />
+                    app:tint="@color/text_hint"
+                    tools:ignore="ContentDescription" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
-
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

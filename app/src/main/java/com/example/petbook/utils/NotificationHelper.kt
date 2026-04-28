@@ -1,5 +1,6 @@
 package com.example.petbook.utils
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -28,7 +29,6 @@ class NotificationHelper(private val context: Context) {
 
         const val TARGET_HISTORY = "target_history"
         const val TARGET_CATALOG = "target_catalog"
-        const val TARGET_DETAIL_HISTORY = "target_detail_history"
     }
 
     private val notificationManager: NotificationManager =
@@ -38,6 +38,7 @@ class NotificationHelper(private val context: Context) {
         createNotificationChannel()
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -79,12 +80,11 @@ class NotificationHelper(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        // Gunakan logo aplikasi sebagai default Large Icon
         val appLogo = BitmapFactory.decodeResource(context.resources, R.mipmap.ic_logo_app_petbook1)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_logo_app_petbook_foreground) // Ikon kecil di status bar
-            .setLargeIcon(appLogo) // Ikon besar di samping teks notifikasi
+            .setSmallIcon(R.mipmap.ic_logo_app_petbook_foreground)
+            .setLargeIcon(appLogo)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -92,7 +92,6 @@ class NotificationHelper(private val context: Context) {
             .setAutoCancel(true)
 
         if (!imageUrl.isNullOrEmpty()) {
-            // Jika ada imageUrl (misal untuk buku baru), tampilkan gambar bukunya
             Glide.with(context)
                 .asBitmap()
                 .load(imageUrl)
@@ -107,7 +106,6 @@ class NotificationHelper(private val context: Context) {
                     override fun onLoadCleared(placeholder: Drawable?) {}
                 })
         } else {
-            // Jika tidak ada imageUrl, gunakan logo aplikasi yang sudah diset di atas
             notificationManager.notify(id, builder.build())
         }
     }

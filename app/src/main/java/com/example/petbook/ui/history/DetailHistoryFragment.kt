@@ -1,5 +1,6 @@
 package com.example.petbook.ui.history
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,6 +18,8 @@ import com.example.petbook.data.api.model.HistoryDataItem
 import com.example.petbook.data.pref.PreferenceManager
 import com.example.petbook.databinding.FragmentDetailHistoryBinding
 import androidx.core.graphics.toColorInt
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class DetailHistoryFragment : Fragment() {
     private var _binding: FragmentDetailHistoryBinding? = null
@@ -62,7 +65,6 @@ class DetailHistoryFragment : Fragment() {
                     putString("book_genre", genre)
                     putFloat("book_rating", rating)
                 }
-                // Navigasi ke Detail Buku
                 findNavController().navigate(R.id.action_detailHistoryFragment_to_detailbookFragment, bundle)
             }
         }
@@ -70,19 +72,42 @@ class DetailHistoryFragment : Fragment() {
 
     private fun checkAndShowSuccessFragment(history: HistoryDataItem, book: BookItem) {
         val status = history.status.lowercase()
-        if ((status == "dipinjam" || status == "dikembalikan" || status == "selesai") &&
-            !prefManager.isStatusSeen(history.id, status)) {
 
-            prefManager.setStatusSeen(history.id, status)
+        val targetStatuses = listOf("dipinjam", "dikembalikan", "selesai")
 
-            val bundle = Bundle().apply {
-                putString("book_title", book.judulBuku)
-                putString("status", status)
+        if (status in targetStatuses && !prefManager.isStatusSeen(history.id, status)) {
+
+            if (isWithinTwentyMinutes(history.updatedAt)) {
+                prefManager.setStatusSeen(history.id, status)
+
+                val bundle = Bundle().apply {
+                    putString("book_title", book.judulBuku)
+                    putString("status", status)
+                }
+                findNavController().navigate(R.id.successReturnFragment, bundle)
             }
-            findNavController().navigate(R.id.successReturnFragment, bundle)
         }
     }
 
+    private fun isWithinTwentyMinutes(updatedAt: String): Boolean {
+        return try {
+            val sdf = SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                Locale.getDefault()
+            )
+            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+
+            val updateDate = sdf.parse(updatedAt)
+            val currentTime = System.currentTimeMillis()
+            val diffInMillis = currentTime - (updateDate?.time ?: 0)
+
+            diffInMillis <= 20 * 60 * 1000 && diffInMillis >= 0
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
     private fun setupUI(
         history: HistoryDataItem,
         book: BookItem,
@@ -102,6 +127,15 @@ class DetailHistoryFragment : Fragment() {
             tvDetailHistoryTglPinjam.text = history.tglPinjam.take(10)
             tvDetailHistoryTglKembali.text = history.tglKembali.take(10)
 
+            if (history.updatedAt != history.createdAt) {
+                tvDetailHistoryStatusBadge2.visibility = View.VISIBLE
+                tvDetailHistoryStatusBadge2.text = "DIPERPANJANG"
+                tvDetailHistoryStatusBadge2.setBackgroundResource(R.drawable.bg_status_dipinjam)
+                tvDetailHistoryStatusBadge2.setTextColor("#1D4ED8".toColorInt())
+            } else {
+                tvDetailHistoryStatusBadge2.visibility = View.GONE
+            }
+
             updateDetailUI(history)
         }
         
@@ -110,11 +144,11 @@ class DetailHistoryFragment : Fragment() {
                 putString("faq_title", "Bagaimana cara mengembalikan buku?")
                 putString("faq_answer", "Bawa buku fisik ke petugas perpustakaan. Setelah petugas memproses pengembalian, status di aplikasi Anda akan otomatis berubah menjadi 'Dikembalikan'.")
             }
-            // Pastikan menggunakan ID aksi yang benar sesuai nav_main.xml
             findNavController().navigate(R.id.action_detailHistoryFragment_to_faqDetailFragment, bundle)
         }
     }
 
+    @SuppressLint("SetTextI18n", "UseKtx")
     private fun updateDetailUI(history: HistoryDataItem) {
         if (_binding == null) return
         val status = history.status.lowercase()
@@ -124,7 +158,6 @@ class DetailHistoryFragment : Fragment() {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
                 binding.tvDetailHistoryStatusBadge.setTextColor("#1D4ED8".toColorInt())
                 binding.tvDetailHistoryStatusBadge.text = "SEDANG DIPINJAM"
-                binding.tvDetailHistoryStatusBadge2.visibility = View.GONE
                 binding.tvHelp.visibility = View.VISIBLE
                 binding.tvDetailStatus.text = "Status: Aktif"
                 binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.accent_blue))
@@ -133,9 +166,8 @@ class DetailHistoryFragment : Fragment() {
             "pending" -> {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
                 binding.tvDetailHistoryStatusBadge.setTextColor("#C2410C".toColorInt())
-                binding.tvDetailHistoryStatusBadge2.visibility = View.GONE
-                binding.tvHelp.visibility = View.GONE
                 binding.tvDetailHistoryStatusBadge.text = "MENUNGGU PERSETUJUAN"
+                binding.tvHelp.visibility = View.GONE
                 binding.tvDetailStatus.text = "Menunggu dikonfirmasi admin"
                 binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
             }
@@ -143,9 +175,8 @@ class DetailHistoryFragment : Fragment() {
             "dikembalikan", "selesai" -> {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dikembalikan)
                 binding.tvDetailHistoryStatusBadge.setTextColor("#047857".toColorInt())
-                binding.tvDetailHistoryStatusBadge2.visibility = View.GONE
-                binding.tvHelp.visibility = View.GONE
                 binding.tvDetailHistoryStatusBadge.text = "SELESAI"
+                binding.tvHelp.visibility = View.GONE
 
                 val dendaAmount = currentFine?.totalDenda?.filter { it.isDigit() }?.toIntOrNull() ?: 0
                 if (dendaAmount > 0) {
@@ -162,9 +193,8 @@ class DetailHistoryFragment : Fragment() {
                 binding.tvDetailHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
                 binding.tvDetailHistoryStatusBadge.setTextColor(Color.parseColor("#B91C1C"))
                 binding.tvDetailHistoryStatusBadge.text = "TERLAMBAT"
-                binding.tvDetailStatus.text = "Status: Terlambat (Buku Belum Kembali)"
-                binding.tvDetailHistoryStatusBadge2.visibility = View.GONE
                 binding.tvHelp.visibility = View.VISIBLE
+                binding.tvDetailStatus.text = "Status: Terlambat (Buku Belum Kembali)"
                 binding.tvDetailStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_red))
             }
         }

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.example.petbook.R
 import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.api.model.*
@@ -27,7 +26,6 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private val prefManager by lazy { PreferenceManager(requireContext()) }
-
     private val settingsViewModel: SettingsViewModel by viewModels {
         ViewModelFactory.getInstance(requireContext(), SettingPreferences.getInstance(requireContext().dataStore))
     }
@@ -95,7 +93,7 @@ class SettingsFragment : Fragment() {
         ApiConfig.getApiService().updateUser("Bearer $token", userId, request).enqueue(object : Callback<BorrowResponse> {
             override fun onResponse(call: Call<BorrowResponse>, response: Response<BorrowResponse>) {
                 if (response.isSuccessful) {
-                    prefManager.saveUser(userId, token, newPass, prefManager.getUsername() ?: "", prefManager.getProfileUrl() ?: "")
+                    prefManager.saveUser(userId, token, prefManager.getUsername() ?: "",newPass,  prefManager.getProfileUrl() ?: "")
                     dialog.dismiss()
                     Toast.makeText(context, "Password berhasil diubah", Toast.LENGTH_SHORT).show()
                 }

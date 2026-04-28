@@ -42,12 +42,13 @@ class LoginFragment : Fragment() {
                 Toast.makeText(requireContext(), "Username dan Password tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            showLoading(true)
 
-            // Panggil API Login
             val loginRequest = LoginRequest(username, password)
             ApiConfig.getApiService().login(loginRequest).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-
+                    showLoading(false)
+                    
                     if (!isAdded || context == null) return
 
                     if (response.isSuccessful) {
@@ -79,6 +80,8 @@ class LoginFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    showLoading(false)
+                    
                     if (!isAdded || context == null) return
 
                     Log.e("LoginFragment", "Failure: ${t.message}")
@@ -86,6 +89,13 @@ class LoginFragment : Fragment() {
                 }
             })
         }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.btnLogin.isEnabled = !isLoading
+        binding.etUsername.isEnabled = !isLoading
+        binding.etPassword.isEnabled = !isLoading
     }
 
     override fun onDestroyView() {

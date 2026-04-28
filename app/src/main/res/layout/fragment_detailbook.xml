@@ -7,7 +7,6 @@
     android:background="@color/surface_white"
     tools:context="com.example.petbook.ui.detail.DetailbookFragment">
 
-    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
@@ -22,7 +21,6 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Book Cover Container -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="180dp"
                 android:layout_height="250dp"
@@ -36,10 +34,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/bintang" />
+                    android:src="@drawable/bintang"
+                    tools:ignore="ContentDescription" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Book Title -->
             <TextView
                 android:id="@+id/tv_detail_title"
                 android:layout_width="match_parent"
@@ -51,7 +49,6 @@
                 android:textSize="22sp"
                 tools:text="Bintang" />
 
-            <!-- Author Name -->
             <TextView
                 android:id="@+id/tv_detail_author"
                 android:layout_width="match_parent"
@@ -63,7 +60,6 @@
                 android:textSize="14sp"
                 tools:text="Tere Liye" />
 
-            <!-- Stats Horizontal Row -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,19 +85,21 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tgl Terbit"
+                            android:text="@string/tgl_terbit"
                             android:textColor="@color/text_hint"
                             android:textSize="12sp" />
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
                                 android:src="@drawable/ic_history"
-                                app:tint="@color/accent_blue" />
+                                app:tint="@color/accent_blue"
+                                tools:ignore="ContentDescription" />
                             <TextView
                                 android:id="@+id/tv_detail_tgl_terbit"
                                 android:layout_width="wrap_content"
@@ -129,7 +127,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Stok"
+                            android:text="@string/stok"
                             android:textColor="@color/text_hint"
                             android:textSize="12sp" />
                         <TextView
@@ -158,7 +156,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Genre"
+                            android:text="@string/genre"
                             android:textColor="@color/text_hint"
                             android:textSize="12sp" />
 
@@ -176,13 +174,12 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Description -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/poppins_bold"
-                android:text="Deskripsi"
+                android:text="@string/deskripsi"
                 android:textColor="@color/text_primary"
                 android:textSize="18sp" />
 
@@ -202,7 +199,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/poppins_bold"
-                android:text="Penerbit"
+                android:text="@string/penerbit"
                 android:textColor="@color/text_primary"
                 android:textSize="18sp" />
 
@@ -224,7 +221,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Fixed Bottom Button Section -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cv_bottom_container"
         android:layout_width="match_parent"
@@ -247,7 +243,7 @@
                 android:layout_gravity="center"
                 android:backgroundTint="@color/accent_blue"
                 android:fontFamily="@font/poppins_bold"
-                android:text="PINJAM BUKU"
+                android:text="@string/pinjam_buku"
                 android:textSize="16sp"
                 android:letterSpacing="0.1"
                 app:cornerRadius="16dp"
@@ -257,5 +253,4 @@
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

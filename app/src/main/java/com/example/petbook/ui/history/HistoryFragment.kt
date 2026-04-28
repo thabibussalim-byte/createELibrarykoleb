@@ -64,8 +64,6 @@ class HistoryFragment : Fragment() {
         setupFilters()
         
         val userId = prefManager.getUserId()
-        val token = prefManager.getToken() ?: ""
-
 
         viewModel.getAllBooks().asLiveData().observe(viewLifecycleOwner) { bookEntities ->
             allBooks = bookEntities.map { it.toBookItem() }
@@ -144,8 +142,6 @@ class HistoryFragment : Fragment() {
                 val author = allAuthors.find { it.id == book.penulisId }?.namaPenulis ?: "Penulis Anonim"
                 val publisher = allPublishers.find { it.id == book.penerbitId }?.publisherName ?: "Penerbit Anonim"
                 val genre = allGenres.find { it.id == book.genreId }?.namaGenre ?: "Umum"
-                
-                // Cari denda terkait transaksi ini
                 val fine = allFines.find { it.transaksiId == historyItem.id }
 
                 val bundle = Bundle().apply {

@@ -37,37 +37,30 @@ class SplashActivity : AppCompatActivity() {
     private fun validateToken(token: String, prefManager: PreferenceManager) {
         val authHeader = "Bearer $token"
         
-        // Kita gunakan API getMahasantri sebagai tes "apakah pintu terbuka?"
         ApiConfig.getApiService().getMahasantri(authHeader).enqueue(object : Callback<MahasantriResponse> {
             override fun onResponse(call: Call<MahasantriResponse>, response: Response<MahasantriResponse>) {
                 if (response.isSuccessful) {
-                    // Token VALID -> Lanjut ke Home
                     navigateToHome()
                 } else {
-                    // Token KADALUARSA atau GA VALID -> Logout dan Login ulang
-                    prefManager.clear() // Hapus sampah token lama
+                    prefManager.clear()
                     Toast.makeText(this@SplashActivity, "Sesi berakhir, silakan login kembali", Toast.LENGTH_SHORT).show()
                     navigateToLogin()
                 }
             }
 
             override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {
-                // Masalah Koneksi -> Tetap izinkan masuk (Offline mode sementara) atau paksa login
-                // Di sini kita izinkan masuk saja agar user tidak terjebak jika sinyal jelek
                 navigateToHome()
             }
         })
     }
 
     private fun navigateToLogin() {
-        //berpindah halaman ke login untuk melakukan login ulang agar mendapatkan token baru yang valid
         val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
         finish()
     }
 
     private fun navigateToHome() {
-        //berpindah halaman ke daasboard
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

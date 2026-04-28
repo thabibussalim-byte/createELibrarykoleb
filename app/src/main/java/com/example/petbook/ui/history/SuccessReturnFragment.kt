@@ -1,5 +1,6 @@
 package com.example.petbook.ui.history
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,10 +41,11 @@ class SuccessReturnFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupUIByStatus(status: String, bookTitle: String) {
         when (status.lowercase()) {
             "dipinjam" -> {
-                binding.ivSuccessIcon.setImageResource(R.drawable.centang) // Pastikan icon tersedia
+                binding.ivSuccessIcon.setImageResource(R.drawable.centang)
                 binding.ivSuccessIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.accent_blue)
                 binding.tvSuccessTitle.text = "Peminjaman Berhasil!"
                 binding.tvSuccessMessage.text = "Buku $bookTitle sekarang aktif dipinjam. Selamat membaca!"

@@ -1,9 +1,7 @@
 package com.example.petbook.ui.history
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,8 +11,7 @@ import com.example.petbook.data.api.model.BookItem
 import com.example.petbook.data.api.model.FineDataItem
 import com.example.petbook.data.api.model.HistoryDataItem
 import com.example.petbook.databinding.ItemHistoryBinding
-import java.text.SimpleDateFormat
-import java.util.Locale
+import androidx.core.graphics.toColorInt
 
 class HistoryAdapter(
     private var listHistory: List<HistoryDataItem>,
@@ -45,6 +42,7 @@ class HistoryAdapter(
         return ViewHolder(binding)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val history = listHistory[position]
         
@@ -70,26 +68,26 @@ class HistoryAdapter(
             when (status) {
                 "pending" -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_pending)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#C2410C"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#F59E0B"))
+                    tvHistoryStatusBadge.setTextColor("#C2410C".toColorInt())
+                    viewStatusIndicator.setBackgroundColor("#F59E0B".toColorInt())
                     tvHistoryStatusBadge.text = "PENDING"
                 }
                 "dipinjam" -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#1D4ED8"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#3B82F6"))
+                    tvHistoryStatusBadge.setTextColor("#1D4ED8".toColorInt())
+                    viewStatusIndicator.setBackgroundColor("#3B82F6".toColorInt())
                     tvHistoryStatusBadge.text = "DIPINJAM"
                 }
                 "dikembalikan", "selesai" -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_dikembalikan)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#047857"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#10B981"))
+                    tvHistoryStatusBadge.setTextColor("#047857".toColorInt())
+                    viewStatusIndicator.setBackgroundColor("#10B981".toColorInt())
                     tvHistoryStatusBadge.text = "DIKEMBALIKAN"
                 }
                 else -> {
                     tvHistoryStatusBadge.setBackgroundResource(R.drawable.bg_status_telat)
-                    tvHistoryStatusBadge.setTextColor(Color.parseColor("#B91C1C"))
-                    viewStatusIndicator.setBackgroundColor(Color.parseColor("#EF4444"))
+                    tvHistoryStatusBadge.setTextColor("#B91C1C".toColorInt())
+                    viewStatusIndicator.setBackgroundColor("#EF4444".toColorInt())
                     tvHistoryStatusBadge.text = "TELAT"
                 }
             }

@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Container Ikon dengan Efek Lingkaran Lembut -->
+
         <FrameLayout
             android:layout_width="160dp"
             android:layout_height="160dp"
@@ -32,7 +32,8 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"
-                android:src="@drawable/centang" />
+                android:src="@drawable/centang"
+                tools:ignore="ContentDescription" />
         </FrameLayout>
 
         <TextView
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="Terima Kasih!"
+            android:text="@string/terima_kasih"
             android:textColor="#16A34A"
             android:textSize="26sp" />
 
@@ -52,12 +53,12 @@
             android:layout_marginTop="12dp"
             android:fontFamily="@font/roboto_regular"
             android:lineSpacingExtra="6dp"
-            android:text="Buku berhasil dikembalikan tepat waktu. Teruslah membaca untuk memperluas wawasan!"
+            android:text="@string/buku_berhasil_dikembalikan_tepat_waktu_teruslah_membaca_untuk_memperluas_wawasan"
             android:textAlignment="center"
             android:textColor="#475569"
             android:textSize="15sp" />
 
-        <!-- Tombol Utama -->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_to_catalog"
             android:layout_width="match_parent"
@@ -65,13 +66,12 @@
             android:layout_marginTop="56dp"
             android:backgroundTint="@color/accent_blue"
             android:fontFamily="@font/poppins_semibold"
-            android:text="Pinjam Buku Lain"
+            android:text="@string/pinjam_buku_lain"
             android:textAllCaps="false"
             android:textSize="15sp"
             app:cornerRadius="16dp"
             app:elevation="2dp" />
 
-        <!-- Tombol Sekunder -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_back_to_home"
             style="@style/Widget.Material3.Button.TextButton"
@@ -79,20 +79,19 @@
             android:layout_height="56dp"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/poppins_medium"
-            android:text="Kembali ke Beranda"
+            android:text="@string/kembali_ke_beranda"
             android:textAllCaps="false"
             android:textColor="#64748B"
             android:textSize="15sp" />
 
     </LinearLayout>
 
-    <!-- Hiasan Dekoratif (Opsional - Pojok Bawah) -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:fontFamily="@font/poppins_medium"
-        android:text="PeTbook Digital Library"
+        android:text="@string/petbook_digital_library"
         android:textColor="#CBD5E1"
         android:textSize="11sp"
         android:letterSpacing="0.1"

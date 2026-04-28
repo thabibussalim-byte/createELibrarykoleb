@@ -7,7 +7,6 @@
     android:background="@color/surface_white"
     tools:context=".ui.buku.BookFragment">
 
-    <!-- 2. JUDUL HALAMAN -->
     <TextView
         android:id="@+id/tv_title_katalog"
         android:layout_width="wrap_content"
@@ -15,13 +14,12 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/poppins_bold"
-        android:text="Katalog Buku"
+        android:text="@string/katalog_buku"
         android:textColor="@color/text_primary"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 3. SEARCH BAR -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_search"
         android:layout_width="match_parent"
@@ -43,7 +41,6 @@
             app:searchIcon="@drawable/ic_search" />
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 4. CHIP FILTER SECTION -->
     <HorizontalScrollView
         android:id="@+id/scroll_chips_book"
         android:layout_width="match_parent"
@@ -66,14 +63,13 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Semua"
+                android:text="@string/semua"
                 android:fontFamily="@font/poppins_medium"
                 android:checked="true"
                 app:chipBackgroundColor="@color/white" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
-    <!-- 5. STATUS LABEL -->
     <TextView
         android:id="@+id/tv_status_label"
         android:layout_width="wrap_content"
@@ -81,13 +77,12 @@
         android:layout_marginStart="28dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/roboto_regular"
-        android:text="Menampilkan semua koleksi"
+        android:text="@string/menampilkan_semua_koleksi"
         android:textColor="#64748B"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scroll_chips_book" />
 
-    <!-- 6. LIST BUKU -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_all_books"
         android:layout_width="match_parent"
@@ -99,7 +94,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv_status_label"
         tools:listitem="@layout/item_book_katalog" />
 
-    <!-- KEREN: CIRCULAR PROGRESS INDICATOR -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar_book"
         android:layout_width="wrap_content"
@@ -114,7 +108,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scroll_chips_book" />
 
-    <!--EMPTY STATE (kondisi saat sebuah halaman atau komponen tidak punya data untuk ditampilkan.)-->
     <LinearLayout
         android:id="@+id/layout_empty_state"
         android:layout_width="wrap_content"
@@ -131,14 +124,15 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:alpha="0.4"
-            android:src="@drawable/book_notfound" />
+            android:src="@drawable/book_notfound"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_semibold"
-            android:text="Buku tidak ditemukan"
+            android:text="@string/buku_tidak_ditemukan"
             android:textColor="#94A3B8"
             android:textSize="16sp" />
 
@@ -148,7 +142,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/roboto_regular"
             android:gravity="center"
-            android:text="Tidak ada buku yang cocok dengan pencarian atau kategori ini"
+            android:text="@string/tidak_ada_buku_yang_cocok_dengan_pencarian_atau_kategori_ini"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 

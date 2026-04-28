@@ -7,7 +7,6 @@
     android:background="@color/surface_white"
     tools:context=".ui.history.DetailHistoryFragment">
 
-    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -19,7 +18,6 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- CARD 1: INFORMASI BUKU -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -53,7 +51,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_semibold"
-                            android:text="Judul Buku"
+                            android:text="@string/judul_buku"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp" />
 
@@ -62,7 +60,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
-                            android:text="Nama Penulis"
+                            android:text="@string/nama_penulis"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp" />
 
@@ -80,7 +78,7 @@
                                 android:paddingHorizontal="12dp"
                                 android:paddingVertical="4dp"
                                 android:layout_marginEnd="10dp"
-                                android:text="DIPINJAM"
+                                android:text="@string/dipinjam"
                                 android:textColor="@android:color/white"
                                 android:textSize="11sp" />
                             <TextView
@@ -92,7 +90,7 @@
                                 android:fontFamily="@font/poppins_medium"
                                 android:paddingHorizontal="12dp"
                                 android:paddingVertical="4dp"
-                                android:text="DIPERPANJANG"
+                                android:text="@string/diperpanjang"
                                 android:visibility="gone"
                                 android:textColor="@android:color/white"
                                 android:textSize="11sp" />
@@ -102,7 +100,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- CARD 2: DETAIL WAKTU & DENDA -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,7 +118,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_semibold"
-                        android:text="Detail Peminjaman"
+                        android:text="@string/detail_peminjaman"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
 
@@ -144,7 +141,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Tgl Pinjam"
+                                android:text="@string/tgl_pinjam"
                                 android:textColor="@color/text_hint"
                                 android:textSize="12sp" />
                             <TextView
@@ -152,7 +149,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:text="-"
+                                android:text="@string/l"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -165,7 +162,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Jatuh Tempo"
+                                android:text="@string/jatuh_tempo"
                                 android:textColor="@color/text_hint"
                                 android:textSize="12sp" />
                             <TextView
@@ -173,7 +170,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:text="-"
+                                android:text="@string/l"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -185,7 +182,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Status: Aktif"
+                        android:text="@string/status_aktif"
                         android:textColor="@color/accent_blue"
                         android:textSize="14sp" />
 
@@ -201,10 +198,11 @@
                     android:id="@+id/tv_help"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Bagaimana cara mengembalikan buku?"
+                    android:text="@string/bagaimana_cara_mengembalikan_buku1"
                     android:textColor="@color/error_red"
                     android:textSize="12sp"
                     android:fontFamily="@font/poppins_regular" />
+
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

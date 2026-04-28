@@ -19,7 +19,6 @@ class AuthActivity : AppCompatActivity() {
 
         prefManager = PreferenceManager(this)
 
-        // Cek Sesi: Jika sudah login, langsung ke MainActivity
         if (prefManager.isLoggedIn()) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -27,23 +26,5 @@ class AuthActivity : AppCompatActivity() {
             return
         }
         setContentView(R.layout.activity_auth)
-    }
-
-
-    fun logout() {
-        lifecycleScope.launch {
-            // 1. Hapus Cache Database Room
-            val database = AppDatabase.getInstance(this@AuthActivity)
-            database.clearAllTables()
-
-            // 2. Hapus Sesi SharedPreferences
-            prefManager.clear()
-
-            // 3. Restart Activity untuk menampilkan Login
-            val intent = Intent(this@AuthActivity, AuthActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-        }
     }
 }
