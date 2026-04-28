@@ -80,7 +80,7 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
 
                         val entity = HistoryEntity(
                             id = item.id,
-                            status = item.status, // Tetap gunakan status asli dari API
+                            status = item.status,
                             tanggalPinjam = item.tglPinjam,
                             tanggalPengembalian = item.tglKembali,
                             keterangan = item.keterangan,

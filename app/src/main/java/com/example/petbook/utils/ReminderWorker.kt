@@ -74,7 +74,6 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) : Worker(
                         val msg = when (item.status.lowercase()) {
                             "dipinjam" -> "Pinjaman buku \"$bookTitle\" disetujui!"
                             "dikembalikan", "selesai" -> "Buku \"$bookTitle\" berhasil dikembalikan."
-                            "ditolak" -> "Pinjaman buku \"$bookTitle\" ditolak admin."
                             else -> null
                         }
                         if (msg != null) {

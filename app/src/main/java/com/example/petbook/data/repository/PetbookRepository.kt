@@ -38,7 +38,7 @@ class PetbookRepository(
     suspend fun createOrUpdateFine(transaksiId: Int, amount: Int, existingFineId: Int? = null) {
         val token = getLatestAdminToken() ?: return
         try {
-            val request = FineRequest(amount.toString(), "belum dibayar", transaksiId)
+            val request = FineRequest(amount.toString(), "belumdibayar", transaksiId)
             val response = if (existingFineId != null) {
                 apiService.updateFine(token, existingFineId, request).awaitResponse()
             } else {
