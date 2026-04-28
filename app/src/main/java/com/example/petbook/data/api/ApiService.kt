@@ -29,6 +29,13 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body request: BorrowRequest
     ): Call<BorrowResponse>
+
+    @GET("api/transaksi/user/{id}")
+    fun getHistoryByUser(
+        @Header("Authorization") token: String,
+        @Path("id") userId: Int
+    ): Call<HistoryResponse>
+
     @GET("api/transaksi")
     fun getAllTransactions(@Header("Authorization") token: String): Call<HistoryResponse>
 
