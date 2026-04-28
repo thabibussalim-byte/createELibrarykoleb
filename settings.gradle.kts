@@ -22,5 +22,5 @@ dependencyResolutionManagement {
 
 
 
-rootProject.name = "PeTbook"
+rootProject.name = "PeTIKbook"
 include(":app")

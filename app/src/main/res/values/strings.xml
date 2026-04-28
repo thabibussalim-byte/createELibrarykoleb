@@ -2,7 +2,7 @@
 
     <!--Teks splash screen-->
     <string name="app_name">ElibraryPetik</string>
-    <string name="elibrary">PeTbook</string>
+    <string name="elibrary">PeTIK book</string>
     <string name="petik">Pesantren Teknologi Informasi dan Komunikasi</string>
     <string name="open_drawer">Open navigation drawer</string>
     <string name="close_drawer">Close navigation drawer</string>
@@ -136,12 +136,16 @@
     <string name="_0_buku">0 Buku</string>
     <string name="katalog_buku">Katalog Buku</string>
     <string name="menampilkan_semua_koleksi">Menampilkan semua koleksi</string>
-    <string name="petbook">PeTbook</string>
+
+
+    <string name="petbook">PeTIK Book</string>
     <string name="versi_1_0_0">Versi 1.0.0</string>
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
     <string name="petbook_adalah_platform_perpustakaan_digital_modern_yang_memudahkan_santri_dalam_mencari_meminjam_dan_mengelola_koleksi_buku_secara_digital_di_lingkungan_pesantren_petik">PeTbook adalah platform perpustakaan digital modern yang memudahkan santri dalam mencari, meminjam, dan mengelola koleksi buku secara digital di lingkungan Pesantren PeTIK.</string>
     <string name="dikembangkan_oleh">Dikembangkan oleh</string>
     <string name="pesantren_petik">Pesantren PeTIK</string>
+
+
     <string name="password_lama">Password Lama</string>
     <string name="masukkan_password_saat_ini">Masukkan password saat ini</string>
     <string name="password_baru">Password Baru</string>

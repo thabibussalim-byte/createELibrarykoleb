@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             window.statusBarColor = ContextCompat.getColor(this, R.color.accent_blue)
             if (destination.id in appBarConfiguration.topLevelDestinations) {
-                supportActionBar?.title = "PeTbook"
+                supportActionBar?.title = "PeTIK book"
                 binding.bottomNav.visibility = View.VISIBLE
             } else {
                 supportActionBar?.title = destination.label

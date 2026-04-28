@@ -35,25 +35,6 @@ class PetbookRepository(
         return adminToken
     }
 
-    suspend fun createOrUpdateFine(transaksiId: Int, amount: Int, existingFineId: Int? = null) {
-        val token = getLatestAdminToken() ?: return
-        try {
-            val request = FineRequest(amount.toString(), "belumdibayar", transaksiId)
-            val response = if (existingFineId != null) {
-                apiService.updateFine(token, existingFineId, request).awaitResponse()
-            } else {
-                apiService.createFine(token, request).awaitResponse()
-            }
-
-            if (response.isSuccessful) {
-                Log.d("Repository", "Denda berhasil diupdate/dibuat untuk transaksi $transaksiId")
-            } else {
-                Log.e("Repository", "Gagal update denda: ${response.errorBody()?.string()}")
-            }
-        } catch (e: Exception) {
-            Log.e("Repository", "Error denda: ${e.message}")
-        }
-    }
     fun getAllBooks(): Flow<List<BookEntity>> = bookDao.getAllBooks()
 
     fun getHistoryByUserId(userId: Int): Flow<List<HistoryEntity>> = 

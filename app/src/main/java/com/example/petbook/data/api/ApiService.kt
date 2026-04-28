@@ -52,19 +52,6 @@ interface ApiService {
         @Body request: UpdateMahasantriRequest
     ): Call<MahasantriUpdateResponse>
 
-    @POST("api/denda/tambah")
-    fun createFine(
-        @Header("Authorization") token: String,
-        @Body request: FineRequest
-    ): Call<FineResponse>
-
-    @PATCH("api/denda/edit/{id}")
-    fun updateFine(
-        @Header("Authorization") token: String,
-        @Path("id") fineId: Int,
-        @Body request: FineRequest
-    ): Call<FineResponse>
-
     @PATCH("api/user/update/{id}")
     fun updateUser(
         @Header("Authorization") token: String,

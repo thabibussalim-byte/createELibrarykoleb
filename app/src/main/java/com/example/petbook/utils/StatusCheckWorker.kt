@@ -7,12 +7,12 @@ import com.example.petbook.data.api.ApiConfig
 import com.example.petbook.data.di.Injection
 import com.example.petbook.data.local.entity.HistoryEntity
 import com.example.petbook.data.pref.PreferenceManager
-import com.example.petbook.data.repository.PetbookRepository
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import androidx.core.content.edit
+import com.example.petbook.data.api.model.HistoryDataItem
 
 class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
@@ -32,9 +32,7 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
             val booksResponse = ApiConfig.getApiService().getBooks().execute()
             val bookList = booksResponse.body()?.data ?: emptyList()
 
-            val finesResponse = ApiConfig.getApiService().getFines(formattedToken).execute()
-            val fineList = finesResponse.body()?.data ?: emptyList()
-
+            // Menghapus pengambilan denda dari API
             val response = ApiConfig.getApiService().getAllTransactions(formattedToken).execute()
 
             if (response.isSuccessful) {
@@ -48,7 +46,8 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                         val existingEntity = repository.getHistoryById(item.id)
 
                         if (currentStatus == "dipinjam") {
-                            val isLate = checkAndCalculateFine(repository, item, fineList)
+                            // Hanya memeriksa keterlambatan tanpa hitung denda
+                            val isLate = checkIfLate(item)
                             if (isLate) {
                                 val lastWasLate = sharedPrefs.getBoolean("is_late_${item.id}", false)
                                 if (!lastWasLate) {
@@ -112,8 +111,7 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
         return Result.success()
     }
 
-    private suspend fun checkAndCalculateFine(repository: PetbookRepository, history: com.example.petbook.data.api.model.HistoryDataItem, fineList: List<com.example.petbook.data.api.model.FineDataItem>): Boolean {
-        var isLate = false
+    private fun checkIfLate(history: HistoryDataItem): Boolean {
         try {
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val returnDateStr = history.tglKembali.take(10)
@@ -122,21 +120,11 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
             val returnDate = sdf.parse(returnDateStr)
             val currentDate = Date()
 
-            if (returnDate != null && currentDate.after(returnDate)) {
-                isLate = true
-                val diffInMillis = currentDate.time - returnDate.time
-                val overdueDays = TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
-
-                if (overdueDays > 0) {
-                    val totalFineAmount = overdueDays * 2000
-                    val existingFine = fineList.find { it.transaksiId == history.id }
-                    repository.createOrUpdateFine(history.id, totalFineAmount, existingFine?.id)
-                }
-            }
+            return returnDate != null && currentDate.after(returnDate)
         } catch (e: Exception) {
-            Log.e("FineUpdate", "Gagal proses denda: ${e.message}")
+            Log.e("StatusCheck", "Gagal cek keterlambatan: ${e.message}")
         }
-        return isLate
+        return false
     }
 
     private fun showStatusNotification(helper: NotificationHelper, status: String, title: String) {

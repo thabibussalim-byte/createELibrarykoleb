@@ -45,15 +45,11 @@ class SuccessReturnFragment : Fragment() {
     private fun setupUIByStatus(status: String, bookTitle: String) {
         when (status.lowercase()) {
             "dipinjam" -> {
-                binding.ivSuccessIcon.setImageResource(R.drawable.centang)
-                binding.ivSuccessIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.accent_blue)
                 binding.tvSuccessTitle.text = "Peminjaman Berhasil!"
                 binding.tvSuccessMessage.text = "Buku $bookTitle sekarang aktif dipinjam. Selamat membaca!"
                 binding.root.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             }
             "dikembalikan", "selesai" -> {
-                binding.ivSuccessIcon.setImageResource(R.drawable.centang)
-                binding.ivSuccessIcon.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.success_green)
                 binding.tvSuccessTitle.text = "Pengembalian Sukses!"
                 binding.tvSuccessMessage.text = "Terima kasih telah mengembalikan buku $bookTitle tepat waktu."
             }
