@@ -1,6 +1,5 @@
 package com.example.petbook.ui.statistik
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,6 +23,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.graphics.toColorInt
 
 class StatistikFragment : Fragment() {
 
@@ -194,9 +194,9 @@ class StatistikFragment : Fragment() {
             entriesPending.add(BarEntry(i.toFloat(), d.third.toFloat()))
         }
 
-        val set1 = BarDataSet(entriesDipinjam, "Dipinjam").apply { color = Color.parseColor("#60A5FA"); setDrawValues(false) }
-        val set2 = BarDataSet(entriesSelesai, "Selesai").apply { color = Color.parseColor("#34D399"); setDrawValues(false) }
-        val set3 = BarDataSet(entriesPending, "Pending").apply { color = Color.parseColor("#FBBF24"); setDrawValues(false) }
+        val set1 = BarDataSet(entriesDipinjam, "Dipinjam").apply { color = "#60A5FA".toColorInt(); setDrawValues(false) }
+        val set2 = BarDataSet(entriesSelesai, "Selesai").apply { color = "#34D399".toColorInt(); setDrawValues(false) }
+        val set3 = BarDataSet(entriesPending, "Pending").apply { color = "#FBBF24".toColorInt(); setDrawValues(false) }
 
         val barData = BarData(set1, set2, set3)
         barData.barWidth = 0.2f
