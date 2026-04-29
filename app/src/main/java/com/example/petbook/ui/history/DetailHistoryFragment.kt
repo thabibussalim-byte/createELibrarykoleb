@@ -127,15 +127,6 @@ class DetailHistoryFragment : Fragment() {
             tvDetailHistoryTglPinjam.text = history.tglPinjam.take(10)
             tvDetailHistoryTglKembali.text = history.tglKembali.take(10)
 
-            if (history.updatedAt != history.createdAt) {
-                tvDetailHistoryStatusBadge2.visibility = View.VISIBLE
-                tvDetailHistoryStatusBadge2.text = "DIPERPANJANG"
-                tvDetailHistoryStatusBadge2.setBackgroundResource(R.drawable.bg_status_dipinjam)
-                tvDetailHistoryStatusBadge2.setTextColor("#1D4ED8".toColorInt())
-            } else {
-                tvDetailHistoryStatusBadge2.visibility = View.GONE
-            }
-
             updateDetailUI(history)
         }
         

@@ -99,14 +99,16 @@ class DetailpeminjamanFragment : Fragment() {
     private fun validateHistoryAndProceed(history: List<HistoryDataItem>, book: BookItem) {
         val currentUserId = prefManager.getUserId()
         val activeStatuses = listOf("dipinjam", "pending", "telat")
+        val hasUnpaidFine = history.any {
+            (it.denda ?: 0) > 0 && it.status.lowercase() == "telat"
+        }
         val hasActiveLoan = history.any { 
             it.status.lowercase() in activeStatuses && it.userId == currentUserId
         }
-
         if (hasActiveLoan) {
-            binding.progressBarBorrow.visibility = View.GONE
-            binding.btnPinjamFinal.isEnabled = true
-            Toast.makeText(requireContext(), "Gagal! Anda masih memiliki peminjaman aktif atau pending.", Toast.LENGTH_LONG).show()
+            handleError("Gagal! Anda masih memiliki peminjaman aktif atau pending.")
+        } else if (hasUnpaidFine) {
+            handleError("Gagal! Anda memiliki denda yang belum dibayar. Silakan lunasKotlini denda terlebih dahulu.")
         } else {
             performBorrowAction(book.id)
         }

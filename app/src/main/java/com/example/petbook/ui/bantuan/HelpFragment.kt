@@ -65,12 +65,6 @@ class HelpFragment : Fragment() {
                 "Jika buku hilang, Anda wajib melaporkannya segera ke petugas. Anda akan diminta untuk mengganti buku yang sama atau membayar denda sesuai dengan harga pasar buku tersebut."
             )
         }
-        binding.btnFaq7.setOnClickListener {
-            navigateToDetail(
-                "Apakah bisa memperpanjang masa pinjam?",
-                "Ya, anda dapat memperpanjang masa pinjam dengan meminta admin perpustakaan untuk ditambahkan waktu peminjaman buku yang telah dipinjam"
-            )
-        }
         binding.btnFaq8.setOnClickListener {
             navigateToDetail(
                 "Bagaimana jika Lupa password?",

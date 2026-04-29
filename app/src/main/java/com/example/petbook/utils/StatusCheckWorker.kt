@@ -13,6 +13,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import androidx.core.content.edit
 import com.example.petbook.data.api.model.HistoryDataItem
+import kotlinx.coroutines.flow.firstOrNull
 
 class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
@@ -29,10 +30,6 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
         try {
             val repository = Injection.provideRepository(applicationContext)
 
-            val booksResponse = ApiConfig.getApiService().getBooks().execute()
-            val bookList = booksResponse.body()?.data ?: emptyList()
-
-            // Menghapus pengambilan denda dari API
             val response = ApiConfig.getApiService().getAllTransactions(formattedToken).execute()
 
             if (response.isSuccessful) {
@@ -41,17 +38,18 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                 var hasActiveProcesses = false
 
                 runBlocking {
+                    val localBooks = repository.getAllBooks().firstOrNull() ?: emptyList()
+
                     for (item in historyList) {
                         val currentStatus = item.status.lowercase()
                         val existingEntity = repository.getHistoryById(item.id)
 
                         if (currentStatus == "dipinjam") {
-                            // Hanya memeriksa keterlambatan tanpa hitung denda
                             val isLate = checkIfLate(item)
                             if (isLate) {
                                 val lastWasLate = sharedPrefs.getBoolean("is_late_${item.id}", false)
                                 if (!lastWasLate) {
-                                    val bookTitle = bookList.find { it.id == item.bukuId }?.judulBuku ?: "Buku"
+                                    val bookTitle = localBooks.find { it.id == item.bukuId }?.judulBuku ?: "Buku"
                                     notificationHelper.showNotification(101, "Peringatan", "Buku \"$bookTitle\" sudah melewati batas waktu!")
                                     sharedPrefs.edit { putBoolean("is_late_${item.id}", true) }
                                 }
@@ -59,23 +57,12 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                             hasActiveProcesses = true
                         }
 
-                        if (existingEntity != null && item.tglKembali != existingEntity.tanggalPengembalian) {
-                            val bookTitle = bookList.find { it.id == item.bukuId }?.judulBuku ?: "Buku"
-                            val lastNotifiedDate = sharedPrefs.getString("notified_tgl_kembali_${item.id}", "")
-                            
-                            if (lastNotifiedDate != item.tglKembali) {
-                                notificationHelper.showNotification(
-                                    103, 
-                                    "Tanggal Diperbarui", 
-                                    "Buku \"$bookTitle\" diperpanjang hingga ${item.tglKembali.take(10)}"
-                                )
-                                sharedPrefs.edit { putString("notified_tgl_kembali_${item.id}", item.tglKembali) }
-                            }
+                        val lastStatus = sharedPrefs.getString("status_${item.id}", null)
+                        if (lastStatus != null && lastStatus != currentStatus) {
+                            val bookTitle = localBooks.find { it.id == item.bukuId }?.judulBuku ?: "Buku"
+                            showStatusNotification(notificationHelper, currentStatus, bookTitle)
                         }
-
-                        if (existingEntity != null && existingEntity.status != currentStatus) {
-                            repository.handleStockUpdate(item.bukuId, existingEntity.status, currentStatus)
-                        }
+                        sharedPrefs.edit { putString("status_${item.id}", currentStatus) }
 
                         val entity = HistoryEntity(
                             id = item.id,
@@ -92,16 +79,10 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
                         )
                         repository.insertHistory(listOf(entity))
 
-                        val lastStatus = sharedPrefs.getString("status_${item.id}", null)
-                        if (lastStatus != null && lastStatus != currentStatus) {
-                            val bookTitle = bookList.find { it.id == item.bukuId }?.judulBuku ?: "Buku"
-                            showStatusNotification(notificationHelper, currentStatus, bookTitle)
-                        }
-                        sharedPrefs.edit { putString("status_${item.id}", currentStatus) }
-
                         if (currentStatus == "pending") hasActiveProcesses = true
                     }
                 }
+                
                 handleWorkerLifetime(hasActiveProcesses)
             }
         } catch (e: Exception) {
@@ -112,7 +93,7 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
     }
 
     private fun checkIfLate(history: HistoryDataItem): Boolean {
-        try {
+        return try {
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val returnDateStr = history.tglKembali.take(10)
             if (returnDateStr.isEmpty()) return false
@@ -120,25 +101,27 @@ class StatusCheckWorker(context: Context, workerParams: WorkerParameters) : Work
             val returnDate = sdf.parse(returnDateStr)
             val currentDate = Date()
 
-            return returnDate != null && currentDate.after(returnDate)
+            returnDate != null && currentDate.after(returnDate)
         } catch (e: Exception) {
-            Log.e("StatusCheck", "Gagal cek keterlambatan: ${e.message}")
+            false
         }
-        return false
     }
 
     private fun showStatusNotification(helper: NotificationHelper, status: String, title: String) {
         when (status) {
             "dipinjam" -> helper.showNotification(101, "Peminjaman Disetujui", "Buku \"$title\" siap diambil.")
-            "dikembalikan" -> helper.showNotification(101, "Sukses", "Buku \"$title\" telah dikembalikan.")
+            "dikembalikan" -> helper.showNotification(102, "Sukses", "Buku \"$title\" telah dikembalikan.")
+            "selesai" -> helper.showNotification(102, "Selesai", "Transaksi buku \"$title\" telah selesai.")
         }
     }
 
     private fun handleWorkerLifetime(active: Boolean) {
         val startTime = inputData.getLong("start_time", System.currentTimeMillis())
-        val isTimedOut = System.currentTimeMillis() - startTime > TimeUnit.DAYS.toMillis(2) 
+        val isTimedOut = System.currentTimeMillis() - startTime > TimeUnit.DAYS.toMillis(1)
+        
         if (!active || isTimedOut) {
             WorkManager.getInstance(applicationContext).cancelUniqueWork("BorrowStatusCheck")
+            Log.d("StatusCheckWorker", "Worker Stopped: active=$active, timeout=$isTimedOut")
         }
     }
 }

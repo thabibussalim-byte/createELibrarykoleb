@@ -178,7 +178,7 @@ class EditProfileFragment : Fragment() {
                         }
                     } else {
                         resetSaveButton()
-                        Toast.makeText(requireContext(), "Gagal terhubung ke server (Error ${response.code()})", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Gagal terhubung ke server (Error ${response.code()}). Silahkan login ulang", Toast.LENGTH_SHORT).show()
                     }
                 }
                 override fun onFailure(call: Call<MahasantriResponse>, t: Throwable) {
